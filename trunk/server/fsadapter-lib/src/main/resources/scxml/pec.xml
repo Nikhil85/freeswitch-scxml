@@ -1,0 +1,95 @@
+
+<sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+   xmlns:sc='http://www.w3.org/2005/07/scxml'
+   xmlns:ms='http://telmi.se/MS'
+   xsi:schemaLocation='
+   http://www.w3.org/2005/07/scxml
+   scxml.xsd
+   http://telmi.se/MS
+   telmims.xsd' initialstate="welcome">
+
+    <sc:datamodel>
+        <sc:data name="template" expr="'pec.vm'" />
+        <sc:data name="action" expr="'SENDMAIL'" />
+        <!--Sound Path -->
+        <sc:data name="sp" expr="'/usr/local/freeswitch/sounds/pec/'" />
+    </sc:datamodel>
+
+    <sc:state id="welcome">
+        <sc:onentry>
+            <ms:answer />
+            <ms:menu
+           ms:choices="1"
+           maxtime="30s"
+           value="sp + 'welcome.wav'" />
+        </sc:onentry>
+
+        <sc:transition event="choice:1" target="number" />
+
+        <sc:transition event="maxtime"  target="welcome" cond="count.maxtime lt 3" />
+        <sc:transition event="maxtime"  target="exit" cond="count.maxtime == 3" />
+
+        <sc:transition  event="nomatch" target="welcome" cond="count.nomatch lt 3" />
+        <sc:transition  event="nomatch" target="exit" cond="count.nomatch == 3" />
+
+    </sc:state>
+
+
+    <sc:state id="number">
+
+        <sc:onentry>
+            <ms:inputdigits
+            maxdigits="16"
+            mindigits="5"
+            value="sp + 'enter-phonenumber.wav'"
+            var="phoneNumber"
+            timeout="30s"/>
+        </sc:onentry>
+
+        <sc:transition event="termdigit"  target="validate" />
+
+        <sc:transition event="maxtime"    target="number" cond="count.maxtime   lt 3" />
+        <sc:transition event="mindigits"  target="number" cond="count.mindigits lt 3" />
+        <sc:transition event="maxdigits"  target="number" cond="count.maxdigits lt 3"/>
+        <sc:transition event="maxtime"    target="exit"   cond="count.maxtime   eq 3" />
+        <sc:transition event="mindigits"  target="exit"   cond="count.mindigits eq 3" />
+        <sc:transition event="maxdigits"  target="exit"   cond="count.maxdigits eq 3"/>
+    </sc:state>
+
+    <sc:state id="validate">
+
+        <sc:onentry>
+            <ms:playaudio value="sp +'you-have-entered.wav'" />
+            <ms:phrase value="phoneNumber" format="number" method="iterated" />
+            <ms:menu value="sp +'is-this-correct.wav'"    ms:choices="19" />
+        </sc:onentry>
+
+       <sc:transition event="choice:1" target="sendNumber" />
+       <sc:transition event="choice:9" target="number" />
+
+       <sc:transition event="maxtime"  target="validate" cond="count.maxtime lt 3" />
+        <sc:transition event="maxtime"  target="exit" cond="count.maxtime == 3" />
+
+        <sc:transition  event="nomatch" target="validate" cond="count.nomatch lt 3" />
+        <sc:transition  event="nomatch" target="exit" cond="count.nomatch == 3" />
+    </sc:state>
+
+    <sc:state id="sendNumber">
+        <sc:onentry>
+            <sc:send
+            targettype="'basichttp'"
+            target="'http://localhost:8080/test'" namelist="template action" />
+        </sc:onentry>
+
+        <sc:transition target="exit">
+            <ms:playaudio value="sp + 'thanks-for-the-call.wav'" />
+        </sc:transition>
+
+    </sc:state>
+
+    <sc:state id="exit" final="true">
+        <sc:onentry>
+            <ms:hangup/>
+        </sc:onentry>
+    </sc:state>
+</sc:scxml>

@@ -1,0 +1,20 @@
+# ####################################################
+#
+# postinstallScriplet
+#
+# This script is run after the package is installed. 
+# It corresponds to the %post tag in the spec file.
+#
+# ####################################################
+
+
+#  Install init files
+# %{__install} -D -m 0755 %{prefix}/bin/tivrbridge.init.redhat.sh /etc/init.d/tivrbridge
+
+%{__ln_s} -f %{prefix}/bin/tivrbridge.redhat.sh /etc/init.d/tivrbridge
+%{__ln_s} -f %{prefix}/sysconfig /etc/sysconfig/tivrbridge
+
+
+# make tivr bridge available at reboot
+chkconfig --add tivrbridge
+

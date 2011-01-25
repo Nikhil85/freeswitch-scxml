@@ -1,0 +1,46 @@
+
+<configuration>
+
+    <jmxConfigurator />
+
+    <!--    <appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">-->
+<!--        <SyslogHost>localhost</SyslogHost>-->
+<!--        <port>514</port>-->
+<!--        <Facility>locall0</Facility>-->
+<!--        <SuffixPattern>[%thread] %logger %msg</SuffixPattern>-->
+<!--    </appender>-->
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <File>/tmp/tivrbridge.log</File>
+        <Append>true</Append>
+
+        <!--                %-4relative-->
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</Pattern>
+        </layout>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout" >
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+        </layout>
+    </appender>
+
+
+    <logger name="com.telmi.msc.fsadapter" >
+        <level value="debug" />
+    </logger>
+
+    <root>
+        <level value="info" />
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+
+    <!--    -->
+<!--    <root level="debug">-->
+<!--        <appender-ref ref="FILE" />-->
+<!--    </root>-->
+<!--    -->
+
+</configuration>

@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://telmi.se/MS"
+            xmlns:tns="http://telmi.se/MS"
+            elementFormDefault="qualified">
+    <xsd:element name="playaudio">
+        <xsd:annotation>
+            <xsd:appinfo/>
+            <xsd:documentation xml:lang="en">
+This element can be used to play audio files to the caller.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute ref="tns:test" />
+            <xsd:attribute ref="tns:say"/>
+            <xsd:attribute name="value" type="xsd:anyURI">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en" source="">
+The value attribute defines the audio file to play to the caller, at this time no protocol 
+identifier like http or file should be used. This is because we only support local files.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:attribute name="test" type="xsd:string" id="test" >
+        <xsd:annotation>
+            <xsd:appinfo/>
+            <xsd:documentation xml:lang="en">
+Un expression that should result in a boolean ex. 1==1. If true the element will execute if false it will not.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="cleardigits" type="xsd:boolean">
+        <xsd:annotation>
+            <xsd:documentation>  
+Setting this attribute to true will result in emptying the DTMF queue.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="say" type="xsd:string">
+        <xsd:annotation>
+            <xsd:documentation>
+This attribute will allow one to have a backup TTS voice if the sound file can't be found.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="choices" type="xsd:string">
+        <xsd:annotation>
+            <xsd:documentation>
+
+A sequence of DTMF chars separated by a space that represents choices a caller may take. For every choice specified in this attribute a transition with a event choice:[DTMF] 
+should be declared at the target state.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:attribute>
+    <xsd:element name="exit">
+        <xsd:annotation>
+            <xsd:documentation>
+This element can be used to end the current session and add information to the resulting SIP BYE message.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute name="expr" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        
+
+
+This attribute can be used if you want to specify a hangup cause. The String should be one of the causes listed at
+http://wiki.freeswitch.org/wiki/Hangup_causes. The string will be put in the hangupcause header. 
+
+Default
+
+NORMAL_CLEARING
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="namelist" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+
+This attribute that should contain one or more variables separated with a space. The variables name and value will be added to the    
+X-EventMap header in the SIP BYE message.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute ref="tns:test"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="getdigits">
+        <xsd:annotation>
+            <xsd:documentation>
+
+This element can be used to get a String of DTMF chars from a caller.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute ref="tns:cleardigits"/>
+            <xsd:attribute name="includetermdigit" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation>
+                     
+                        Set to true, if the termdigits should be removed from the variable specified in the var attribute.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="maxdigits" type="xsd:int" use="optional" default="10">
+                <xsd:annotation>
+                    <xsd:documentation>
+
+Specifies how many digits a caller should be allowed to enter at most.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="maxtime" type="xsd:string" default="30s">
+                <xsd:annotation>
+                    <xsd:documentation>
+Specifies how long time at most the collecting of digits may take.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute ref="tns:termdigits" use="optional">
+                <xsd:annotation>
+                    <xsd:documentation>
+
+This attribute should contain one or more DTMF chars, the collection of digits will stop if the caller enters this sequence and a termdigit
+event will get thrown.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute ref="tns:test" use="optional"/>
+            <xsd:attribute name="var" type="xsd:string" use="required">
+                <xsd:annotation>
+                    <xsd:documentation>
+
+This will be the name of the variable that holds the DTMF String and it's value will be set after this element has executed.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:attribute name="termdigits" type="xsd:string">
+        <xsd:annotation>
+            <xsd:documentation>
+
+A sequence with DTMF chars that should end the current action that the caller is doing.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:attribute>
+    <xsd:element name="cleardigits">
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute ref="tns:test"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="hangup">
+        <xsd:annotation>
+            <xsd:documentation>
+
+Hangs up the call, should be used when all execution is finished.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute ref="tns:test"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="menu">
+        <xsd:annotation>
+            <xsd:documentation>
+
+This element can be used for navigation and execution of action based of the choices a caller enters.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute ref="tns:choices"/>
+            <xsd:attribute ref="tns:cleardigits"/>
+            <xsd:attribute ref="tns:test"/>
+            <xsd:attribute name="maxtime" type="xsd:int">
+                <xsd:annotation>
+                    <xsd:documentation>
+
+This attribute specifies how long time to wait on the caller to make it's choice, when the maxtime has elapsed a maxtime event will get thrown and
+the collecting of digits will end.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute ref="tns:say"/>
+            <xsd:attribute ref="tns:termdigits"/>
+            <xsd:attribute name="value" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+
+This String should be a path to a wav file on the system. At this moment a path should not have a protocol identifier
+at the beginning because local files are only supported, this may change.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="prompt">
+        <xsd:annotation>
+            <xsd:documentation>
+The prompt element allows you to queue up a series of comma-delimited wav files and/or TTS strings, ("prompt lists"), to play to the caller. This differs from the menu
+tag in that we specify a singular value for both the .wav file, and the TTS string.
+
+Note: Not implemented.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute name="value" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+
+Series of comma-delimited wav files and/or TTS strings, ("prompt lists"), to play to the caller.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute ref="tns:choices"/>
+            <xsd:attribute ref="tns:cleardigits"/>
+            <xsd:attribute name="maxtime" type="xsd:int"/>
+            <xsd:attribute ref="tns:termdigits"/>
+            <xsd:attribute ref="tns:test"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="recordaudio">
+        <xsd:annotation>
+            <xsd:documentation>
+                
+Un element that can record a callers voice in a given time and save it to disk.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute name="beep" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation>
+This attribute specifies if the recording should be started with a small beep sound or not.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute ref="tns:cleardigits"/>
+            <xsd:attribute name="maxtime" type="xsd:int">
+                <xsd:annotation>
+                    <xsd:documentation>
+Specifies how long the recording should be allowed to get.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute ref="tns:termdigits"/>
+            <xsd:attribute ref="tns:test"/>
+            <xsd:attribute name="timevar" type="xsd:long">
+                <xsd:annotation>
+                    <xsd:documentation>
+This attribute is the reference name to the timevar variable. This variable will gets it's value assigned to it
+when the recording has ended.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="var" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+This attribute is the reference name to the recording. It can after the recording is done, be used for playing the recording back to the caller or
+sent to a server.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="reject">
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute ref="tns:test"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="say" >
+        <xsd:complexType mixed="true">
+            <xsd:sequence/>
+            <xsd:attribute ref="tns:choices"/>
+            <xsd:attribute ref="tns:test"/>
+            <xsd:attribute name="voice" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="wait">
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute ref="tns:choices"/>
+            <xsd:attribute ref="tns:termdigits"/>
+            <xsd:attribute ref="tns:test"/>
+            <xsd:attribute name="value" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="answer">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">Un element that will pickup the call and make sure that the session is ready. It's not end of the world if you miss this element
+the script will continue anyway but the first audio element that script encounters could sound a bit strange at the beginning.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute ref="tns:test"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="var">
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute name="name" type="xsd:string"/>
+            <xsd:attribute name="expr" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="sendmail">
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute ref="tns:test"/>
+            <xsd:attribute name="from" type="xsd:string"/>
+            <xsd:attribute name="to" type="xsd:string"/>
+            <xsd:attribute name="subject" type="xsd:string"/>
+            <xsd:attribute name="contenttype" type="xsd:string"/>
+            <xsd:attribute name="content" type="xsd:string"/>
+            <xsd:attribute name="debug" type="xsd:boolean"/>
+            <xsd:attribute name="attachment" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="call">
+        <xsd:annotation>
+            <xsd:documentation>
+   
+The call element allows you to place calls to other sip endpoints.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute name="maxtime" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        
+   
+Specifies how long the the platform should try to reach the sip endpoint before throwing a noanswer event.
+
+Format:
+
+The string begins with a required numeric value. The valid qualifiers are:
+
+    * m: minutes
+    * s: seconds (default)
+    * ms: milliseconds
+    
+Default:
+
+30s
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="callerID" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+   
+This attribute sets the display name of the outbound call.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="id" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+  
+Not implemented
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="value" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+   
+The value for this attribute defines the URL describing the place to initiate a call to. An empty value will result in un error.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute ref="tns:test"/>
+            <xsd:attribute name="busytones" type="xsd:int">
+                <xsd:annotation>
+                    <xsd:documentation>
+           
+This attribute let's one set how many busy tones should be generated before throwing a busy event.
+Defaults to 0.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="inputdigits">
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute name="value" type="xsd:string"/>
+            <xsd:attribute name="maxdigits" type="xsd:string"/>
+            <xsd:attribute name="mindigits" type="xsd:string"/>
+            <xsd:attribute name="termdigits" type="xsd:string"/>
+            <xsd:attribute name="var" type="xsd:string"/>
+            <xsd:attribute name="includetermdigit" type="xsd:boolean"/>
+            <xsd:attribute name="cleardigits" type="xsd:boolean"/>
+            <xsd:attribute name="timeout" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
+
+

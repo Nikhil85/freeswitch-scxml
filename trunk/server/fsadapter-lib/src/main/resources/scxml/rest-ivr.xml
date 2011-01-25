@@ -1,0 +1,218 @@
+
+<sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+   xmlns:sc='http://www.w3.org/2005/07/scxml'
+   xmlns:ms='http://telmi.se/MS'
+   xsi:schemaLocation='
+   http://www.w3.org/2005/07/scxml
+   scxml.xsd
+   http://telmi.se/MS
+   telmims.xsd' initialstate="welcome">
+
+    <sc:datamodel>
+        <sc:data name="action" expr="'RESTAURANTTASK'" />
+        <sc:data name="reservationType" expr="'NOTSET'" />
+        <sc:data name="reservationPrompt" expr="'NOTSET'" />
+        <sc:data name="recordingPrompt" expr="'NOTSET'" />
+        <sc:data name="reservationTempus" expr="'NOTSET'" />
+        <sc:data name="template" expr="'restaurant-mail.vm'" />
+        <sc:data name="fullyBookedFlag" expr="true" />
+       <sc:data name="extension" expr="1" />
+
+            <!--Sound Path -->
+        <sc:data name="sp" expr="'/usr/local/freeswitch/sounds/rest/'" />
+
+    </sc:datamodel>
+
+    <sc:state id="welcome">
+        <sc:onentry>
+            <ms:answer />
+        </sc:onentry>
+
+        <sc:transition target="main" >
+            <ms:playaudio value="sp + 'Welcome.wav'" />
+        </sc:transition>
+
+    </sc:state>
+    
+    <sc:state id="main">
+
+        <sc:onentry>
+            <ms:menu
+          ms:choices="*1234"
+          value="sp + 'MainMenu.wav'"
+          ms:termdigits="#"
+          maxtime="10s" />
+        </sc:onentry>
+
+        <sc:transition event="choice:1" target="reservationTempus">
+            <sc:assign name="reservationType"   expr="'RESERVATION'"/>
+            <sc:assign name="reservationPrompt" expr="sp + 'GetTempus_MakeReservation.wav'"/>
+        </sc:transition>
+
+        <sc:transition event="choice:2" target="reservationTempus">
+            <sc:assign name="reservationType" expr="'CANCEL_RESERVATION'"/>
+            <sc:assign name="reservationPrompt" expr="sp + 'GetTempus_CancelReservation.wav'"/>
+        </sc:transition>
+
+        <sc:transition event="choice:3" target="reservationTempus">
+            <sc:assign name="reservationType" expr="'CHANGE_RESERVATION'"/>
+            <sc:assign name="reservationPrompt" expr="sp + 'GetTempus_ChangeReservation.wav'"/>
+        </sc:transition>
+
+        <sc:transition event="choice:4" target="doTransfer" />
+
+        <sc:transition event="choice:*" target="main" />
+
+        <sc:transition event="hangup"   target="exit" />
+
+        <sc:transition event="maxtime"  target="main" cond="count.maxtime lt 3" />
+        <sc:transition event="maxtime"  target="exit" cond="count.maxtime == 3" />
+
+        <sc:transition  event="nomatch" target="main" cond="count.nomatch lt 3" />
+        <sc:transition  event="nomatch" target="exit" cond="count.nomatch == 3" />
+
+    </sc:state>
+        
+    <sc:state id="reservationTempus">
+
+        <sc:onentry>
+            <ms:menu ms:choices="*12" value="reservationPrompt"/>
+        </sc:onentry>
+
+        <sc:transition event="choice:1" target="recording" cond="fullyBookedFlag eq false" >
+            <sc:assign name="reservationTempus" expr="'TODAY'" />
+
+            <sc:if cond="reservationType == 'RESERVATION'">
+                <sc:assign name="recordingPrompt" expr="sp + 'GetVM_MakeReservationToday.wav'" />
+            </sc:if>
+
+            <sc:if cond="reservationType == 'CANCEL_RESERVATION'">
+                <sc:assign name="recordingPrompt" expr="sp + 'GetVM_CancelReservationToday.wav'" />
+            </sc:if>
+
+            <sc:if cond="reservationType == 'CHANGE_RESERVATION'">
+                <sc:assign name="recordingPrompt" expr="sp + 'GetVM_ChangeReservationToday.wav'" />
+            </sc:if>
+              
+        </sc:transition>
+
+        <sc:transition event="choice:1" target="fullyBooked" cond="fullyBookedFlag eq true" />
+
+        <sc:transition event="choice:2" target="recording">
+            <sc:assign name="reservationTempus" expr="'FUTURE'" />
+
+            <sc:if cond="reservationType == 'RESERVATION'">
+                <sc:assign name="recordingPrompt" expr="sp + 'GetVM_MakeReservationFuture.wav'" />
+            </sc:if>
+
+            <sc:if cond="reservationType == 'CANCEL_RESERVATION'">
+                <sc:assign name="recordingPrompt" expr="sp + 'GetVM_CancelReservationFuture.wav'" />
+            </sc:if>
+
+            <sc:if cond="reservationType == 'CHANGE_RESERVATION'">
+                <sc:assign name="recordingPrompt" expr="sp + 'GetVM_ChangeReservationFuture.wav'" />
+            </sc:if>
+        </sc:transition>
+
+        <sc:transition event="choice:*" target="main" />
+
+        <sc:transition event="hangup"    target="exit" />
+
+        <sc:transition event="maxtime"  target="reservationTempus" cond="count.maxtime lt 3" />
+        <sc:transition event="maxtime"  target="exit" cond="count.maxtime == 3" />
+
+        <sc:transition  event="nomatch" target="reservationTempus" cond="count.nomatch lt 3" />
+        <sc:transition  event="nomatch" target="exit" cond="count.nomatch == 3" />
+
+    </sc:state>
+
+    <sc:state id="fullyBooked">
+        <sc:onentry>
+            <ms:menu
+            ms:choices="*2"
+            value=" sp + 'FullyBooked.wav'" />
+        </sc:onentry>
+
+        <sc:transition target="recording" event="choice:2" >
+           <sc:assign name="reservationTempus" expr="'FUTURE'" />
+           <sc:assign name="recordingPrompt" expr="sp + 'GetVM_MakeReservationFuture.wav'" />
+        </sc:transition>
+
+        <sc:transition event="hangup"    target="exit" />
+
+        <sc:transition event="maxtime"  target="fullyBooked" cond="count.maxtime lt 3" />
+        <sc:transition event="maxtime"  target="main" cond="count.maxtime == 3" />
+
+        <sc:transition  event="nomatch" target="fullyBooked" cond="count.nomatch lt 3" />
+        <sc:transition  event="nomatch" target="main" cond="count.nomatch == 3" />
+
+    </sc:state>
+
+    <sc:state id="recording" >
+      
+      <sc:onentry>
+           <ms:playaudio value="recordingPrompt" />
+           <ms:recordaudio beep="true" maxtime="120s" var="recording" ms:termdigits="#" />
+       </sc:onentry>
+    
+      <sc:transition event="termdigit" target="telephoneNumber" />
+      <sc:transition event="maxtime"   target="telephoneNumber" />
+      <sc:transition event="hangup"    target="exit" />
+    
+    </sc:state>
+
+
+    <sc:state id="telephoneNumber" >
+
+      <sc:onentry>
+          <ms:inputdigits var="telephoneNumber" maxdigits="15" mindigits="6" value="sp + 'GetTelephoneNumber.wav'" />
+      </sc:onentry>
+
+      <sc:transition event="termdigit" target="submitData" />
+
+      <sc:transition event="maxdigits" target="telephoneNumber" />
+      <sc:transition event="mindigits" target="telephoneNumber" />
+
+      <sc:transition event="hangup"    target="exit" />
+
+    </sc:state>
+
+
+    <sc:state id="submitData" >
+
+        <sc:onentry>
+            <sc:send
+             targettype="'basichttp'"
+             target="'http://localhost:8080/testSubmit/testSubmit'"
+             namelist="action template recording reservationType reservationTempus telephoneNumber" />
+        </sc:onentry>
+
+     <sc:transition cond="reservationType eq 'RESERVATION'" target="exit" >
+         <ms:playaudio value="sp + 'End_MakeReservation.wav'" />
+         <ms:playaudio value="sp + 'End_Info.wav'" />
+     </sc:transition>
+
+     <sc:transition cond="reservationType eq 'CANCEL_RESERVATION'" target="exit">
+         <ms:playaudio value="sp + 'End_ChangeReservation.wav'" />
+     </sc:transition>
+
+     <sc:transition cond="reservationType eq 'CHANGE_RESERVATION'" target="exit">
+            <ms:playaudio value="sp + 'End_ChangeReservation.wav'" />
+            <ms:playaudio value="sp + 'End_Info.wav'" />
+     </sc:transition>
+
+    </sc:state>
+
+    <sc:state id="doTransfer">
+        <sc:onentry>
+            <ms:exit expr="extension" />
+        </sc:onentry>
+    </sc:state>
+
+    <sc:state id="exit" final="true">
+        <sc:onentry>
+            <ms:hangup/>
+        </sc:onentry>
+    </sc:state>
+
+</sc:scxml>

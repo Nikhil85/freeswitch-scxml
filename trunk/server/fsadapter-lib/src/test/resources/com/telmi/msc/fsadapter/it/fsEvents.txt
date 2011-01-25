@@ -1,0 +1,65 @@
+Channel-Username: 1001
+Channel-Dialplan: XML
+Channel-Caller-ID-Name: 1001
+Channel-Caller-ID-Number: 1001
+Channel-Network-Addr: 10.0.1.241
+Channel-Destination-Number: 886
+Channel-Unique-ID: 40117b0a-186e-11dd-bbcd-7b74b6b4d31e
+variable_sip_to_params: %s
+variable_sip_h_X-Eventmap: %s
+
+Event-Name: CHANNEL_EXECUTE_COMPLETE
+Core-UUID: 689fd828-e85b-ca43-a219-39332bc55860
+Event-Calling-File: switch_channel.c
+Event-Calling-Function: switch_channel_set_caller_profile
+Event-Calling-Line-Number: 840
+
+Event-Name: DTMF
+DTMF-Digit: 0
+DTMF-Duration: 2000
+
+Event-Name: DTMF
+DTMF-Digit: 1
+DTMF-Duration: 2000
+
+Event-Name: DTMF
+DTMF-Digit: 2
+DTMF-Duration: 2000
+
+Event-Name: DTMF
+DTMF-Digit: 3
+DTMF-Duration: 2000
+
+Event-Name: DTMF
+DTMF-Digit: 4
+DTMF-Duration: 2000
+
+Event-Name: DTMF
+DTMF-Digit: 5
+DTMF-Duration: 2000
+
+Event-Name: DTMF
+DTMF-Digit: 6
+DTMF-Duration: 2000
+
+Event-Name: DTMF
+DTMF-Digit: 7
+DTMF-Duration: 2000
+
+Event-Name: DTMF
+DTMF-Digit: 8
+DTMF-Duration: 2000
+
+Event-Name: DTMF
+DTMF-Digit: 9
+DTMF-Duration: 2000
+
+Event-Name: DTMF
+DTMF-Digit: *
+DTMF-Duration: 2000
+
+Event-Name: DTMF
+DTMF-Digit: #
+DTMF-Duration: 2000
+
+

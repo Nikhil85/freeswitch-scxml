@@ -1,0 +1,52 @@
+<sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+           xmlns:sc='http://www.w3.org/2005/07/scxml'
+           xmlns:ms='http://telmi.se/MS'
+           xsi:schemaLocation='
+           http://www.w3.org/2005/07/scxml
+           scxml.xsd
+           http://telmi.se/MS
+           telmims.xsd' initialstate="welcome">
+
+    <sc:datamodel>
+        <!--Sound Path -->
+        <sc:data name="sp" expr="'/home/jocke/SERVICES/filesrv/customers/3/prompts/'" />
+
+    </sc:datamodel>
+
+    <sc:state id="welcome">
+        <sc:onentry>
+            <ms:answer />
+        </sc:onentry>
+        <sc:transition target="main" />
+    </sc:state>
+
+    <sc:state id="main">
+
+        <sc:onentry>
+            <ms:menu
+                ms:choices="*1"
+                value="sp + 'welcome.wav'"
+                ms:termdigits="#"
+                maxtime="60s" />
+        </sc:onentry>
+
+        <sc:transition event="choice:1" target="exit">
+           <ms:playaudio value="'/home/jocke/suite-espanola-min.wav'" /> 
+        </sc:transition>
+
+        <sc:transition event="hangup"   target="exit" />
+        
+        <sc:transition event="maxtime"  target="exit" />
+
+        <sc:transition  event="nomatch" target="exit" />
+
+    </sc:state>
+
+    <sc:state id="exit" final="true">
+        <sc:onentry>
+            <ms:hangup />
+        </sc:onentry>
+    </sc:state>
+
+</sc:scxml>
+

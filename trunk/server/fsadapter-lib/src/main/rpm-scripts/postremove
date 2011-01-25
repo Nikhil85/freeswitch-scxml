@@ -1,0 +1,14 @@
+# ####################################################
+#
+# postremoveScriptlet
+#
+# This script is run after the package is removed. 
+# It corresponds to the %postun tag in the spec file.
+#
+# ####################################################
+
+
+# remove symbolic links
+
+%{__rm} -f /etc/init.d/tivrbridge
+%{__rm} -f /etc/sysconfig/tivrbridge
