@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.telmi.msc</groupId>
+	<artifactId>fsadapter</artifactId>
+	<packaging>pom</packaging>
+	<version>2.0-SNAPSHOT</version>
+
+	<name>${artifactId} ${project.version}</name>
+    
+	<description>FreeSwitch to SCXML Socket Adapter</description>
+	<url>http://telmicommunication.jira.com/wiki/display/MSC/Home</url>
+
+	<modules>
+		<module>fsadapter-lib</module>
+		<module>fsadapter-main</module>
+	</modules>
+
+	<repositories>
+		<repository>
+			<id>guice-maven</id>
+			<name>guice maven</name>
+			<url>http://guice-maven.googlecode.com/svn/trunk</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<downloadSources>false</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+
