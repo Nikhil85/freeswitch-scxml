@@ -1,0 +1,14 @@
+# ####################################################
+#
+# preinstallScriptlet
+# This script is run before the package is installed. 
+# It corresponds to the %pre tag in the spec file.
+#
+# ####################################################
+
+
+# Add a tivrbridge user with group daemon
+%ifos linux
+/usr/sbin/useradd -r -g daemon -s /bin/false -c "the tivrbridge daemon user" -d %{prefix} tivrbridge 2> /dev/null || :
+%endif
+

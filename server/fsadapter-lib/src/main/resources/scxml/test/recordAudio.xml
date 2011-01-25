@@ -1,0 +1,46 @@
+<sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+   xmlns:sc='http://www.w3.org/2005/07/scxml'
+   xmlns:ms='http://telmi.se/MS'
+   xsi:schemaLocation='
+   http://www.w3.org/2005/07/scxml
+   file:/home/jocke/TivrBridge/src/main/resources/scxml.xsd
+   http://telmi.se/MS
+   file:/home/jocke/TivrBridge/src/main/resources/telmims.xsd' initialstate="start">
+
+    <sc:datamodel>
+        <sc:data name="sounds" expr="'/usr/local/freeswitch/sounds/test/'"  />
+    </sc:datamodel>
+
+    <sc:state id="start" final="true" >
+        
+       <sc:onentry>
+            <ms:answer/>
+            <ms:say>'Start recording after the beep'</ms:say>
+            <ms:recordaudio 
+            termdigits="#"
+            beep="true"
+            var="rec"
+            maxtime="10s"/>
+        </sc:onentry>
+
+        <sc:transition event="termdigit" target="exit">
+            <ms:say>'Lets here what you just said'</ms:say>
+            <ms:playaudio value="rec" />
+        </sc:transition>
+
+         <sc:transition event="maxtime" target="exit">
+            <ms:say>'Lets here what you just said'</ms:say>
+            <ms:playaudio value="rec" />
+        </sc:transition>
+
+    </sc:state>
+
+       <sc:state id="exit" final="true">
+         <sc:onentry>
+            <ms:exit />
+        </sc:onentry>
+
+  </sc:state>
+
+</sc:scxml>
+

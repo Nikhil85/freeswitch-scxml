@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : voicemail.xml
+    Created on : den 29 april 2010, 15:29
+    Author     : joe
+    Description:
+        Purpose of the document follows.
+-->
+   
+<voicemails>
+    <cid>2</cid>
+    <voicemail>
+        <recieved>2006-12-16</recieved>
+        <file>/home/jocke/test/audio.wav</file>
+    </voicemail>
+    <voicemail>
+        <recieved>2006-12-17</recieved>
+        <file>/home/jocke/test/audi2.wav</file>
+    </voicemail>
+</voicemails>
+
+
