@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    
+    <folder name="Editors">
+        <folder name="text">
+            <folder name="scxml+xml">
+                <file name="PaletteFactory.instance">
+                    <attr name="instanceOf" stringvalue="org.netbeans.spi.palette.PaletteController"/>
+                    <attr name="instanceCreate" methodvalue="com.albatross.visualivr.palette.ScxmlPaleteFactory.getPalette"/>
+                </file>
+            </folder>
+        </folder>
+    </folder>
+   
+    <folder name="Menu">
+        <folder name="Tools">
+            <folder name="PaletteManager">
+                <file name="com-albatross-visualivr-palette-ScxmlPaletteCustomizerAction.instance"/>
+            </folder>
+        </folder>
+    </folder>
+    <folder name="ScxmlPalette">
+        <folder name="SCXML Core">  
+            <attr name="SystemFileSystem.localizingBundle" stringvalue="com.albatross.visualivr.palette.Bundle"/>
+            <file name="state.xml" url="nbresloc:/com/albatross/visualivr/palette/items/state.xml"/>
+            <file name="parallel.xml" url="nbresloc:/com/albatross/visualivr/palette/items/parallel.xml"/>
+            <file name="onentry.xml" url="nbresloc:/com/albatross/visualivr/palette/items/onentry.xml"/>
+            <file name="onexit.xml" url="nbresloc:/com/albatross/visualivr/palette/items/onexit.xml"/>
+            <file name="transition.xml" url="nbresloc:/com/albatross/visualivr/palette/items/transition.xml"/>
+            <file name="if.xml" url="nbresloc:/com/albatross/visualivr/palette/items/if.xml"/>
+            <file name="elseif.xml" url="nbresloc:/com/albatross/visualivr/palette/items/elseif.xml"/>
+            <file name="else.xml" url="nbresloc:/com/albatross/visualivr/palette/items/else.xml"/>
+        </folder>
+        <folder name="SCXML Data">  
+            <attr name="SystemFileSystem.localizingBundle" stringvalue="com.albatross.visualivr.palette.Bundle"/>
+            <file name="datamodel.xml" url="nbresloc:/com/albatross/visualivr/palette/items/datamodel.xml"/>
+            <file name="data.xml" url="nbresloc:/com/albatross/visualivr/palette/items/data.xml"/>
+            <file name="assign.xml" url="nbresloc:/com/albatross/visualivr/palette/items/assign.xml"/>
+        </folder>
+
+        <folder name="SCXML Communication">  
+            <attr name="SystemFileSystem.localizingBundle" stringvalue="com.albatross.visualivr.palette.Bundle"/>
+        </folder>
+        
+        <folder name="Actions">  
+            <attr name="SystemFileSystem.localizingBundle" stringvalue="com.albatross.visualivr.palette.Bundle"/>
+        </folder>
+        
+    </folder>
+</filesystem>
