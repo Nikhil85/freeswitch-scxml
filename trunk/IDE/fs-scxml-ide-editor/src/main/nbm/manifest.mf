@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: com/albatross/visualivr/editor/Bundle.properties
+OpenIDE-Module-Layer: com/albatross/visualivr/editor/layer.xml
+OpenIDE-Module-Requires: org.openide.windows.WindowManager
+
+Name: com/albatross/visualivr/editor/ScxmlDataLoader.class
+OpenIDE-Module-Class: Loader
