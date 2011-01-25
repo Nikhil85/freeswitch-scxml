@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: com/albatross/visualivr/simulator/Bundle.properties
+OpenIDE-Module-Layer: com/albatross/visualivr/simulator/layer.xml
+OpenIDE-Module-Install: com/albatross/visualivr/simulator/Installer.class
+
