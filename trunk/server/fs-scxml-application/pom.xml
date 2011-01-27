@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>org.freeswitch.scxml</artifactId>
-        <groupId>org.freeswitch</groupId>
-        <version>2.0-SNAPSHOT</version>
+        <groupId>org.freeswitch.scxml</groupId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.freeswitch.scxml</groupId>
-    <artifactId>fs.scxml.application</artifactId>
+    <artifactId>org.freeswitch.scxml.application</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
@@ -101,7 +101,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>fs.scxml.application.api</artifactId>
+            <artifactId>org.freeswitch.scxml.application.api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
