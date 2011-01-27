@@ -1,8 +1,0 @@
-# ####################################################
-#
-# prepareScriptlet
-# This script specifies commands to prepare the build. 
-# It corresponds to the %prep tag in the spec file.
-#
-# ####################################################
-  

@@ -1,7 +1,0 @@
-# ####################################################
-#
-# preremoveScriptlet
-# This script is run before the package is removed. 
-# It corresponds to the %preun tag in the spec file.
-#
-# ####################################################
