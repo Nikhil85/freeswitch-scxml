@@ -1,51 +1,66 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0          http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.telmi.msc</groupId>
-	<artifactId>fsadapter</artifactId>
-	<packaging>pom</packaging>
-	<version>2.0-SNAPSHOT</version>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.freeswitch</groupId>
+    <artifactId>org.freeswitch.scxml</artifactId>
+    <packaging>pom</packaging>
+    <version>2.0-SNAPSHOT</version>
 
-	<name>${artifactId} ${project.version}</name>
+    <name>fs-scxml-pom</name>
     
-	<description>FreeSwitch to SCXML Socket Adapter</description>
-	<url>http://telmicommunication.jira.com/wiki/display/MSC/Home</url>
+    <description>FreeSwitch to SCXML Socket Adapter</description>
+    <url>http://telmicommunication.jira.com/wiki/display/MSC/Home</url>
 
-	<modules>
-		<module>fsadapter-lib</module>
-		<module>fsadapter-main</module>
-	</modules>
+    <modules>
+        <module>fs-scxml-socket</module>
+        <module>fs-scxml-adapter</module>
+        <module>fs-scxml-application</module>
+    <module>fs-scxml-socket-api</module>
+    <module>fs-scxml-application-api</module>
+    <module>fs-scxml-adapter-api</module>
+  </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.5.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.5.11</version>
+        </dependency>
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>1.0</version>
+        </dependency>
 
-	<repositories>
-		<repository>
-			<id>guice-maven</id>
-			<name>guice maven</name>
-			<url>http://guice-maven.googlecode.com/svn/trunk</url>
-		</repository>
-	</repositories>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>3.0-rc2</version>
+        </dependency>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<downloadSources>false</downloadSources>
-					<downloadJavadocs>true</downloadJavadocs>
-				</configuration>
-			</plugin>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+            <version>3.0-rc2</version>
+        </dependency>
+    </dependencies>
 
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
-

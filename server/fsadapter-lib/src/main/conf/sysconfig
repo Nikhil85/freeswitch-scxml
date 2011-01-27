@@ -1,4 +1,0 @@
-TIVRBRIDGE_HOME=/opt/tivrbridge
-PID_FILE=/tmp/tivrbridge.pid
-RUNNING_USER=telmisrv
-

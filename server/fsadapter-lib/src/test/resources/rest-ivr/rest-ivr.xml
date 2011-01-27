@@ -1,8 +1,0 @@
-   <scxml:scxml
-   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-   xmlns:scxml='http://www.w3.org/2005/07/scxml'
-   xmlns:ms='http://telmi.se/MS'
-   xsi:schemaLocation='/home/jocke/fileserver/scxml/scxml.xsd /home/jocke/fileserver/scxml/telmims.xsd' initialstate="main">
-   
-</scxml:scxml>
-   
