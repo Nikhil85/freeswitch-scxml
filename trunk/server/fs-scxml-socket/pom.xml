@@ -44,6 +44,33 @@
             <artifactId>org.freeswitch.scxml.application.api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.5.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.5.11</version>
+        </dependency>
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>3.0-rc2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+            <version>3.0-rc2</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -53,11 +80,6 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.1.0</version>
                 <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>org.freeswitch.scxml.socket.Activator</Bundle-Activator>
-                    </instructions>
-                </configuration>
             </plugin>
         </plugins>
     </build>
