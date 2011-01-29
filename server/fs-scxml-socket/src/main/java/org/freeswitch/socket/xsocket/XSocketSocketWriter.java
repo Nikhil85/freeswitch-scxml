@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.freeswitch.adapter.CommandExecutor;
 import org.freeswitch.socket.SocketWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import org.xsocket.connection.INonBlockingConnection;
  *
  * @author jocke
  */
-public final class XSocketSocketWriter implements SocketWriter, EventMatcher {
+public final class XSocketSocketWriter implements CommandExecutor, EventMatcher {
 
     private static final String BREAK = "break";
 
@@ -38,7 +39,6 @@ public final class XSocketSocketWriter implements SocketWriter, EventMatcher {
         this.connection = con;
     }
 
-    @Override
     public void write(String data) throws IOException {
 
 
@@ -55,7 +55,6 @@ public final class XSocketSocketWriter implements SocketWriter, EventMatcher {
 
     }
 
-    @Override
     public boolean isConnected() {
         synchronized (connection) {
             return connection.isOpen();
@@ -92,5 +91,15 @@ public final class XSocketSocketWriter implements SocketWriter, EventMatcher {
             result = matcher.group(3);
         }
         return result;
+    }
+
+    @Override
+    public void execute(String data) throws IOException {
+        write(data);
+    }
+
+    @Override
+    public boolean isReady() {
+        return isConnected();
     }
 }
