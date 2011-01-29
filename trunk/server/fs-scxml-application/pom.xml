@@ -136,6 +136,16 @@
             <artifactId>guice-multibindings</artifactId>
             <version>3.0-rc2</version>
         </dependency>
+        <dependency>
+            <groupId>org.ops4j</groupId>
+            <artifactId>peaberry</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j</groupId>
+            <artifactId>peaberry.activation</artifactId>
+            <version>1.2</version>
+        </dependency> 
     </dependencies>
 
     <build>
@@ -147,7 +157,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>org.freeswitch.scxml.application.fsscxmlapplication.Activator</Bundle-Activator>
+                        <Bundle-Module>org.freeswitch.scxml.module.ApplicationModule</Bundle-Module>
                     </instructions>
                 </configuration>
             </plugin>
