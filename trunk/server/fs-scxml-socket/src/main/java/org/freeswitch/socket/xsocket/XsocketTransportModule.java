@@ -1,8 +1,10 @@
 package org.freeswitch.socket.xsocket;
-
-import org.xsocket.connection.IDataHandler;
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 import org.freeswitch.socket.TcpServer;
+import org.xsocket.connection.IDataHandler;
+import static org.ops4j.peaberry.Peaberry.service;
+import static org.ops4j.peaberry.util.TypeLiterals.export;
 
 /**
  *
@@ -15,7 +17,9 @@ public final class XsocketTransportModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-        bind(IDataHandler.class).to(FSEventSocketHandler.class);
-        bind(TcpServer.class).to(XsocketTcpServerImpl.class);
+       bind(export(IDataHandler.class)).toProvider(service(FSEventSocketHandler.class).export());
+       bind(export(TcpServer.class)).toProvider(service(XsocketTcpServerImpl.class).export());
+       bind(XsocketTcpServerImpl.class).in(Singleton.class);
     }
+    
 }

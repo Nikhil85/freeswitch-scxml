@@ -14,6 +14,8 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import org.freeswitch.scxml.application.ThreadPoolManager;
 import org.freeswitch.socket.TcpServer;
+import org.ops4j.peaberry.activation.Start;
+import org.ops4j.peaberry.activation.Stop;
 
 /**
  *
@@ -66,7 +68,9 @@ public final class XsocketTcpServerImpl implements TcpServer {
     }
 
     @Override
+    @Start
     public void startServer() {
+        System.out.println("Start server");
         LOG.debug("Try to start Server ...");
         state = SERVERSTATE.START;
 
@@ -102,6 +106,7 @@ public final class XsocketTcpServerImpl implements TcpServer {
 
 
     @Override
+    @Stop
     public void stopServer() {
         LOG.info("Try to stop Server ...");
         state = SERVERSTATE.STOP;
