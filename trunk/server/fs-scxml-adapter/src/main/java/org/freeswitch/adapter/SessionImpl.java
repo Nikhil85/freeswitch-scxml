@@ -31,7 +31,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     private final BlockingQueue<Event> eventQueue;
     private final ScheduledExecutorService scheduler;
     private final String recPath;
-    private final long sessionid;
+    private final String sessionid;
     //
     // instance fields
     //
@@ -60,9 +60,17 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
         this.scheduler = eventScheduler;
         this.recPath = recordingPath;
         this.eventQueue = blockingQueue;
-        this.sessionid = 1;
         this.executor = executor;
+        this.sessionid = getUuid();
+    }
 
+    public SessionImpl(Map<String, Object> map) {
+        this.sessionData = map;
+        this.scheduler = (ScheduledExecutorService) map.get(ScheduledExecutorService.class.getName());
+        this.recPath = (String) map.get("REC_PATH");
+        this.eventQueue = (BlockingQueue<Event>) map.get(BlockingQueue.class.getName());
+        this.executor = (CommandExecutor) map.get(CommandExecutor.class.getName());
+        this.sessionid = getUuid();
     }
 
     /**
