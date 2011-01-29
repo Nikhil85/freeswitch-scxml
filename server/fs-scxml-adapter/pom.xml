@@ -25,6 +25,16 @@
             <version>1.0-SNAPSHOT</version>
             <type>bundle</type>
         </dependency>
+        <dependency>
+            <groupId>org.ops4j</groupId>
+            <artifactId>peaberry</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j</groupId>
+            <artifactId>peaberry.activation</artifactId>
+            <version>1.2</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -35,6 +45,11 @@
                 <version>2.1.0</version>
                 <extensions>true</extensions>
             </plugin>
+            <configuration>
+                <instructions>
+                    <Bundle-Module>org.freeswitch.adapter.AdapterModule</Bundle-Module>
+                </instructions>
+            </configuration>
         </plugins>
     </build>
 </project>
