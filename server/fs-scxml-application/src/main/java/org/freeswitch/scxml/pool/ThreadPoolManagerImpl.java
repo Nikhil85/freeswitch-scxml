@@ -13,18 +13,17 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+import org.ops4j.peaberry.activation.Start;
+import org.ops4j.peaberry.activation.Stop;
 
 /**
  *
  * @author jocke
  */
-@Singleton
-public final class ThreadPoolManagerImpl implements ThreadPoolManager  {
+public final class ThreadPoolManagerImpl implements ThreadPoolManager {
 
     private static final Logger LOG =
             LoggerFactory.getLogger(ThreadPoolManagerImpl.class);
-
-
     private final ScheduledExecutorService schedulerPool;
     private final ExecutorService workerPool;
     private final ThreadPoolExecutor applicationPool;
@@ -37,21 +36,24 @@ public final class ThreadPoolManagerImpl implements ThreadPoolManager  {
      *
      */
     @Inject
-    ThreadPoolManagerImpl(
-            @Named("scheduler.corePoolSize") int corePoolSize,
-            @Named("appPool.nThreads") int nThreads) {
+    public ThreadPoolManagerImpl() {
 
-        this.schedulerPool = Executors.newScheduledThreadPool(corePoolSize);
+        System.out.println("Thread pool was created");
+        
+        this.schedulerPool = Executors.newScheduledThreadPool(Integer.valueOf(200));
         this.workerPool = Executors.newCachedThreadPool();
-
-        this.applicationPool =
-                (ThreadPoolExecutor) Executors.newFixedThreadPool(nThreads);
+        this.applicationPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(Integer.valueOf(200));
     }
 
     public int getNumberOfThreadsForApplicationPool() {
         return applicationPool.getCorePoolSize();
     }
-    
+
+    @Start
+    public void start() {
+        System.out.println("Thread pools are ready");
+    }
+
     /**
      * Set the application pool size.
      *
@@ -124,15 +126,15 @@ public final class ThreadPoolManagerImpl implements ThreadPoolManager  {
         }
     }
 
-
     /**
      * Shutdown all executors managed by this ThreadPoolManager.
      */
+    @Stop
+    @Override
     public void shutdownAll() {
         LOG.info("Shutdown all executors");
         shutDownExecutorService(schedulerPool, 10, TimeUnit.SECONDS);
         shutDownExecutorService(workerPool, 10, TimeUnit.SECONDS);
         shutDownExecutorService(applicationPool, 1, TimeUnit.MILLISECONDS);
     }
-
 }

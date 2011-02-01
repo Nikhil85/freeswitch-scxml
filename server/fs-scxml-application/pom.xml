@@ -158,7 +158,8 @@
                 <configuration>
                     <instructions>
                         <Bundle-Module>org.freeswitch.scxml.module.ApplicationModule</Bundle-Module>
-                        <Export-Package>org.freeswitch.scxml.module</Export-Package>
+                        <Export-Package>org.freeswitch.scxml.module,org.freeswitch.scxml.pool</Export-Package>
+                        <Private-Package>org.freeswitch.scxml.actions.*,org.freeswitch.scxml.engine.*,org.freeswitch.scxml.module.*,org.freeswitch.scxml.pool.*,org.freeswitch.scxml.sender.*</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

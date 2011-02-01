@@ -22,8 +22,10 @@ import org.freeswitch.scxml.actions.RecordAudioAction;
 import org.freeswitch.scxml.actions.SayAction;
 import org.freeswitch.scxml.actions.SendAction;
 import org.freeswitch.scxml.actions.WaitAction;
+import org.freeswitch.scxml.application.ThreadPoolManager;
 import org.freeswitch.scxml.engine.ScxmlApplication;
 import org.freeswitch.scxml.engine.ScxmlApplicationImp;
+import org.freeswitch.scxml.pool.ThreadPoolManagerImpl;
 import org.freeswitch.scxml.sender.BasicHttpSender;
 import org.freeswitch.scxml.sender.Sender;
 import org.freeswitch.scxml.sender.SenderFactory;
@@ -31,7 +33,6 @@ import org.freeswitch.scxml.sender.SenderFactoryImpl;
 import org.freeswitch.scxml.sender.SipReferSender;
 import static org.ops4j.peaberry.Peaberry.*;
 import static org.ops4j.peaberry.util.TypeLiterals.export;
-import static org.ops4j.peaberry.util.TypeLiterals.iterable;
 import static org.ops4j.peaberry.activation.Configurables.*;
 
 /**
@@ -48,15 +49,18 @@ public final class ApplicationModule extends AbstractModule {
      */
     @Override
     protected void configure() {
+        bindConfiguration();
+        
         bind(export(BundleNotifier.class)).toProvider(service(BundleNotifier.class).export());
         bind(BundleNotifier.class).in(Singleton.class);
-        bind(ScxmlApplication.class).to(ScxmlApplicationImp.class);
         bind(export(ApplicationLauncher.class)).toProvider(service(ScxmlApplicationLauncher.class).export());
+        bind(export(ThreadPoolManager.class)).toProvider(service(ThreadPoolManagerImpl.class).export()).asEagerSingleton();
+     
+        bind(ScxmlApplication.class).to(ScxmlApplicationImp.class);
         bind(SenderFactory.class).to(SenderFactoryImpl.class);
         bindSenders();
         bindActions();
         //TODO fix
-        bindConfiguration();
         
     }
 
@@ -128,5 +132,7 @@ public final class ApplicationModule extends AbstractModule {
 
     private void bindConfiguration() {
         bind(Boolean.class).annotatedWith(Names.named("scxml.cache")).toProvider(configurable(Boolean.class).from(PID).named("scxml.cache"));
+        bind(String.class).annotatedWith(Names.named("scheduler.corePoolSize")).toProvider(configurable(String.class).from(PID).named("scheduler.corePoolSize"));
+        bind(String.class).annotatedWith(Names.named("appPool.nThreads")).toProvider(configurable(String.class).from(PID).named("appPool.nThreads"));
     }
 }
