@@ -31,7 +31,8 @@ public final class XsocketTcpServerImpl implements TcpServer {
     private final ThreadPoolManager threadPoolManager;
 
     private IServer iServer;
-    private int port;
+    
+    private int port = 9696;
     /** The internal state. **/
     private enum SERVERSTATE { START, STOP, SHUTDOWN };
 
@@ -49,10 +50,7 @@ public final class XsocketTcpServerImpl implements TcpServer {
     @Inject
     XsocketTcpServerImpl(
             IDataHandler dataHandler,
-            ThreadPoolManager poolManager,
-            @Named("tcp.port") int tcpPort) {
-
-        this.port = tcpPort;
+            ThreadPoolManager poolManager) {
         this.iDataHandler = dataHandler;
         this.threadPoolManager = poolManager;
     }
@@ -70,12 +68,11 @@ public final class XsocketTcpServerImpl implements TcpServer {
     @Override
     @Start
     public void startServer() {
-        System.out.println("Start server");
-        LOG.debug("Try to start Server ...");
+        System.out.println("Try to start Server ...");
         state = SERVERSTATE.START;
 
         if (iServer != null && iServer.isOpen()) {
-            LOG.warn("Server is already started");
+            System.out.println("Server is already started");
             return;
         }
 
@@ -83,11 +80,12 @@ public final class XsocketTcpServerImpl implements TcpServer {
             try {
                 iServer = new Server(port, iDataHandler);
             } catch (UnknownHostException e) {
-                LOG.error("Oops! {}", e.getMessage());
-                Runtime.getRuntime().halt(301);
+                System.out.println(e.getMessage());
+                return;
+               
             } catch (IOException e) {
-                LOG.error("Oops! {}", e.getMessage());
-                Runtime.getRuntime().halt(302);
+                System.out.println(e.getMessage());
+                return;
             }
         }
 
@@ -97,10 +95,10 @@ public final class XsocketTcpServerImpl implements TcpServer {
         }
 
         try {
+            System.out.println("Start server now");
             iServer.start();
         } catch (IOException ex) {
-            LOG.error(ex.getMessage());
-            Runtime.getRuntime().halt(303);
+            System.out.println(ex.getMessage());
         }
     }
 

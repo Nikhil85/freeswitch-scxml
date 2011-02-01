@@ -54,7 +54,6 @@ public final class FSEventSocketHandler implements IDataHandler, IDisconnectHand
 
     private final ThreadPoolManager threadPoolManager;
 
-    private final String recordingPath;
     private final SessionFactory factory;
 
     /**
@@ -67,13 +66,9 @@ public final class FSEventSocketHandler implements IDataHandler, IDisconnectHand
      *
      */
     @Inject
-    FSEventSocketHandler(
-            ThreadPoolManager poolManager,
-            ApplicationLauncher appLauncher,
-            @Named("recording.path") String recordingPath, SessionFactory factory) {
+    FSEventSocketHandler(ThreadPoolManager poolManager, ApplicationLauncher appLauncher, SessionFactory factory) {
         this.threadPoolManager = poolManager;
         this.applicationLauncer = appLauncher;
-        this.recordingPath = recordingPath;
         this.factory = factory;
     }
 
