@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<features>
+   <feature name="fs-scxml-feature" version="3.0">
+     <bundle>mvn:com.google.inject/guice/3.0-rc2</bundle>
+     <bundle>mvn:org.aopalliance/com.springsource.org.aopalliance/1.0.0</bundle>
+     <bundle>mvn:javax.inject/com.springsource.javax.inject/1.0.0</bundle>
+     <bundle>mvn:org.xsocket/xSocket/2.8</bundle>
+     <bundle>mvn:org.ops4j/peaberry/1.1.1</bundle>
+     <bundle>mvn:com.google.inject.extensions/guice-multibindings/3.0-rc2</bundle>
+     <bundle>mvn:org.apache.commons/com.springsource.org.apache.commons.collections/3.2.1</bundle>
+     <bundle>mvn:org.apache.commons/com.springsource.org.apache.commons.beanutils/1.8.0</bundle>
+     <bundle>mvn:org.apache.commons/com.springsource.org.apache.commons.digester/1.8.1</bundle>
+  </feature>
+</features>
+
+
