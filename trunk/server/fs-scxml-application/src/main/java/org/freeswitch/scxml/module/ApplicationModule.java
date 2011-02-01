@@ -1,5 +1,6 @@
 package org.freeswitch.scxml.module;
 
+import javax.inject.Singleton;
 import com.google.inject.name.Names;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
@@ -30,15 +31,15 @@ import org.freeswitch.scxml.sender.SenderFactoryImpl;
 import org.freeswitch.scxml.sender.SipReferSender;
 import static org.ops4j.peaberry.Peaberry.*;
 import static org.ops4j.peaberry.util.TypeLiterals.export;
+import static org.ops4j.peaberry.util.TypeLiterals.iterable;
 import static org.ops4j.peaberry.activation.Configurables.*;
 
 /**
  *
  * @author jocke
  */
-
 public final class ApplicationModule extends AbstractModule {
-    
+
     private static final String NAME_SPACE = "http://www.freeswitch.org/";
     private static final String PID = "org.freeswitch.scxml";
 
@@ -47,15 +48,19 @@ public final class ApplicationModule extends AbstractModule {
      */
     @Override
     protected void configure() {
+        bind(export(BundleNotifier.class)).toProvider(service(BundleNotifier.class).export());
+        bind(BundleNotifier.class).in(Singleton.class);
+        bind(ScxmlApplication.class).to(ScxmlApplicationImp.class);
         bind(export(ApplicationLauncher.class)).toProvider(service(ScxmlApplicationLauncher.class).export());
-        bind(export(ScxmlApplication.class)).toProvider(service(ScxmlApplicationImp.class).export());
         bind(SenderFactory.class).to(SenderFactoryImpl.class);
         bindSenders();
         bindActions();
+        //TODO fix
         bindConfiguration();
+        
     }
-    
-     /**
+
+    /**
      * Bind all the applications senders.
      */
     private void bindSenders() {
@@ -72,59 +77,56 @@ public final class ApplicationModule extends AbstractModule {
         Multibinder<CustomAction> actionBinder =
                 Multibinder.newSetBinder(binder(), CustomAction.class);
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(NAME_SPACE, "menu", MenuAction.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(NAME_SPACE, "menu", MenuAction.class));
 
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(NAME_SPACE, "var", Var.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(NAME_SPACE, "var", Var.class));
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(NAME_SPACE, "answer", AnswerAction.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(NAME_SPACE, "answer", AnswerAction.class));
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(NAME_SPACE, "exit", ExitAction.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(NAME_SPACE, "exit", ExitAction.class));
 
-       actionBinder.addBinding().toInstance(
+        actionBinder.addBinding().toInstance(
                 new CustomAction(NAME_SPACE, "hangup", HangupAction.class));
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(
-               NAME_SPACE, "playaudio", PlayAudioAction.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(
+                NAME_SPACE, "playaudio", PlayAudioAction.class));
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(
-               NAME_SPACE, "recordaudio", RecordAudioAction.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(
+                NAME_SPACE, "recordaudio", RecordAudioAction.class));
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(
-               NAME_SPACE, "getdigits", GetDigitsAction.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(
+                NAME_SPACE, "getdigits", GetDigitsAction.class));
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(NAME_SPACE, "wait", WaitAction.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(NAME_SPACE, "wait", WaitAction.class));
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(NAME_SPACE,
-               "inputdigits", InputDigitsAction.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(NAME_SPACE,
+                "inputdigits", InputDigitsAction.class));
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(NAME_SPACE, "phrase", PhraseAction.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(NAME_SPACE, "phrase", PhraseAction.class));
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(NAME_SPACE, "gentone" , GenToneAction.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(NAME_SPACE, "gentone", GenToneAction.class));
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(NAME_SPACE, "say", SayAction.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(NAME_SPACE, "say", SayAction.class));
 
-       actionBinder.addBinding().toInstance(
-               new CustomAction(NAME_SPACE, "send", SendAction.class));
+        actionBinder.addBinding().toInstance(
+                new CustomAction(NAME_SPACE, "send", SendAction.class));
 
     }
 
     private void bindConfiguration() {
-         bind(Boolean.class).annotatedWith(Names.named("scxml.cache")).toProvider(configurable(Boolean.class).from(PID).named("scxml.cache"));
+        bind(Boolean.class).annotatedWith(Names.named("scxml.cache")).toProvider(configurable(Boolean.class).from(PID).named("scxml.cache"));
     }
-
-
 }
-

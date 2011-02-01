@@ -24,11 +24,12 @@ public final class ScxmlApplicationImp implements ScxmlApplication {
 
     private static final String BASE = "base";
     private volatile boolean cache = false;
-    private final List<CustomAction> actions;
+    private  List<CustomAction> actions;
 
     private static final Logger LOG =
             LoggerFactory.getLogger(ScxmlApplicationImp.class);
-    private final SenderFactory factory;
+    
+    //private final SenderFactory factory;
 
     private static final ConcurrentHashMap<URL, StateMachine> CACHE =
             new ConcurrentHashMap<URL, StateMachine>();
@@ -44,14 +45,9 @@ public final class ScxmlApplicationImp implements ScxmlApplication {
      *
      */
     @Inject
-    ScxmlApplicationImp(
-            @Named("scxml.cache") boolean useCache,
-            SenderFactory senderFactory,
-            Set<CustomAction> customActions) {
-        this.cache = useCache;
-        this.actions = new ArrayList<CustomAction>(customActions.size());
-        this.factory = senderFactory;
-        actions.addAll(customActions);
+    public ScxmlApplicationImp() {
+        //this.actions = new ArrayList<CustomAction>(customActions.size());
+        //actions.addAll(customActions);
 
     }
 
@@ -69,7 +65,7 @@ public final class ScxmlApplicationImp implements ScxmlApplication {
         } else {
             LOG.trace("No machine in cache with url {} ",  url.toString());
 
-            StateMachine machine = new StateMachine(url, actions, factory);
+            StateMachine machine = new StateMachine(url, actions, /*factory*/ null);
             if (cache) {
                 CACHE.put(url, machine);
                 LOG.debug("adding machine to cache");

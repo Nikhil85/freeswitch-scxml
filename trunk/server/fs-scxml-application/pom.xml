@@ -158,6 +158,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-Module>org.freeswitch.scxml.module.ApplicationModule</Bundle-Module>
+                        <Export-Package>org.freeswitch.scxml.module</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
