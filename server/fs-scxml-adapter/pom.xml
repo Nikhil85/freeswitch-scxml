@@ -46,7 +46,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Module>org.freeswitch.adapter.AdapterModule</Bundle-Module>
+                        <Bundle-Module>org.freeswitch.adapter.module.AdapterModule</Bundle-Module>
+                        <Export-Package>org.freeswitch.adapter.module</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
