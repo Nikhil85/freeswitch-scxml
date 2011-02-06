@@ -1,36 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0          http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.freeswitch.scxml</groupId>
-  <artifactId>org.freeswitch.scxml</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.freeswitch.scxml</groupId>
+    <artifactId>org.freeswitch.scxml</artifactId>
 
-  <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
 
-  <name>fs-scxml-pom</name>
+    <name>fs-scxml-pom</name>
 
-  <description>FreeSwitch to SCXML</description>
+    <description>FreeSwitch to SCXML</description>
 
-  <modules>
-    <module>fs-scxml-socket</module>
-    <module>fs-scxml-adapter</module>
-    <module>fs-scxml-application</module>
-    <module>fs-scxml-socket-api</module>
-    <module>fs-scxml-application-api</module>
-    <module>fs-scxml-adapter-api</module>
-  </modules>
+    <modules>
+        <module>fs-scxml-socket</module>
+        <module>fs-scxml-adapter</module>
+        <module>fs-scxml-application</module>
+        <module>fs-scxml-socket-api</module>
+        <module>fs-scxml-application-api</module>
+        <module>fs-scxml-adapter-api</module>
+    </modules>
+  
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+    </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
       <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -82,7 +90,7 @@
         </executions>
       </plugin>
       -->
-    </plugins>
-  </build>
+        </plugins>
+    </build>
 
 </project>
