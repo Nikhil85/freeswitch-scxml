@@ -21,7 +21,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>fs.scxml.adapter.api</artifactId>
+            <artifactId>org.freeswitch.scxml.adapter.api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
