@@ -18,17 +18,13 @@ import static org.ops4j.peaberry.util.TypeLiterals.export;
  */
 public final class XsocketTransportModule extends AbstractModule {
 
-    private static final String PID = "org.freeswitch.scxml";
-
     /**
      * Configure the transport module.
      */
     @Override
     protected void configure() {
-        
         bind(export(ModuleStarter.class)).toProvider(service(ModuleStarter.class).export());
-        bind(ModuleStarter.class).in(Singleton.class);
-        
+        bind(ModuleStarter.class).in(Singleton.class); 
         bind(ThreadPoolManager.class).toProvider(service(ThreadPoolManager.class).single());
         bind(SessionFactory.class).toProvider(service(SessionFactory.class).single());
         bind(ApplicationLauncher.class).toProvider(service(ApplicationLauncher.class).single());
