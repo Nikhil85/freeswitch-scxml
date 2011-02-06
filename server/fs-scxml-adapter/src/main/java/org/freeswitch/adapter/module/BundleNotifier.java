@@ -2,6 +2,8 @@ package org.freeswitch.adapter.module;
 
 import org.ops4j.peaberry.activation.Start;
 import org.ops4j.peaberry.activation.Stop;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -9,15 +11,16 @@ import org.ops4j.peaberry.activation.Stop;
  */
 public class BundleNotifier {
     
+    private static final Logger LOG = LoggerFactory.getLogger(BundleNotifier.class);
    
     @Start
     public void start() {
-        System.out.println("The adapter was started");
+        LOG.info("The adapter was started");
     }
     
     @Stop
     public void stop() {
-        System.out.println("The adapter was stopped");
+        LOG.info("The adapter was stopped");
     }
     
 }
