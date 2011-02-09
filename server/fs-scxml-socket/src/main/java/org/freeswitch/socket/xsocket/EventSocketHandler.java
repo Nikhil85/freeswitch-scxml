@@ -18,11 +18,12 @@ import org.xsocket.connection.INonBlockingConnection;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.freeswitch.adapter.CommandExecutor;
 import org.freeswitch.scxml.application.ApplicationLauncher;
 import org.freeswitch.scxml.application.ThreadPoolManager;
 import org.freeswitch.adapter.Event;
@@ -35,9 +36,9 @@ import org.freeswitch.socket.ServerSessionListener;
  * @author jocke
  */
 @Singleton
-public final class FSEventSocketHandler implements IDataHandler, IDisconnectHandler, IConnectHandler {
+public final class EventSocketHandler implements IDataHandler, IDisconnectHandler, IConnectHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FSEventSocketHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EventSocketHandler.class);
 
     private static final Pattern CONTENT_LENGTH_PATTERN = Pattern.compile("Content-Length:\\s(\\d*)",
             Pattern.MULTILINE);
@@ -53,8 +54,8 @@ public final class FSEventSocketHandler implements IDataHandler, IDisconnectHand
     private final ApplicationLauncher applicationLauncer;
 
     private final ThreadPoolManager threadPoolManager;
-
     private final SessionFactory factory;
+
 
     /**
      *
@@ -66,7 +67,7 @@ public final class FSEventSocketHandler implements IDataHandler, IDisconnectHand
      *
      */
     @Inject
-    FSEventSocketHandler(ThreadPoolManager poolManager, ApplicationLauncher appLauncher, SessionFactory factory) {
+    EventSocketHandler(ThreadPoolManager poolManager, ApplicationLauncher appLauncher, SessionFactory factory) {
         this.threadPoolManager = poolManager;
         this.applicationLauncer = appLauncher;
         this.factory = factory;
@@ -124,9 +125,7 @@ public final class FSEventSocketHandler implements IDataHandler, IDisconnectHand
             if (header.startsWith("Content-Type: text/disconnect-notice")) {
                 return true;
             }
-
-
-
+            
             String eventdata = null;
             if (EVENT_PATTERN.matcher(header).find()) {
                 eventdata = header;
@@ -145,18 +144,19 @@ public final class FSEventSocketHandler implements IDataHandler, IDisconnectHand
             } else {
                 LOG.debug("New Connection so prepare the call");
 
-                BlockingQueue<Event> eventQueue = new ArrayBlockingQueue<Event>(50);
                 INonBlockingConnection syncConnection = ConnectionUtils.synchronizedConnection(nonblockconnection);
                 
                 XSocketSocketWriter socketWriter = new XSocketSocketWriter(syncConnection);
+                BlockingQueue<Event> eventQueue = new ArrayBlockingQueue<Event>(50);
+                final XsocketServerSession serverSession = new XsocketServerSession(eventQueue, socketWriter);
                 
                 Map<String, Object> channelVars = extractDataToMap(eventdata);
-               
-                final Session fss = factory.create(channelVars);
-                //new FSSessionImpl(channelVars, socketWriter, threadPoolManager.getScheduler(), recordingPath, eventQueue);
+                channelVars.put(BlockingQueue.class.getName(), eventQueue);
+                channelVars.put(CommandExecutor.class.getName(), socketWriter);
+                channelVars.put(ScheduledExecutorService.class.getName(), threadPoolManager.getScheduler());
                 
-                final XsocketServerSession serverSession = new XsocketServerSession(eventQueue, socketWriter);
-
+                final Session fss = factory.create(channelVars);
+                
                 // save reference to serverSessionListener
                 syncConnection.setAttachment(serverSession);
                 Runnable appRunner = new Runnable() {
