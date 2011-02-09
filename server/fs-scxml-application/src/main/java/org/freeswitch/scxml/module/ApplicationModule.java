@@ -49,19 +49,18 @@ public final class ApplicationModule extends AbstractModule {
      */
     @Override
     protected void configure() {
-        bindConfiguration();
+        
+        bind(Boolean.class).annotatedWith(Names.named("scxml.cache")).toProvider(configurable(Boolean.class).from(PID).named("scxml.cache"));
         
         bind(export(BundleNotifier.class)).toProvider(service(BundleNotifier.class).export());
         bind(BundleNotifier.class).in(Singleton.class);
         bind(export(ApplicationLauncher.class)).toProvider(service(ScxmlApplicationLauncher.class).export());
-        bind(export(ThreadPoolManager.class)).toProvider(service(ThreadPoolManagerImpl.class).export()).asEagerSingleton();
+        bind(export(ThreadPoolManager.class)).toProvider(service(ThreadPoolManagerImpl.class).export()).in(Singleton.class);
      
         bind(ScxmlApplication.class).to(ScxmlApplicationImp.class);
         bind(SenderFactory.class).to(SenderFactoryImpl.class);
         bindSenders();
-        bindActions();
-        //TODO fix
-        
+        bindActions(); 
     }
 
     /**
@@ -130,9 +129,5 @@ public final class ApplicationModule extends AbstractModule {
 
     }
 
-    private void bindConfiguration() {
-        bind(Boolean.class).annotatedWith(Names.named("scxml.cache")).toProvider(configurable(Boolean.class).from(PID).named("scxml.cache"));
-        bind(String.class).annotatedWith(Names.named("scheduler.corePoolSize")).toProvider(configurable(String.class).from(PID).named("scheduler.corePoolSize"));
-        bind(String.class).annotatedWith(Names.named("appPool.nThreads")).toProvider(configurable(String.class).from(PID).named("appPool.nThreads"));
-    }
+ 
 }

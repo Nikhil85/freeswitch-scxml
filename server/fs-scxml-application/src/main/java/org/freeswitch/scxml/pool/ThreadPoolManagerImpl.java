@@ -11,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import org.ops4j.peaberry.activation.Start;
 import org.ops4j.peaberry.activation.Stop;
 
@@ -22,8 +20,7 @@ import org.ops4j.peaberry.activation.Stop;
  */
 public final class ThreadPoolManagerImpl implements ThreadPoolManager {
 
-    private static final Logger LOG =
-            LoggerFactory.getLogger(ThreadPoolManagerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ThreadPoolManagerImpl.class);
     private final ScheduledExecutorService schedulerPool;
     private final ExecutorService workerPool;
     private final ThreadPoolExecutor applicationPool;
@@ -36,10 +33,7 @@ public final class ThreadPoolManagerImpl implements ThreadPoolManager {
      *
      */
     @Inject
-    public ThreadPoolManagerImpl() {
-
-        System.out.println("Thread pool was created");
-        
+    public ThreadPoolManagerImpl() {        
         this.schedulerPool = Executors.newScheduledThreadPool(Integer.valueOf(200));
         this.workerPool = Executors.newCachedThreadPool();
         this.applicationPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(Integer.valueOf(200));
@@ -51,7 +45,7 @@ public final class ThreadPoolManagerImpl implements ThreadPoolManager {
 
     @Start
     public void start() {
-        System.out.println("Thread pools are ready");
+        LOG.info("Starting thread pools " );
     }
 
     /**
@@ -132,7 +126,7 @@ public final class ThreadPoolManagerImpl implements ThreadPoolManager {
     @Stop
     @Override
     public void shutdownAll() {
-        LOG.info("Shutdown all executors");
+        LOG.info("Shutting down all thread pools");
         shutDownExecutorService(schedulerPool, 10, TimeUnit.SECONDS);
         shutDownExecutorService(workerPool, 10, TimeUnit.SECONDS);
         shutDownExecutorService(applicationPool, 1, TimeUnit.MILLISECONDS);
