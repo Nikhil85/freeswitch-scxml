@@ -11,7 +11,7 @@ import org.xsocket.connection.Server;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
+import java.util.Date;
 import org.freeswitch.scxml.application.ThreadPoolManager;
 import org.freeswitch.socket.TcpServer;
 import org.ops4j.peaberry.activation.Start;
@@ -68,11 +68,11 @@ public final class XsocketTcpServerImpl implements TcpServer {
     @Override
     @Start
     public void startServer() {
-        System.out.println("Try to start Server ...");
+        LOG.info("Try to start Server ...");
         state = SERVERSTATE.START;
 
         if (iServer != null && iServer.isOpen()) {
-            System.out.println("Server is already started");
+            LOG.info("Server is already started");
             return;
         }
 
@@ -95,10 +95,10 @@ public final class XsocketTcpServerImpl implements TcpServer {
         }
 
         try {
-            System.out.println("Start server now");
             iServer.start();
+            LOG.info("Server started {} " , new Date());
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+            LOG.error("Failed to start the server" , ex.getMessage());
         }
     }
 

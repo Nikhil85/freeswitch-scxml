@@ -16,13 +16,16 @@ import org.slf4j.LoggerFactory;
  */
 public final class XsocketServerSession implements org.freeswitch.socket.ServerSessionListener {
 
-    private static final Logger LOG =
-            LoggerFactory.getLogger(XsocketServerSession.class);
+    private static final Logger LOG = LoggerFactory.getLogger(XsocketServerSession.class);
+    
     private static final Pattern EVENT_PATTERN =
             Pattern.compile("(Event-Name:)(\\s)(\\w*)", Pattern.MULTILINE);
+    
     private static final Pattern APP_PATTERN =
             Pattern.compile("^(Application:)(\\s)(\\w*)$", Pattern.MULTILINE);
+    
     private static final String DTMF_LINE = "DTMF-Digit: ";
+    
     private static final int DTMF_LINE_LENGTH = DTMF_LINE.length();
 
     private final BlockingQueue<Event> queue;
@@ -122,7 +125,6 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
 
         try {
             queue.put(Event.getInstance(EventName.CHANNEL_HANGUP));
-
         } catch (InterruptedException ex) {
             LOG.info(ex.getMessage());
         }
