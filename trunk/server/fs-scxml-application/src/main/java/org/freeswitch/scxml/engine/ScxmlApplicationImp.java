@@ -45,9 +45,10 @@ public final class ScxmlApplicationImp implements ScxmlApplication {
      *
      */
     @Inject
-    public ScxmlApplicationImp() {
-        //this.actions = new ArrayList<CustomAction>(customActions.size());
-        //actions.addAll(customActions);
+    public ScxmlApplicationImp(Set<CustomAction> actions, @Named("scxml.cache") Boolean cache) {
+        this.actions = new ArrayList<CustomAction>(actions.size());
+        this.cache = cache;
+        actions.addAll(actions);
 
     }
 
