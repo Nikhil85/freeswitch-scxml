@@ -18,7 +18,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
-
+    
+    public static final String REC_PATH = "REC_PATH";
     //
     // Class variables
     //
@@ -67,7 +68,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     public SessionImpl(Map<String, Object> map) {
         this.sessionData = map;
         this.scheduler = (ScheduledExecutorService) map.get(ScheduledExecutorService.class.getName());
-        this.recPath = (String) map.get("REC_PATH");
+        this.recPath = (String) map.get(REC_PATH);
         this.eventQueue = (BlockingQueue<Event>) map.get(BlockingQueue.class.getName());
         this.executor = (CommandExecutor) map.get(CommandExecutor.class.getName());
         this.sessionid = getUuid();
