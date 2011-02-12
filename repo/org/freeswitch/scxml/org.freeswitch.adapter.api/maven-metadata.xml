@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.freeswitch.scxml</groupId>
+  <artifactId>org.freeswitch.adapter.api</artifactId>
+  <versioning>
+    <versions>
+      <version>1.0-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20110212165102</lastUpdated>
+  </versioning>
+</metadata>
