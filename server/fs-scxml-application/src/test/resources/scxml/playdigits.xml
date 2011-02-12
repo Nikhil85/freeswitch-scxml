@@ -1,0 +1,16 @@
+<scxml xmlns="http://www.w3.org/2005/07/scxml"
+       xmlns:ms="http://telmi.se/MS"
+              version="1.0"
+              initialstate="main">
+
+    <state id="main" final="true" >
+       <onentry>
+
+            <ms:answer/>
+            <ms:say>'Lets say some number'</ms:say>
+            <ms:phrase value="'1033'" format="number" method="pronounced" />
+            <ms:hangup/>
+        </onentry>
+    </state>
+</scxml>
+
