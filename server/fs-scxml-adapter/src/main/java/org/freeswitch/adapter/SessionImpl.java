@@ -41,7 +41,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     private final CommandExecutor executor;
 
     /**
-     * Create a new instance of FsIvrSession.
+     * Create a new instance of IvrSession.
      *
      * @param data           Variables.
      * @param con            Connection to write to.
@@ -101,13 +101,13 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
 
     @Override
     public Event answer() {
-        LOG.trace("FSSession#{}: answer ...");
+        LOG.trace("Session#{}: answer ...");
 
 
         if (notAnswered) {
             excecute(Command.answer());
             //Collect events until CHANNEL EXECUTE COMPLETE or hangup
-            Event evt = new Event.EventCatcher(eventQueue).startPolling().newFSEvent();
+            Event evt = new Event.EventCatcher(eventQueue).startPolling().newEvent();
             this.notAnswered = false;
             return evt;
         } else {
@@ -119,10 +119,10 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     public Event say(
             String moduleName, String sayType, String sayMethod, String value) {
 
-        LOG.trace("FSSession#{}: say ...");
+        LOG.trace("Session#{}: say ...");
 
         excecute(Command.say(moduleName, sayType, sayMethod, value));
-        Event evt = new Event.EventCatcher(eventQueue).startPolling().newFSEvent();
+        Event evt = new Event.EventCatcher(eventQueue).startPolling().newEvent();
         return evt;
     }
 
@@ -135,7 +135,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
         excecute(Command.playback("silence_stream://10", true));
         eventcatcher.startPolling().reset();
 
-        return eventcatcher.newFSEvent();
+        return eventcatcher.newEvent();
     }
 
     @Override
@@ -145,7 +145,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
             Set<DTMF> terms,
             String format) {
 
-        LOG.trace("FSSession#{}: Try to recordFile");
+        LOG.trace("Session#{}: Try to recordFile");
 
         Event.EventCatcher eventcatcher = new Event.EventCatcher(eventQueue).termDigits(terms);
 
@@ -173,29 +173,28 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
         Long duration = TimeUnit.MILLISECONDS.convert(after - now, TimeUnit.NANOSECONDS);
         sessionData.put("duration", duration);
         sessionData.put("last_rec", dstFileName);
-        return eventcatcher.newFSEvent();
+        return eventcatcher.newEvent();
     }
 
     @Override
     public Event speak(String text) {
 
-        LOG.debug("FSSession#{}: speak ...");
+        LOG.debug("Session#{}: speak ...");
 
         excecute(Command.speak(text, false));
 
-        Event evt = new Event.EventCatcher(eventQueue).startPolling().newFSEvent();
+        Event evt = new Event.EventCatcher(eventQueue).startPolling().newEvent();
 
         return evt;
     }
 
     @Override
     public Event getDigits(int maxdigits, Set<DTMF> terms, long timeout) {
-        LOG.debug("FSSession#{}: getDigits ...");
+        LOG.debug("Session#{}: getDigits ...");
         ScheduledFuture<EventName> future =
                 scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
 
-        Event evt =
-                new Event.EventCatcher(eventQueue).maxDigits(maxdigits).termDigits(terms).startPolling().newFSEvent();
+        Event evt = new Event.EventCatcher(eventQueue).maxDigits(maxdigits).termDigits(terms).startPolling().newEvent();
 
         if (!future.isDone()) {
             future.cancel(true);
@@ -211,10 +210,10 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
             long timeout,
             Set<DTMF> terms) {
 
-        LOG.info("FSSession#{}: read ...  timeout -->{}", timeout);
+        LOG.info("Session#{}: read ...  timeout -->{}", timeout);
 
         excecute(Command.playback(prompt, false));
-//        writeData(String.format(FSCommand.PLAY, prompt));
+//        writeData(String.format(Command.PLAY, prompt));
         Event.EventCatcher builder =
                 new Event.EventCatcher(eventQueue).maxDigits(maxDigits).termDigits(terms).startPolling();
 
@@ -233,21 +232,21 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
             breakAction(builder.reset());
         }
 
-        return builder.newFSEvent();
+        return builder.newEvent();
     }
 
     @Override
     public Event streamFile(String file) {
-        LOG.debug("FSSession#{}: StreamFile: {}", sessionid, file);
+        LOG.debug("Session#{}: StreamFile: {}", sessionid, file);
 
         excecute(Command.playback(file, false));
 
-        return new Event.EventCatcher(eventQueue).startPolling().newFSEvent();
+        return new Event.EventCatcher(eventQueue).startPolling().newEvent();
     }
 
     @Override
     public Event streamFile(String file, Set<DTMF> terms) {
-        LOG.debug("FSSession#{}: StreamFile: {}, with termination options", sessionid, file);
+        LOG.debug("Session#{}: StreamFile: {}, with termination options", sessionid, file);
 
         excecute(Command.playback(file, false));
 
@@ -256,40 +255,40 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
         if (builder.endsWithDtmf(terms)) {
             breakAction(builder.reset());
         }
-        return builder.newFSEvent();
+        return builder.newEvent();
     }
 
     @Override
     public void sleep(long milliseconds) {
         try {
-            LOG.debug("FSSession#{}: Channel Silence for '{}' millis.", sessionid, milliseconds);
+            LOG.debug("Session#{}: Channel Silence for '{}' millis.", sessionid, milliseconds);
             Thread.sleep(milliseconds);
         } catch (InterruptedException ex) {
-            LOG.warn("FSSession#{}: Thread interupted while sleeping, {}", sessionid, ex.getMessage());
+            LOG.warn("Session#{}: Thread interupted while sleeping, {}", sessionid, ex.getMessage());
         }
     }
 
     @Override
     public Event hangup(Map<String, Object> nameList) {
-        LOG.debug("FSSession#{}: hang up ...", sessionid);
+        LOG.debug("Session#{}: hang up ...", sessionid);
 
         excecute(Command.set(EVENT_MAP_EQUALS + nameList.toString()));
         Event.EventCatcher builder = new Event.EventCatcher(eventQueue).startPolling();
         builder.reset();
 
         excecute(Command.hangup(null));
-        return builder.startPolling().newFSEvent();
+        return builder.startPolling().newEvent();
     }
 
     @Override
     public Event hangup() {
-        LOG.trace("FSSession#{}: hangup ...", sessionid);
+        LOG.trace("Session#{}: hangup ...", sessionid);
 
         if (alive) {
             //Only call hangup once.
             alive = false;
             excecute(Command.hangup(null));
-            Event evt = new Event.EventCatcher(eventQueue).startPolling().newFSEvent();
+            Event evt = new Event.EventCatcher(eventQueue).startPolling().newEvent();
             return evt;
         } else {
             return Event.getInstance(EventName.CHANNEL_EXECUTE_COMPLETE);
@@ -298,9 +297,9 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
 
     @Override
     public Event deflect(String target) {
-        LOG.trace("FSSession#{}: deflect ...", sessionid);
+        LOG.trace("Session#{}: deflect ...", sessionid);
         excecute(Command.refer(target));
-        return new Event.EventCatcher(eventQueue).startPolling().newFSEvent();
+        return new Event.EventCatcher(eventQueue).startPolling().newEvent();
     }
 
     @Override
@@ -326,7 +325,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
      * @return The events from the break action.
      */
     private Event.EventCatcher breakAction(Event.EventCatcher builder) {
-        LOG.debug("FSSession#{}: breakAction ...", sessionid);
+        LOG.debug("Session#{}: breakAction ...", sessionid);
 
         excecute(Command.breakcommand());
         sleep(1000L);
@@ -335,10 +334,10 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
 
     @Override
     public EventName call() {
-        LOG.trace("FSSession#{}: call ...", sessionid);
+        LOG.trace("Session#{}: call ...", sessionid);
         eventQueue.add(Event.getInstance(EventName.TIMEOUT));
 
-        LOG.debug("FSSession#{}: Call Action timed out ???", sessionid);
+        LOG.debug("Session#{}: Call Action timed out ???", sessionid);
         return EventName.TIMEOUT;
     }
 
