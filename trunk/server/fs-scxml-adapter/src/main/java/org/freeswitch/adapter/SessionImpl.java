@@ -105,7 +105,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
 
 
         if (notAnswered) {
-            writeData(Command.answer());
+            excecute(Command.answer());
             //Collect events until CHANNEL EXECUTE COMPLETE or hangup
             Event evt = new Event.EventCatcher(eventQueue).startPolling().newFSEvent();
             this.notAnswered = false;
@@ -121,7 +121,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
 
         LOG.trace("FSSession#{}: say ...");
 
-        writeData(Command.say(moduleName, sayType, sayMethod, value));
+        excecute(Command.say(moduleName, sayType, sayMethod, value));
         Event evt = new Event.EventCatcher(eventQueue).startPolling().newFSEvent();
         return evt;
     }
@@ -129,10 +129,10 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     @Override
     public Event beep() {
         Event.EventCatcher eventcatcher = new Event.EventCatcher(eventQueue);
-        writeData(Command.playback("tone_stream://%(500, 0, 800)", true));
+        excecute(Command.playback("tone_stream://%(500, 0, 800)", true));
         eventcatcher.startPolling().reset();
 
-        writeData(Command.playback("silence_stream://10", true));
+        excecute(Command.playback("silence_stream://10", true));
         eventcatcher.startPolling().reset();
 
         return eventcatcher.newFSEvent();
@@ -150,15 +150,15 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
         Event.EventCatcher eventcatcher = new Event.EventCatcher(eventQueue).termDigits(terms);
 
         if (beep) {
-            writeData(Command.playback("tone_stream://%(500, 0, 800)", true));
+            excecute(Command.playback("tone_stream://%(500, 0, 800)", true));
             eventcatcher.startPolling().reset();
 
-            writeData(Command.playback("silence_stream://10", true));
+            excecute(Command.playback("silence_stream://10", true));
             eventcatcher.startPolling().reset();
         }
 
         String dstFileName = getRecPath(format);
-        writeData(Command.record(dstFileName, timeLimitInMillis, null, null, false));
+        excecute(Command.record(dstFileName, timeLimitInMillis, null, null, false));
 
         long now = System.nanoTime();
         eventcatcher.startPolling();
@@ -181,7 +181,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
 
         LOG.debug("FSSession#{}: speak ...");
 
-        writeData(Command.speak(text, false));
+        excecute(Command.speak(text, false));
 
         Event evt = new Event.EventCatcher(eventQueue).startPolling().newFSEvent();
 
@@ -213,7 +213,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
 
         LOG.info("FSSession#{}: read ...  timeout -->{}", timeout);
 
-        writeData(Command.playback(prompt, false));
+        excecute(Command.playback(prompt, false));
 //        writeData(String.format(FSCommand.PLAY, prompt));
         Event.EventCatcher builder =
                 new Event.EventCatcher(eventQueue).maxDigits(maxDigits).termDigits(terms).startPolling();
@@ -240,7 +240,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     public Event streamFile(String file) {
         LOG.debug("FSSession#{}: StreamFile: {}", sessionid, file);
 
-        writeData(Command.playback(file, false));
+        excecute(Command.playback(file, false));
 
         return new Event.EventCatcher(eventQueue).startPolling().newFSEvent();
     }
@@ -249,7 +249,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     public Event streamFile(String file, Set<DTMF> terms) {
         LOG.debug("FSSession#{}: StreamFile: {}, with termination options", sessionid, file);
 
-        writeData(Command.playback(file, false));
+        excecute(Command.playback(file, false));
 
         Event.EventCatcher builder = new Event.EventCatcher(eventQueue).termDigits(terms).startPolling();
 
@@ -273,11 +273,11 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     public Event hangup(Map<String, Object> nameList) {
         LOG.debug("FSSession#{}: hang up ...", sessionid);
 
-        writeData(Command.set(EVENT_MAP_EQUALS + nameList.toString()));
+        excecute(Command.set(EVENT_MAP_EQUALS + nameList.toString()));
         Event.EventCatcher builder = new Event.EventCatcher(eventQueue).startPolling();
         builder.reset();
 
-        writeData(Command.hangup(null));
+        excecute(Command.hangup(null));
         return builder.startPolling().newFSEvent();
     }
 
@@ -288,7 +288,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
         if (alive) {
             //Only call hangup once.
             alive = false;
-            writeData(Command.hangup(null));
+            excecute(Command.hangup(null));
             Event evt = new Event.EventCatcher(eventQueue).startPolling().newFSEvent();
             return evt;
         } else {
@@ -299,7 +299,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     @Override
     public Event deflect(String target) {
         LOG.trace("FSSession#{}: deflect ...", sessionid);
-        writeData(Command.refer(target));
+        excecute(Command.refer(target));
         return new Event.EventCatcher(eventQueue).startPolling().newFSEvent();
     }
 
@@ -328,7 +328,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     private Event.EventCatcher breakAction(Event.EventCatcher builder) {
         LOG.debug("FSSession#{}: breakAction ...", sessionid);
 
-        writeData(Command.breakcommand());
+        excecute(Command.breakcommand());
         sleep(1000L);
         return builder.startPolling().reset().startPolling().reset();
     }
@@ -365,7 +365,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
      *
      * @param data To send.
      */
-    private void writeData(String data) {
+    private void excecute(String data) {
         
         if (executor.isReady()) {
 
