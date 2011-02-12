@@ -1,0 +1,38 @@
+<scxml xmlns="http://www.w3.org/2005/07/scxml"
+       xmlns:ms="http://telmi.se/MS"
+              version="1.0"
+              initialstate="main">
+
+    <state id="main" final="true" >
+        
+       <onentry>
+            <ms:answer/>
+            <ms:say>'Please enter som digits'</ms:say>
+            <ms:getdigits var="mydigits" termdigits="#" maxdigits="3" />
+        </onentry>
+      
+         <transition event="termdigit" target="exit" >
+            <log expr="'termdigit' + mydigits "  />
+            <ms:say>'Termdigit'</ms:say>
+        </transition>
+
+        <transition event="maxtime" target="exit">
+             <ms:say>'Max time'</ms:say>
+             <log expr="'maxtime'"  />
+        </transition>
+
+        <transition event="maxdigits" target="exit">
+            <ms:say>'Max digits'</ms:say>
+            <log expr="'maxdigits'" />
+        </transition>
+     
+    </state>
+
+    <state id="exit" final="true">
+         <onentry>
+            <log expr="mydigits" />
+            <ms:hangup/>
+        </onentry>
+  </state>
+</scxml>
+
