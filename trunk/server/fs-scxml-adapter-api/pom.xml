@@ -8,7 +8,7 @@
     </parent>
 
     <groupId>org.freeswitch.scxml</groupId>
-    <artifactId>org.freeswitch.adapter.api</artifactId>
+    <artifactId>org.freeswitch.scxml.adapter.api</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>fs-scxml-adapter-api</name>
