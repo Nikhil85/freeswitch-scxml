@@ -269,7 +269,7 @@ public final class Event {
          *
          * @return a new IvrEvent.
          */
-        public Event newFSEvent() {
+        public Event newEvent() {
             return new Event(this);
         }
 
@@ -315,10 +315,12 @@ public final class Event {
 
                     if (event == null) {
                         this.events.add(EventName.CHANNEL_HANGUP);
+                    
                     } else {
                         dtmfs.addAll(event.dtmfEvents);
                         events.addAll(event.channelEvents);
                     }
+                
                 } catch (InterruptedException ex) {
                     LOG.error("Oops! event poll timout", ex);
                 }
