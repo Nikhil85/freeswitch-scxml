@@ -38,7 +38,25 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>googlecode</id>
+            <url>svn:https://freeswitch-scxml.googlecode.com/svn/repo</url>
+        </repository>
+    </distributionManagement>  
+    
+        
     <build>
+        <extensions>
+            <extension>
+                <groupId>org.jvnet.wagon-svn</groupId>
+                <artifactId>wagon-svn</artifactId>
+                <version>1.9</version>
+            </extension>
+        </extensions>
+
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
