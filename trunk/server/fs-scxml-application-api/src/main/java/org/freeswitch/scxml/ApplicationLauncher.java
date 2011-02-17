@@ -1,4 +1,4 @@
-package org.freeswitch.scxml.application;
+package org.freeswitch.scxml;
 
 import org.freeswitch.adapter.Session;
 

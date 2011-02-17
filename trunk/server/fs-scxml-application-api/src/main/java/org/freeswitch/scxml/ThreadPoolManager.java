@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.freeswitch.scxml.application;
+package org.freeswitch.scxml;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
