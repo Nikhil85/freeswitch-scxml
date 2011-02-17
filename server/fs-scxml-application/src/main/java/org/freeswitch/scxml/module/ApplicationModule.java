@@ -4,7 +4,7 @@ import javax.inject.Singleton;
 import com.google.inject.name.Names;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
-import org.freeswitch.scxml.application.ApplicationLauncher;
+import org.freeswitch.scxml.ApplicationLauncher;
 import org.freeswitch.scxml.engine.ScxmlApplicationLauncher;
 
 import org.apache.commons.scxml.model.CustomAction;
@@ -22,7 +22,7 @@ import org.freeswitch.scxml.actions.RecordAudioAction;
 import org.freeswitch.scxml.actions.SayAction;
 import org.freeswitch.scxml.actions.SendAction;
 import org.freeswitch.scxml.actions.WaitAction;
-import org.freeswitch.scxml.application.ThreadPoolManager;
+import org.freeswitch.scxml.ThreadPoolManager;
 import org.freeswitch.scxml.engine.ScxmlApplication;
 import org.freeswitch.scxml.engine.ScxmlApplicationImp;
 import org.freeswitch.scxml.pool.ThreadPoolManagerImpl;
@@ -42,25 +42,29 @@ import static org.ops4j.peaberry.activation.Configurables.*;
 public final class ApplicationModule extends AbstractModule {
 
     private static final String NAME_SPACE = "http://www.freeswitch.org/";
-    private static final String PID = "org.freeswitch.scxml";
-
+    private static final String PID = "org.freeswitch.scxml.app";
+    
+ 
     /**
      * Configure the application.
      */
     @Override
     protected void configure() {
-        
-        bind(Boolean.class).annotatedWith(Names.named("scxml.cache")).toProvider(configurable(Boolean.class).from(PID).named("scxml.cache"));
-        
+
+        bind(String.class).annotatedWith(Names.named("scxml.cache")).toProvider(configurable(String.class).from(PID).named("scxml.cache"));
+
         bind(export(BundleNotifier.class)).toProvider(service(BundleNotifier.class).export());
         bind(BundleNotifier.class).in(Singleton.class);
+
         bind(export(ApplicationLauncher.class)).toProvider(service(ScxmlApplicationLauncher.class).export());
-        bind(export(ThreadPoolManager.class)).toProvider(service(ThreadPoolManagerImpl.class).export()).in(Singleton.class);
-     
+        bind(export(ThreadPoolManager.class)).toProvider(service(ThreadPoolManagerImpl.class).export());
+        bind(ThreadPoolManagerImpl.class).in(Singleton.class);
+
         bind(ScxmlApplication.class).to(ScxmlApplicationImp.class);
         bind(SenderFactory.class).to(SenderFactoryImpl.class);
         bindSenders();
-        bindActions(); 
+        bindActions();
+       
     }
 
     /**
@@ -128,6 +132,4 @@ public final class ApplicationModule extends AbstractModule {
                 new CustomAction(NAME_SPACE, "send", SendAction.class));
 
     }
-
- 
 }

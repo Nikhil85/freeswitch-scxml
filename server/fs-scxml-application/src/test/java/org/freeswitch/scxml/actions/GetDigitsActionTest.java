@@ -88,7 +88,7 @@ public final class GetDigitsActionTest {
         queue.put(Event.getInstance(DTMF.SIX));
         queue.put(Event.getInstance(DTMF.SEVEN));
 
-        Event maxDigits = new Event.EventCatcher(queue).maxDigits(MAX_DIGITS).startPolling().newFSEvent();
+        Event maxDigits = new Event.EventCatcher(queue).maxDigits(MAX_DIGITS).startPolling().newEvent();
 
         // CallXmlEvent.MAXDIGITS
         TriggerEvent event = handleAction(action, maxDigits, "1234567");

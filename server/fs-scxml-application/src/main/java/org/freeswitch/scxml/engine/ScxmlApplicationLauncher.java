@@ -14,7 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.net.URL;
 import org.freeswitch.adapter.Session;
-import org.freeswitch.scxml.application.ApplicationLauncher;
+import org.freeswitch.scxml.ApplicationLauncher;
 
 /**
  *
