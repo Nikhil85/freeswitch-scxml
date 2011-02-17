@@ -30,26 +30,21 @@
             <artifactId>easymock</artifactId>
             <version>3.0</version>
         </dependency>
-        
-        <dependency>
-            <groupId>org.ops4j</groupId>
-            <artifactId>peaberry</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j</groupId>
-            <artifactId>peaberry.activation</artifactId>
-            <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>3.0-rc2</version>
-        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>org.freeswitch.scxml.adapter.api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.1.0</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.configadmin</artifactId>
+            <version>1.2.8</version>
         </dependency>
     </dependencies>
 
@@ -66,6 +61,7 @@
                     <instructions>
                         <Bundle-Module>org.freeswitch.adapter.module.AdapterModule</Bundle-Module>
                         <Export-Package>org.freeswitch.adapter.module</Export-Package>
+                        <Bundle-Activator>org.freeswitch.adapter.module.AdapterActivator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
