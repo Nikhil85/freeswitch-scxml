@@ -86,7 +86,7 @@ public final class InputDigitsActionTest {
         queue.put(Event.getInstance(DTMF.SIX));
         queue.put(Event.getInstance(DTMF.SEVEN));
 
-        Event maxDigits = new Event.EventCatcher(queue).maxDigits(7).startPolling().newFSEvent();
+        Event maxDigits = new Event.EventCatcher(queue).maxDigits(7).startPolling().newEvent();
 
         TriggerEvent event = handleAction(action, maxDigits, "1234567");
 
@@ -125,7 +125,7 @@ public final class InputDigitsActionTest {
         queue.put(Event.getInstance(DTMF.STAR));
         queue.put(Event.getInstance(DTMF.TWO));
 
-        Event term = new Event.EventCatcher(queue).maxDigits(5).termDigits(EnumSet.of(DTMF.STAR)).startPolling().newFSEvent();
+        Event term = new Event.EventCatcher(queue).maxDigits(5).termDigits(EnumSet.of(DTMF.STAR)).startPolling().newEvent();
 
         TriggerEvent event = handleAction(action, term, "0011");
 
@@ -152,7 +152,7 @@ public final class InputDigitsActionTest {
         queue.put(Event.getInstance(DTMF.STAR));
 
 
-        Event mindigits = new Event.EventCatcher(queue).maxDigits(4).termDigits(EnumSet.of(DTMF.STAR)).startPolling().newFSEvent();
+        Event mindigits = new Event.EventCatcher(queue).maxDigits(4).termDigits(EnumSet.of(DTMF.STAR)).startPolling().newEvent();
 
         TriggerEvent event = handleAction(action, mindigits, "00");
 

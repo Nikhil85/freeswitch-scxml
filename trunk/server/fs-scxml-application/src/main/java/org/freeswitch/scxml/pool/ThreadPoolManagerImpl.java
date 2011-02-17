@@ -1,6 +1,6 @@
 package org.freeswitch.scxml.pool;
 
-import org.freeswitch.scxml.application.ThreadPoolManager;
+import org.freeswitch.scxml.ThreadPoolManager;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
