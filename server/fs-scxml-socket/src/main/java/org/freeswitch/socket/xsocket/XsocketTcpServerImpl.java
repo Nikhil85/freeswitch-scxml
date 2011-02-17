@@ -12,7 +12,7 @@ import org.xsocket.connection.Server;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Date;
-import org.freeswitch.scxml.application.ThreadPoolManager;
+import org.freeswitch.scxml.ThreadPoolManager;
 import org.freeswitch.socket.TcpServer;
 import org.ops4j.peaberry.activation.Start;
 import org.ops4j.peaberry.activation.Stop;

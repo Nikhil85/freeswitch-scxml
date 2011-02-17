@@ -3,8 +3,8 @@ package org.freeswitch.socket.xsocket.module;
 import org.freeswitch.adapter.SessionFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
-import org.freeswitch.scxml.application.ApplicationLauncher;
-import org.freeswitch.scxml.application.ThreadPoolManager;
+import org.freeswitch.scxml.ApplicationLauncher;
+import org.freeswitch.scxml.ThreadPoolManager;
 import org.freeswitch.socket.TcpServer;
 import org.freeswitch.socket.xsocket.EventSocketHandler;
 import org.freeswitch.socket.xsocket.XsocketTcpServerImpl;
@@ -25,9 +25,11 @@ public final class XsocketTransportModule extends AbstractModule {
     protected void configure() {
         bind(export(ModuleStarter.class)).toProvider(service(ModuleStarter.class).export());
         bind(ModuleStarter.class).in(Singleton.class); 
-        bind(ThreadPoolManager.class).toProvider(service(ThreadPoolManager.class).single());
+        
         bind(SessionFactory.class).toProvider(service(SessionFactory.class).single());
+        bind(ThreadPoolManager.class).toProvider(service(ThreadPoolManager.class).single());
         bind(ApplicationLauncher.class).toProvider(service(ApplicationLauncher.class).single());
+         
         bind(IDataHandler.class).to(EventSocketHandler.class);
         bind(TcpServer.class).to(XsocketTcpServerImpl.class).in(Singleton.class);
     }
