@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import org.freeswitch.adapter.Session;
+import org.osgi.framework.ServiceReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +25,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.freeswitch.adapter.CommandExecutor;
-import org.freeswitch.scxml.application.ApplicationLauncher;
-import org.freeswitch.scxml.application.ThreadPoolManager;
+import org.freeswitch.scxml.ApplicationLauncher;
+import org.freeswitch.scxml.ThreadPoolManager;
 import org.freeswitch.adapter.Event;
 import org.freeswitch.adapter.SessionFactory;
 import org.freeswitch.socket.ServerSessionListener;
-
 
 /**
  *
@@ -39,23 +39,16 @@ import org.freeswitch.socket.ServerSessionListener;
 public final class EventSocketHandler implements IDataHandler, IDisconnectHandler, IConnectHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventSocketHandler.class);
-
     private static final Pattern CONTENT_LENGTH_PATTERN = Pattern.compile("Content-Length:\\s(\\d*)",
             Pattern.MULTILINE);
-
     private static final Pattern EVENT_IN_CONTENT_PATTERN = Pattern.compile(
             "Content-Type: text/event-plain", Pattern.MULTILINE);
-
     private static final Pattern EVENT_PATTERN = Pattern.compile("Event-Name:\\s(.*)",
             Pattern.MULTILINE);
-
     private static final String UTF8 = "UTF-8";
-
     private final ApplicationLauncher applicationLauncer;
-
     private final ThreadPoolManager threadPoolManager;
     private final SessionFactory factory;
-
 
     /**
      *
@@ -125,7 +118,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
             if (header.startsWith("Content-Type: text/disconnect-notice")) {
                 return true;
             }
-            
+
             String eventdata = null;
             if (EVENT_PATTERN.matcher(header).find()) {
                 eventdata = header;
@@ -142,24 +135,28 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
                 // old connection
                 session.onDataEvent(eventdata);
             } else {
-                LOG.debug("New Connection so prepare the call");
+                LOG.debug("New Connection so prepare the call to launch");
 
                 INonBlockingConnection syncConnection = ConnectionUtils.synchronizedConnection(nonblockconnection);
-                
+
                 XSocketSocketWriter socketWriter = new XSocketSocketWriter(syncConnection);
                 BlockingQueue<Event> eventQueue = new ArrayBlockingQueue<Event>(50);
                 final XsocketServerSession serverSession = new XsocketServerSession(eventQueue, socketWriter);
-                
+
                 Map<String, Object> channelVars = extractDataToMap(eventdata);
                 channelVars.put(BlockingQueue.class.getName(), eventQueue);
                 channelVars.put(CommandExecutor.class.getName(), socketWriter);
+
+                LOG.debug("Will access pool manager 2");
                 channelVars.put(ScheduledExecutorService.class.getName(), threadPoolManager.getScheduler());
                 
+                LOG.debug("Will create session");
                 final Session fss = factory.create(channelVars);
-                
+                LOG.debug("Session Ready");
                 // save reference to serverSessionListener
                 syncConnection.setAttachment(serverSession);
-                Runnable appRunner = new Runnable() {
+
+                Runnable appRunner = new Runnable()  {
 
                     @Override
                     public void run() {
@@ -172,16 +169,16 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
                     }
                 };
 
-                LOG.debug("launch applicationLauncher in new thread");
+                LOG.info("launch applicationLauncher in new thread");
                 threadPoolManager.getWorkerPool().execute(appRunner);
-            }
+                }
 
         } catch (UnsupportedEncodingException ex) {
             LOG.error(ex.getMessage());
 
         } catch (IOException ex) {
             LOG.error(ex.getMessage());
-        } 
+        }
 
         return true;
     }
@@ -189,17 +186,9 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
     @Override
     public boolean onConnect(INonBlockingConnection connection) {
         try {
-            LOG.debug("onConnect:  connection[{}] {} bytes available", connection,
-                    connection.available());
+            LOG.debug("onConnect:  connection[{}] {} bytes available", connection, connection.available());
             connection.write("connect\n\n");
-
-//            connection.write("linger\n\n");
-
-            // Register for events
             connection.write("myevents\n\n");
-            connection.write("filter Event-Name CHANNEL_EXECUTE_COMPLETE\n\n");
-            connection.write("filter Event-Name DTMF\n\n");
-
         } catch (Exception ex) {
             LOG.error("Oops! onConnect error.", ex);
             return false;
