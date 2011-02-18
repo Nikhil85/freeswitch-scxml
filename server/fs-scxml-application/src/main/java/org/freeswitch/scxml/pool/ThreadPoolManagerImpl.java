@@ -10,9 +10,6 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Inject;
-import org.ops4j.peaberry.activation.Start;
-import org.ops4j.peaberry.activation.Stop;
 
 /**
  *
@@ -32,7 +29,6 @@ public final class ThreadPoolManagerImpl implements ThreadPoolManager {
      * @param nThreads     The size of the pool to execute applications.
      *
      */
-    @Inject
     public ThreadPoolManagerImpl() {        
         this.schedulerPool = Executors.newScheduledThreadPool(Integer.valueOf(200));
         this.workerPool = Executors.newCachedThreadPool();
@@ -43,7 +39,6 @@ public final class ThreadPoolManagerImpl implements ThreadPoolManager {
         return applicationPool.getCorePoolSize();
     }
 
-    @Start
     public void start() {
         LOG.info("Starting thread pools " );
     }
@@ -120,10 +115,6 @@ public final class ThreadPoolManagerImpl implements ThreadPoolManager {
         }
     }
 
-    /**
-     * Shutdown all executors managed by this ThreadPoolManager.
-     */
-    @Stop
     @Override
     public void shutdownAll() {
         LOG.info("Shutting down all thread pools");

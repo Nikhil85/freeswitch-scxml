@@ -10,8 +10,6 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.net.URL;
 import org.freeswitch.adapter.Session;
 import org.freeswitch.scxml.ApplicationLauncher;
@@ -20,7 +18,6 @@ import org.freeswitch.scxml.ApplicationLauncher;
  *
  * @author jocke
  */
-@Singleton
 public final class ScxmlApplicationLauncher implements ApplicationLauncher {
 
     /**
@@ -31,7 +28,6 @@ public final class ScxmlApplicationLauncher implements ApplicationLauncher {
      * Encoding to use.
      */
     public static final String UTF8 = "UTF-8";
-    private final ScxmlApplication application;
     private static final Logger LOG =
             LoggerFactory.getLogger(ScxmlApplication.class);
     private static final Pattern MAP_STRIP =
@@ -42,9 +38,7 @@ public final class ScxmlApplicationLauncher implements ApplicationLauncher {
      *
      * @param app The scxml application.
      */
-    @Inject
-    ScxmlApplicationLauncher(ScxmlApplication app) {
-        this.application = app;
+    public ScxmlApplicationLauncher() {
     }
 
     @Override
@@ -73,8 +67,8 @@ public final class ScxmlApplicationLauncher implements ApplicationLauncher {
             URL url = new URL(prop[1]);
 
             vars.put(Session.class.getName(), session);
-
-            application.createAndStartMachine(url, vars);
+             //TODO use lookup
+            //application.createAndStartMachine(url, vars);
 
         } catch (IllegalStateException iex) {
             LOG.error(iex.getMessage());

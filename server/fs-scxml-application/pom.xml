@@ -122,33 +122,6 @@
             <artifactId>org.freeswitch.scxml.application.api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>aopalliance</groupId>
-            <artifactId>aopalliance</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>3.0-rc2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-multibindings</artifactId>
-            <version>3.0-rc2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j</groupId>
-            <artifactId>peaberry</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j</groupId>
-            <artifactId>peaberry.activation</artifactId>
-            <version>1.2</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -163,6 +136,7 @@
                         <Bundle-Module>org.freeswitch.scxml.module.ApplicationModule</Bundle-Module>
                         <Export-Package>org.freeswitch.scxml.module,org.freeswitch.scxml.pool</Export-Package>
                         <Private-Package>org.freeswitch.scxml.actions.*,org.freeswitch.scxml.engine.*,org.freeswitch.scxml.module.*,org.freeswitch.scxml.pool.*,org.freeswitch.scxml.sender.*</Private-Package>
+                        <Bundle-Activator>org.freeswitch.scxml.module.ApplicationActivator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

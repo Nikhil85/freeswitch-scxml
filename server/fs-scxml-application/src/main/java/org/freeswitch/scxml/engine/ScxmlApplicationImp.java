@@ -1,17 +1,12 @@
 package org.freeswitch.scxml.engine;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.scxml.env.jexl.JexlContext;
 import org.apache.commons.scxml.model.CustomAction;
-import org.freeswitch.scxml.sender.SenderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +14,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author jocke
  */
-@Singleton
 public final class ScxmlApplicationImp implements ScxmlApplication {
 
     private static final String BASE = "base";
@@ -44,8 +38,7 @@ public final class ScxmlApplicationImp implements ScxmlApplication {
      * @param customActions All the actions handled by this application.
      *
      */
-    @Inject
-    public ScxmlApplicationImp(Set<CustomAction> actions, @Named("scxml.cache") String cache) {
+    public ScxmlApplicationImp() {
         this.actions = new ArrayList<CustomAction>(actions.size());
         this.cache = Boolean.valueOf(cache);
         this.actions.addAll(actions);
