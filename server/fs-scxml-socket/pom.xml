@@ -89,6 +89,7 @@
                     <instructions>
                         <Bundle-Module>org.freeswitch.socket.xsocket.module.XsocketTransportModule</Bundle-Module>
                         <Export-Package>org.freeswitch.socket.xsocket.module</Export-Package>
+                        <Bundle-Activator>org.freeswitch.socket.xsocket.module.SocketActivator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
