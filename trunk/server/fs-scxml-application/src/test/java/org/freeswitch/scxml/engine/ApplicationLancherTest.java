@@ -42,8 +42,7 @@ public final class ApplicationLancherTest  {
     @Test
     public void testLaunch() throws Exception {
 
-        ScxmlApplicationLauncher launcher =
-                new ScxmlApplicationLauncher(application);
+        ScxmlApplicationLauncher launcher = new ScxmlApplicationLauncher();
 
         Map<String, Object> vars = new HashMap<String, Object>();
 
