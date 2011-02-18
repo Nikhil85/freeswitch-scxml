@@ -2,6 +2,7 @@ package org.freeswitch.adapter.module;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import org.freeswitch.adapter.SessionFactory;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -18,6 +19,7 @@ public class AdapterActivator implements BundleActivator , ManagedService  {
     @Override
     public void start(BundleContext context) throws Exception {
         context.registerService(ManagedService.class.getName(), this, getManagedServiceProperties());
+        context.registerService(SessionFactory.class.getName(), new SessionFactoryImpl(), null);
     }
 
     @Override
@@ -26,6 +28,7 @@ public class AdapterActivator implements BundleActivator , ManagedService  {
 
     @Override
     public void updated(Dictionary dctnr) throws ConfigurationException {
+        //TODO set the new recording path
     }
     
      protected Dictionary getManagedServiceProperties() {  
