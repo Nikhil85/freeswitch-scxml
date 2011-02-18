@@ -6,7 +6,6 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import org.freeswitch.adapter.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xsocket.connection.ConnectionUtils;
@@ -14,10 +13,8 @@ import org.xsocket.connection.IConnectHandler;
 import org.xsocket.connection.IDataHandler;
 import org.xsocket.connection.IDisconnectHandler;
 import org.xsocket.connection.INonBlockingConnection;
-import com.google.inject.Singleton;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.freeswitch.adapter.CommandExecutor;
@@ -28,7 +25,6 @@ import org.freeswitch.socket.ServerSessionListener;
  *
  * @author jocke
  */
-@Singleton
 public final class EventSocketHandler implements IDataHandler, IDisconnectHandler, IConnectHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventSocketHandler.class);

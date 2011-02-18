@@ -8,20 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.xsocket.connection.IDataHandler;
 import org.xsocket.connection.IServer;
 import org.xsocket.connection.Server;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.util.Date;
-import org.freeswitch.scxml.ThreadPoolManager;
 import org.freeswitch.socket.TcpServer;
-import org.ops4j.peaberry.activation.Start;
-import org.ops4j.peaberry.activation.Stop;
 
 /**
  *
  * @author Jocke, Kristofer
  */
-@Singleton
 public final class XsocketTcpServerImpl implements TcpServer {
 
     private static final Logger LOG =
@@ -61,7 +54,6 @@ public final class XsocketTcpServerImpl implements TcpServer {
     }
 
     @Override
-    @Start
     public void startServer() {
         LOG.info("Try to start Server ...");
         state = SERVERSTATE.START;
@@ -100,7 +92,6 @@ public final class XsocketTcpServerImpl implements TcpServer {
     
 
     @Override
-    @Stop
     public void stopServer() {
         LOG.info("Try to stop Server ...");
         state = SERVERSTATE.STOP;
