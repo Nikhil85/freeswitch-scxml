@@ -28,7 +28,6 @@ public final class XsocketTcpServerImpl implements TcpServer {
             LoggerFactory.getLogger(XsocketTcpServerImpl.class);
 
     private final IDataHandler iDataHandler;
-    private final ThreadPoolManager threadPoolManager;
 
     private IServer iServer;
     
@@ -47,12 +46,8 @@ public final class XsocketTcpServerImpl implements TcpServer {
      * @param poolManager Handles all Thread pools.
      * @param tcpPort     The port to listen on.
      */
-    @Inject
-    XsocketTcpServerImpl(
-            IDataHandler dataHandler,
-            ThreadPoolManager poolManager) {
+    public XsocketTcpServerImpl(IDataHandler dataHandler) {
         this.iDataHandler = dataHandler;
-        this.threadPoolManager = poolManager;
     }
 
     @Override
@@ -91,7 +86,7 @@ public final class XsocketTcpServerImpl implements TcpServer {
 
 
         if (iServer.getWorkerpool() == null) {
-            iServer.setWorkerpool(threadPoolManager.getWorkerPool());
+            //iServer.setWorkerpool(threadPoolManager.getWorkerPool());
         }
 
         try {
@@ -130,7 +125,7 @@ public final class XsocketTcpServerImpl implements TcpServer {
     public void reload() {
 
         state = SERVERSTATE.STOP;
-        threadPoolManager.shutdownAll();
+        //threadPoolManager.shutdownAll();
         stopServer();
 
         state = SERVERSTATE.START;

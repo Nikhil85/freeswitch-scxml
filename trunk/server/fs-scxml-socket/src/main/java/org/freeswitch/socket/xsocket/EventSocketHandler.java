@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import org.freeswitch.adapter.Session;
-import org.osgi.framework.ServiceReference;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xsocket.connection.ConnectionUtils;
@@ -16,8 +14,6 @@ import org.xsocket.connection.IConnectHandler;
 import org.xsocket.connection.IDataHandler;
 import org.xsocket.connection.IDisconnectHandler;
 import org.xsocket.connection.INonBlockingConnection;
-
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -25,10 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.freeswitch.adapter.CommandExecutor;
-import org.freeswitch.scxml.ApplicationLauncher;
-import org.freeswitch.scxml.ThreadPoolManager;
 import org.freeswitch.adapter.Event;
-import org.freeswitch.adapter.SessionFactory;
 import org.freeswitch.socket.ServerSessionListener;
 
 /**
@@ -46,10 +39,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
     private static final Pattern EVENT_PATTERN = Pattern.compile("Event-Name:\\s(.*)",
             Pattern.MULTILINE);
     private static final String UTF8 = "UTF-8";
-    private final ApplicationLauncher applicationLauncer;
-    private final ThreadPoolManager threadPoolManager;
-    private final SessionFactory factory;
-
+    
     /**
      *
      * Create a new XsocketSessionManager.
@@ -59,11 +49,8 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
      * @param recordingPath The path to save recordings.
      *
      */
-    @Inject
-    EventSocketHandler(ThreadPoolManager poolManager, ApplicationLauncher appLauncher, SessionFactory factory) {
-        this.threadPoolManager = poolManager;
-        this.applicationLauncer = appLauncher;
-        this.factory = factory;
+    public EventSocketHandler() {
+
     }
 
     /**
@@ -148,10 +135,10 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
                 channelVars.put(CommandExecutor.class.getName(), socketWriter);
 
                 LOG.debug("Will access pool manager 2");
-                channelVars.put(ScheduledExecutorService.class.getName(), threadPoolManager.getScheduler());
+                //channelVars.put(ScheduledExecutorService.class.getName(), threadPoolManager.getScheduler());
                 
                 LOG.debug("Will create session");
-                final Session fss = factory.create(channelVars);
+                //final Session fss = factory.create(channelVars);
                 LOG.debug("Session Ready");
                 // save reference to serverSessionListener
                 syncConnection.setAttachment(serverSession);
@@ -161,16 +148,16 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
                     @Override
                     public void run() {
                         try {
-                            applicationLauncer.launch(fss);
+                            //applicationLauncer.launch(fss);
                         } catch (Exception ex) {
                             LOG.error("Application Runnder Thread died \n", ex);
                         }
-                        fss.hangup();
+                        //fss.hangup();
                     }
                 };
 
                 LOG.info("launch applicationLauncher in new thread");
-                threadPoolManager.getWorkerPool().execute(appRunner);
+                //threadPoolManager.getWorkerPool().execute(appRunner);
                 }
 
         } catch (UnsupportedEncodingException ex) {
