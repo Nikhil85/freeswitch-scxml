@@ -59,8 +59,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.freeswitch.adapter.module</Export-Package>
-                        <Bundle-Activator>org.freeswitch.adapter.module.AdapterActivator</Bundle-Activator>
+                        <Bundle-Activator>org.freeswitch.adapter.osgi.AdapterActivator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
