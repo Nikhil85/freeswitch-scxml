@@ -1,6 +1,9 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.api;
 
 
+import org.freeswitch.adapter.api.DTMF;
+import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.EventName;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
