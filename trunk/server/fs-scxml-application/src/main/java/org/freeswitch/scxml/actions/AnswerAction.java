@@ -1,8 +1,8 @@
 package org.freeswitch.scxml.actions;
 
 
-import org.freeswitch.adapter.Event;
-import org.freeswitch.adapter.Session;
+import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
 /**

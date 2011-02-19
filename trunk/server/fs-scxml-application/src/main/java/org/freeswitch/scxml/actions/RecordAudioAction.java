@@ -4,9 +4,9 @@ package org.freeswitch.scxml.actions;
 import java.util.Map;
 
 import java.util.Set;
-import org.freeswitch.adapter.Session;
-import org.freeswitch.adapter.Event;
-import org.freeswitch.adapter.DTMF;
+import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
 /**

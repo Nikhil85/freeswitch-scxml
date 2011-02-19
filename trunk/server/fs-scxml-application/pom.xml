@@ -121,11 +121,22 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>org.freeswitch.scxml.application.api</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>org.freeswitch.scxml.adapter.api</artifactId>
+                    <groupId>org.freeswitch.scxml</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-lookup</artifactId>
             <version>RELEASE70-BETA</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.freeswitch.scxml.adapter.api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

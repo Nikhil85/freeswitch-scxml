@@ -7,6 +7,7 @@ package org.freeswitch.scxml.module;
 
 import org.apache.commons.scxml.model.CustomAction;
 import org.apache.commons.scxml.model.Var;
+import org.freeswitch.adapter.api.SessionFactory;
 import org.freeswitch.scxml.ApplicationLauncher;
 import org.freeswitch.scxml.ThreadPoolManager;
 import org.freeswitch.scxml.actions.AnswerAction;
@@ -29,6 +30,8 @@ import org.freeswitch.scxml.sender.Sender;
 import org.freeswitch.scxml.sender.SenderFactory;
 import org.freeswitch.scxml.sender.SenderFactoryImpl;
 import org.freeswitch.scxml.sender.SipReferSender;
+import org.openide.util.Lookup;
+import org.openide.util.Lookup.Item;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -43,6 +46,9 @@ public class ApplicationActivator implements BundleActivator {
     
     @Override
     public void start(BundleContext context) throws Exception {
+        SessionFactory lookup = Lookup.getDefault().lookup(SessionFactory.class);
+        System.out.println(lookup);
+        
         context.registerService(ApplicationLauncher.class.getName(), new ScxmlApplicationLauncher(), null);
         context.registerService(ThreadPoolManager.class.getName(), new ThreadPoolManagerImpl(), null);
         context.registerService(SenderFactory.class.getName(), new SenderFactoryImpl(), null); 
@@ -62,7 +68,6 @@ public class ApplicationActivator implements BundleActivator {
         context.registerService(CustomAction.class.getName(), new CustomAction(NAME_SPACE, "gentone", GenToneAction.class), null);
         context.registerService(CustomAction.class.getName(), new CustomAction(NAME_SPACE, "say", SayAction.class), null);
         context.registerService(CustomAction.class.getName(), new CustomAction(NAME_SPACE, "send", SendAction.class), null);
-       
     }
 
     @Override

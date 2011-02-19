@@ -11,7 +11,7 @@ import org.apache.commons.scxml.Context;
 import org.apache.commons.scxml.Evaluator;
 import org.apache.commons.scxml.SCInstance;
 import org.apache.commons.scxml.TriggerEvent;
-import org.freeswitch.adapter.Session;
+import org.freeswitch.adapter.api.Session;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

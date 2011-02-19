@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.scxml.model.ExternalContent;
 import org.w3c.dom.Text;
 
-import org.freeswitch.adapter.Session;
+import org.freeswitch.adapter.api.Session;
 
 /**
  * Handles the say element in the callxml 3.0 spec.
