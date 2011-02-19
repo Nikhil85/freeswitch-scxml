@@ -1,5 +1,10 @@
 package org.freeswitch.adapter;
 
+import org.freeswitch.adapter.api.DTMF;
+import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.CommandExecutor;
+import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.EventName;
 import java.io.IOException;
 
 import java.util.Map;
