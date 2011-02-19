@@ -1,4 +1,4 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.api;
 
 /**
  * http://wiki.freeswitch.org/wiki/Event_list

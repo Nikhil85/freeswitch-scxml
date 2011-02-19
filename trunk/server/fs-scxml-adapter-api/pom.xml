@@ -22,8 +22,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.freeswitch.adapter</Export-Package>
-                        <Private-Package>org.freeswitch.adapter.*</Private-Package>
+                        <Export-Package>org.freeswitch.adapter.api</Export-Package>
+                        <Private-Package>org.freeswitch.adapter.api.*</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

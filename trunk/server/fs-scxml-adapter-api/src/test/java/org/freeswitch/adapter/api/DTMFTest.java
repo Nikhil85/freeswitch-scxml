@@ -1,5 +1,6 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.api;
 
+import org.freeswitch.adapter.api.DTMF;
 import java.util.EnumSet;
 import java.util.Set;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.api;
 
 //import com.telmi.msc.freeswitch.FSEventName;
 import java.util.ArrayList;

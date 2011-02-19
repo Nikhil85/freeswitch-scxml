@@ -1,10 +1,7 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.api;
 
 import java.util.Map;
 import java.util.Set;
-import org.freeswitch.adapter.DTMF;
-import org.freeswitch.adapter.Event;
-
 
 /**
  *
