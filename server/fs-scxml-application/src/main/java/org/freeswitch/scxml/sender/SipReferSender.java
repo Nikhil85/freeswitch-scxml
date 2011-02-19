@@ -9,9 +9,9 @@ import org.apache.commons.scxml.model.ModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.freeswitch.adapter.Event;
-import org.freeswitch.adapter.EventName;
-import org.freeswitch.adapter.Session;
+import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.EventName;
+import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
 /**

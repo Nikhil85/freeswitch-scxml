@@ -14,9 +14,9 @@ import org.unitils.easymock.EasyMockUnitils;
 import org.unitils.easymock.annotation.Mock;
 
 import java.net.URL;
-import org.freeswitch.adapter.Event;
-import org.freeswitch.adapter.EventName;
-import org.freeswitch.adapter.Session;
+import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.EventName;
+import org.freeswitch.adapter.api.Session;
 import org.junit.Ignore;
 
 /**

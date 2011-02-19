@@ -1,7 +1,7 @@
 package org.freeswitch.scxml.actions;
 
 
-import org.freeswitch.adapter.Session;
+import org.freeswitch.adapter.api.Session;
 
 /**
  *

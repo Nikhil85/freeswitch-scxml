@@ -1,6 +1,6 @@
 package org.freeswitch.scxml.actions;
 
-import org.freeswitch.adapter.Session;
+import org.freeswitch.adapter.api.Session;
 
 /**
  * Handles the wait element in the callxml 3.0 spec.

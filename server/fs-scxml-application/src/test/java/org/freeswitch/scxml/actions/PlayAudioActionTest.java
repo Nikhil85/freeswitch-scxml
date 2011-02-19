@@ -3,9 +3,9 @@ package org.freeswitch.scxml.actions;
 
 
 import org.freeswitch.scxml.engine.CallXmlEvent;
-import org.freeswitch.adapter.Session;
-import org.freeswitch.adapter.Event;
-import org.freeswitch.adapter.DTMF;
+import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.DTMF;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import org.apache.commons.scxml.Evaluator;
 import org.apache.commons.scxml.SCInstance;
 import org.apache.commons.scxml.SCXMLExpressionException;
 import org.apache.commons.scxml.TriggerEvent;
-import org.freeswitch.adapter.EventName;
+import org.freeswitch.adapter.api.EventName;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

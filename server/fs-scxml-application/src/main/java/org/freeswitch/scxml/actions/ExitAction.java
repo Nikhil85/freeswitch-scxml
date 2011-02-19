@@ -2,7 +2,7 @@ package org.freeswitch.scxml.actions;
 
 import java.util.Map;
 
-import org.freeswitch.adapter.Session;
+import org.freeswitch.adapter.api.Session;
 
 
 /**
