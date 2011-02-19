@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import org.freeswitch.adapter.Session;
 import org.freeswitch.scxml.ApplicationLauncher;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -28,10 +29,8 @@ public final class ScxmlApplicationLauncher implements ApplicationLauncher {
      * Encoding to use.
      */
     public static final String UTF8 = "UTF-8";
-    private static final Logger LOG =
-            LoggerFactory.getLogger(ScxmlApplication.class);
-    private static final Pattern MAP_STRIP =
-            Pattern.compile("(\\{|}|\\s)");
+    private static final Logger LOG =  LoggerFactory.getLogger(ScxmlApplicationLauncher.class);
+    private static final Pattern MAP_STRIP = Pattern.compile("(\\{|}|\\s)");
 
     /**
      * Create a new ScxmlApplicationLauncher instance.
@@ -56,19 +55,21 @@ public final class ScxmlApplicationLauncher implements ApplicationLauncher {
 
             if (param == null) {
                 session.hangup();
-                LOG.info("No SCXML param in request! No way to"
-                        + " launch application");
+                LOG.info("No SCXML param in request! No way to" + " launch application");
                 return;
             }
 
             param = URLDecoder.decode(param, UTF8);
-
             String[] prop = param.split("=");
             URL url = new URL(prop[1]);
-
             vars.put(Session.class.getName(), session);
-             //TODO use lookup
-            //application.createAndStartMachine(url, vars);
+            
+            ScxmlApplication app = Lookup.getDefault().lookup(ScxmlApplication.class);
+            if(app != null) {
+                app.createAndStartMachine(url, vars);
+            } else {
+                LOG.warn("New scxml application was found unable to launch application");
+            }
 
         } catch (IllegalStateException iex) {
             LOG.error(iex.getMessage());

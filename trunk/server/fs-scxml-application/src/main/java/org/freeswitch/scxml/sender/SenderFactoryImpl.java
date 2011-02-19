@@ -1,11 +1,13 @@
 package org.freeswitch.scxml.sender;
 
+import java.util.Collection;
+import org.openide.util.Lookup;
+
 /**
  *
  * @author jocke
  */
 public final class SenderFactoryImpl implements SenderFactory {
-
 
     /**
      * Create a new sender factory with all senders.
@@ -18,14 +20,17 @@ public final class SenderFactoryImpl implements SenderFactory {
     @Override
     public Sender getSender(String targetType) {
 
-        Sender sender = null ;//CACHE.get(targetType); TODO use Lookup*/
+        Collection<? extends Sender> allSenders = Lookup.getDefault().lookupAll(Sender.class);
 
-        if (sender == null) {
-            return null;
-
-        } else {
-            return sender.newInstance();
-
+        for (Sender sender : allSenders) {
+            
+            if (sender.supports().equals(targetType)) {
+                return sender.newInstance();
+            }
+            
         }
+
+        return null;
+
     }
 }

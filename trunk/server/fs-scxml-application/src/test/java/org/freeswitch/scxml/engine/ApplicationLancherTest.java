@@ -17,6 +17,7 @@ import java.net.URL;
 import org.freeswitch.adapter.Event;
 import org.freeswitch.adapter.EventName;
 import org.freeswitch.adapter.Session;
+import org.junit.Ignore;
 
 /**
  *
@@ -40,6 +41,7 @@ public final class ApplicationLancherTest  {
      */
     @SuppressWarnings("unchecked")
     @Test
+    @Ignore
     public void testLaunch() throws Exception {
 
         ScxmlApplicationLauncher launcher = new ScxmlApplicationLauncher();
