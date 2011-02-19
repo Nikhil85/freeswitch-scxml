@@ -4,9 +4,9 @@ package org.freeswitch.socket.xsocket;
 import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.freeswitch.adapter.DTMF;
-import org.freeswitch.adapter.Event;
-import org.freeswitch.adapter.EventName;
+import org.freeswitch.adapter.api.DTMF;
+import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.EventName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

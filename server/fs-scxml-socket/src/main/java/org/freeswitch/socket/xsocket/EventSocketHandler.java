@@ -17,25 +17,27 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.freeswitch.adapter.CommandExecutor;
-import org.freeswitch.adapter.Event;
+import org.freeswitch.adapter.api.CommandExecutor;
+import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.SessionFactory;
+import org.freeswitch.scxml.ApplicationLauncher;
+import org.freeswitch.scxml.ThreadPoolManager;
 import org.freeswitch.socket.ServerSessionListener;
+import org.openide.util.Lookup;
 
 /**
  *
  * @author jocke
  */
 public final class EventSocketHandler implements IDataHandler, IDisconnectHandler, IConnectHandler {
-
-    private static final Logger LOG = LoggerFactory.getLogger(EventSocketHandler.class);
-    private static final Pattern CONTENT_LENGTH_PATTERN = Pattern.compile("Content-Length:\\s(\\d*)",
-            Pattern.MULTILINE);
-    private static final Pattern EVENT_IN_CONTENT_PATTERN = Pattern.compile(
-            "Content-Type: text/event-plain", Pattern.MULTILINE);
-    private static final Pattern EVENT_PATTERN = Pattern.compile("Event-Name:\\s(.*)",
-            Pattern.MULTILINE);
-    private static final String UTF8 = "UTF-8";
     
+    private static final Logger LOG = LoggerFactory.getLogger(EventSocketHandler.class);
+    private static final Pattern CONTENT_LENGTH_PATTERN = Pattern.compile("Content-Length:\\s(\\d*)", Pattern.MULTILINE);
+    private static final Pattern EVENT_IN_CONTENT_PATTERN = Pattern.compile("Content-Type: text/event-plain", Pattern.MULTILINE);
+    private static final Pattern EVENT_PATTERN = Pattern.compile("Event-Name:\\s(.*)", Pattern.MULTILINE);
+    private static final String UTF8 = "UTF-8";
+
     /**
      *
      * Create a new XsocketSessionManager.
@@ -46,7 +48,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
      *
      */
     public EventSocketHandler() {
-
+        
     }
 
     /**
@@ -70,20 +72,20 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
      */
     @Override
     public boolean onData(final INonBlockingConnection nonblockconnection) {
-
+        
         try {
             LOG.debug("onData:  connection[{}] {} bytes available", nonblockconnection,
                     nonblockconnection.available());
-
+            
             if (nonblockconnection.available() == -1) {
                 LOG.debug("no data available, Channel has reached End Of Stream");
                 return true;
             }
-
-
+            
+            
             String header = nonblockconnection.readStringByDelimiter("\n\n");
             LOG.trace("header ===============\n{}\n===========", header);
-
+            
             String content = null;
             Matcher matcher = CONTENT_LENGTH_PATTERN.matcher(header);
             if (matcher.find()) {
@@ -93,15 +95,15 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
                 content = nonblockconnection.readStringByLength(length, UTF8);
                 LOG.trace("content ==========\n{}=========", content);
             }
-
+            
             if (header.startsWith("Content-Type: command/reply")) {
                 return true;
             }
-
+            
             if (header.startsWith("Content-Type: text/disconnect-notice")) {
                 return true;
             }
-
+            
             String eventdata = null;
             if (EVENT_PATTERN.matcher(header).find()) {
                 eventdata = header;
@@ -111,7 +113,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
                 LOG.warn("Unknown socket data:\nheader=\n{}\ncontent=\n{}\n", header, content);
                 return false;
             }
-
+            
             ServerSessionListener session =
                     (ServerSessionListener) nonblockconnection.getAttachment();
             if (session != null) {
@@ -119,53 +121,58 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
                 session.onDataEvent(eventdata);
             } else {
                 LOG.debug("New Connection so prepare the call to launch");
-
+                
                 INonBlockingConnection syncConnection = ConnectionUtils.synchronizedConnection(nonblockconnection);
-
+                
                 XSocketSocketWriter socketWriter = new XSocketSocketWriter(syncConnection);
                 BlockingQueue<Event> eventQueue = new ArrayBlockingQueue<Event>(50);
                 final XsocketServerSession serverSession = new XsocketServerSession(eventQueue, socketWriter);
-
+                
                 Map<String, Object> channelVars = extractDataToMap(eventdata);
                 channelVars.put(BlockingQueue.class.getName(), eventQueue);
                 channelVars.put(CommandExecutor.class.getName(), socketWriter);
-
-                LOG.debug("Will access pool manager 2");
-                //channelVars.put(ScheduledExecutorService.class.getName(), threadPoolManager.getScheduler());
                 
-                LOG.debug("Will create session");
-                //final Session fss = factory.create(channelVars);
+                SessionFactory factory = Lookup.getDefault().lookup(SessionFactory.class);
+                
+                if (factory == null) {
+                    LOG.warn("No factory found in lookup ");
+                    return false;
+                }
+                
+                final Session fss = factory.create(channelVars);
                 LOG.debug("Session Ready");
                 // save reference to serverSessionListener
                 syncConnection.setAttachment(serverSession);
-
-                Runnable appRunner = new Runnable()  {
-
+                
+                Runnable appRunner = new Runnable()   {
+                    
                     @Override
                     public void run() {
                         try {
-                            //applicationLauncer.launch(fss);
+                            ApplicationLauncher applicationLauncher = Lookup.getDefault().lookup(ApplicationLauncher.class);
+                            applicationLauncher.launch(fss);
                         } catch (Exception ex) {
                             LOG.error("Application Runnder Thread died \n", ex);
                         }
-                        //fss.hangup();
+                        fss.hangup();
                     }
                 };
-
+                
                 LOG.info("launch applicationLauncher in new thread");
-                //threadPoolManager.getWorkerPool().execute(appRunner);
-                }
-
+                ThreadPoolManager manager = Lookup.getDefault().lookup(ThreadPoolManager.class);
+                manager.getWorkerPool().execute(appRunner);
+            }
+            
         } catch (UnsupportedEncodingException ex) {
             LOG.error(ex.getMessage());
-
+            
         } catch (IOException ex) {
             LOG.error(ex.getMessage());
         }
-
+        
         return true;
     }
-
+    
     @Override
     public boolean onConnect(INonBlockingConnection connection) {
         try {
@@ -178,14 +185,14 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         }
         return true;
     }
-
+    
     @Override
     public boolean onDisconnect(INonBlockingConnection connection) {
         try {
             LOG.debug("onDisconnect:  connection[{}] {} bytes available", connection,
                     connection.available());
             ServerSessionListener fss = (ServerSessionListener) connection.getAttachment();
-
+            
             if (fss == null) {
                 LOG.warn("A connection was set up, but no session was created.");
             } else {
@@ -197,10 +204,10 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         }
         return true;
     }
-
+    
     private Map<String, Object> extractDataToMap(final String data) {
         Map<String, Object> map = new HashMap<String, Object>();
-
+        
         String trimedData = data.replaceAll(":", "");
         Scanner scanner = new Scanner(trimedData);
         while (scanner.hasNext()) {

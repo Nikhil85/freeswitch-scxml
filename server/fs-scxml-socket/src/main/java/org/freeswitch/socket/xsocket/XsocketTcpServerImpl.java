@@ -9,7 +9,9 @@ import org.xsocket.connection.IDataHandler;
 import org.xsocket.connection.IServer;
 import org.xsocket.connection.Server;
 import java.util.Date;
+import org.freeswitch.scxml.ThreadPoolManager;
 import org.freeswitch.socket.TcpServer;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -17,17 +19,12 @@ import org.freeswitch.socket.TcpServer;
  */
 public final class XsocketTcpServerImpl implements TcpServer {
 
-    private static final Logger LOG =
-            LoggerFactory.getLogger(XsocketTcpServerImpl.class);
-
+    private static final Logger LOG = LoggerFactory.getLogger(XsocketTcpServerImpl.class);
     private final IDataHandler iDataHandler;
-
     private IServer iServer;
-    
     private int port = 9696;
     /** The internal state. **/
     private enum SERVERSTATE { START, STOP, SHUTDOWN };
-
     private SERVERSTATE state = SERVERSTATE.START;
 
 
@@ -78,7 +75,13 @@ public final class XsocketTcpServerImpl implements TcpServer {
 
 
         if (iServer.getWorkerpool() == null) {
-            //iServer.setWorkerpool(threadPoolManager.getWorkerPool());
+            ThreadPoolManager poolManager = Lookup.getDefault().lookup(ThreadPoolManager.class);
+            
+            if(poolManager != null) {
+              iServer.setWorkerpool(poolManager.getWorkerPool());   
+            } else {
+                LOG.warn("No thread pool manager found will use default");
+            }
         }
 
         try {
