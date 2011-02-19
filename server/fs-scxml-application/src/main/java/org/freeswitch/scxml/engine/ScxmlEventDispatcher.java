@@ -8,6 +8,7 @@ import org.apache.commons.scxml.EventDispatcher;
 import org.apache.commons.scxml.SCXMLExecutor;
 import org.freeswitch.scxml.sender.Sender;
 import org.freeswitch.scxml.sender.SenderFactory;
+import org.openide.util.Lookup;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +22,9 @@ import org.slf4j.LoggerFactory;
  */
 final class ScxmlEventDispatcher implements EventDispatcher {
 
-    private final SenderFactory factory;
     private final Context context;
     private SCXMLExecutor executor;
-    private static final Logger LOG =
-            LoggerFactory.getLogger(ScxmlEventDispatcher.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ScxmlEventDispatcher.class);
 
     /**
      * Create a new instance of ScxmlEventDispatcher.
@@ -33,8 +32,7 @@ final class ScxmlEventDispatcher implements EventDispatcher {
      * @param senderFactory Create senders.
      * @param ctx The context with variables.
      */
-    ScxmlEventDispatcher(SenderFactory senderFactory, Context ctx) {
-        this.factory = senderFactory;
+    public ScxmlEventDispatcher(Context ctx) {
         this.context = ctx;
     }
 
@@ -63,17 +61,22 @@ final class ScxmlEventDispatcher implements EventDispatcher {
             long delay,
             List externalNodes) {
 
-        Sender sender = factory.getSender(targetType);
+        SenderFactory factory = Lookup.getDefault().lookup(SenderFactory.class);
 
+        if(factory == null) {
+            LOG.warn("No sender factory found unable to send ");
+            return;
+        } 
+        
+        Sender sender = factory.getSender(targetType);
+       
         if (sender == null) {
             LOG.error("Target type '{}' is not supported ", targetType);
 
         } else {
-
             sender.setExecutor(executor);
             sender.setContext(context);
             sender.send(sendId, target, params);
-
         }
     }
 }

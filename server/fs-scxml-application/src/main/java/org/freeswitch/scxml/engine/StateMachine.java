@@ -10,7 +10,6 @@ import org.apache.commons.scxml.io.SCXMLParser;
 import org.apache.commons.scxml.model.CustomAction;
 import org.apache.commons.scxml.model.ModelException;
 import org.apache.commons.scxml.model.SCXML;
-import org.freeswitch.scxml.sender.SenderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.ErrorHandler;
@@ -23,10 +22,8 @@ import org.xml.sax.SAXException;
 public final class StateMachine {
 
     private SCXML machine;
-    private static final Logger LOG =
-            LoggerFactory.getLogger(StateMachine.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StateMachine.class);
     private final URL scxmlDocument;
-    private final SenderFactory factory;
 
     /**
      * The only way to create a new StateMacine.
@@ -35,11 +32,8 @@ public final class StateMachine {
      * @param actions       A list of custom actions.
      * @param senderFactory Creates senders.
      */
-    public StateMachine(final URL document,
-            List<CustomAction> actions, SenderFactory senderFactory) {
+    public StateMachine(final URL document, List<CustomAction> actions) {
         this.scxmlDocument = document;
-        this.factory = senderFactory;
-
         ErrorHandler errHandler = new SimpleErrorHandler();
 
         try {
@@ -65,26 +59,14 @@ public final class StateMachine {
      */
     public void newMachine(final Context rootCtx) {
 
-        ScxmlEventDispatcher dispatcher =
-                new ScxmlEventDispatcher(factory, rootCtx);
-
-        SCXMLExecutor engine = new SCXMLExecutor(
-                new JexlEvaluator(),
-                dispatcher,
-                new ErrorReporter());
-
+        ScxmlEventDispatcher dispatcher = new ScxmlEventDispatcher(rootCtx);
+        SCXMLExecutor engine = new SCXMLExecutor(new JexlEvaluator(),dispatcher, new ErrorReporter());
         dispatcher.setExecutor(engine);
-
         engine.setStateMachine(machine);
-
         engine.setSuperStep(true);
-
         Count counter = new Count();
-
         engine.setRootContext(rootCtx);
-
         rootCtx.set("count", counter);
-
         engine.addListener(machine, new ScxmlListenerImpl(counter));
 
         try {
@@ -115,7 +97,7 @@ public final class StateMachine {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append("machine working at: " + scxmlDocument.getPath() + "\n");
+        builder.append("machine working at: ").append(scxmlDocument.getPath()).append("\n");
 
         return builder.toString();
     }
