@@ -28,6 +28,8 @@ public enum EventName {
     CHANNEL_EXECUTE_COMPLETE,
     
     CHANNEL_CREATE,
+    
+    CHANNEL_EXECUTE,
     /**
      * CHANNEL_DESTROY.
      * Called when a channel should get destroyed.
