@@ -1,7 +1,8 @@
 package org.freeswitch.scxml.engine;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.apache.commons.scxml.Context;
 import org.apache.commons.scxml.SCXMLExecutor;
 import org.apache.commons.scxml.env.SimpleErrorHandler;
@@ -10,6 +11,7 @@ import org.apache.commons.scxml.io.SCXMLParser;
 import org.apache.commons.scxml.model.CustomAction;
 import org.apache.commons.scxml.model.ModelException;
 import org.apache.commons.scxml.model.SCXML;
+import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.ErrorHandler;
@@ -32,12 +34,12 @@ public final class StateMachine {
      * @param actions       A list of custom actions.
      * @param senderFactory Creates senders.
      */
-    public StateMachine(final URL document, List<CustomAction> actions) {
+    public StateMachine(final URL document) {
         this.scxmlDocument = document;
         ErrorHandler errHandler = new SimpleErrorHandler();
-
+        Collection<? extends CustomAction> actions = Lookup.getDefault().lookupAll(CustomAction.class);
         try {
-            machine = SCXMLParser.parse(document, errHandler, actions);
+            machine = SCXMLParser.parse(document, errHandler, new ArrayList<CustomAction>(actions));
         } catch (IOException ioe) {
             logError(ioe);
         } catch (SAXException sae) {

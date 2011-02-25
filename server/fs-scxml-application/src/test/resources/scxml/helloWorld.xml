@@ -1,14 +1,14 @@
 <scxml xmlns="http://www.w3.org/2005/07/scxml"
-       xmlns:ms="http://telmi.se/MS"
+       xmlns:fs="http://www.freeswitch.org/"
               version="1.0"
               initialstate="main">
 
     <state id="main" final="true" >
         
        <onentry>
-            <ms:answer/>
-            <ms:say>'Hello World'</ms:say>
-            <ms:getdigits var="mydigits" termdigits="#" />
+            <fs:answer/>
+            <fs:say>'Hello World'</fs:say>
+            <fs:getdigits var="mydigits" termdigits="#" />
         </onentry>
       
          <transition event="termdigit" target="exit" >
@@ -27,7 +27,7 @@
 
     <state id="exit" final="true">
          <onentry>
-            <ms:hangup/>
+            <fs:hangup/>
         </onentry>
   </state>
 </scxml>

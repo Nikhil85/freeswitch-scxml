@@ -1,12 +1,9 @@
 package org.freeswitch.scxml.engine;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.scxml.env.jexl.JexlContext;
-import org.apache.commons.scxml.model.CustomAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,29 +15,11 @@ public final class ScxmlApplicationImp implements ScxmlApplication {
 
     private static final String BASE = "base";
     private volatile boolean cache = false;
-    private  List<CustomAction> actions;
 
     private static final Logger LOG = LoggerFactory.getLogger(ScxmlApplicationImp.class);
     
     private static final ConcurrentHashMap<URL, StateMachine> CACHE =
             new ConcurrentHashMap<URL, StateMachine>();
-
-    /**
-     * Creates a new instance.
-     *
-     * @param useCache To use cache or not.
-     *
-     * @param senderFactory of senders.
-     *
-     * @param customActions All the actions handled by this application.
-     *
-     */
-    public ScxmlApplicationImp() {
-        this.actions = new ArrayList<CustomAction>(actions.size());
-        this.cache = Boolean.valueOf(cache);
-        this.actions.addAll(actions);
-
-    }
 
     @Override
     public void createAndStartMachine(URL url, Map<String, Object> map)  {
@@ -55,8 +34,8 @@ public final class ScxmlApplicationImp implements ScxmlApplication {
 
         } else {
             LOG.trace("No machine in cache with url {} ",  url.toString());
-
-            StateMachine machine = new StateMachine(url, actions);
+            StateMachine machine = new StateMachine(url);
+            
             if (cache) {
                 CACHE.put(url, machine);
                 LOG.debug("adding machine to cache");
@@ -65,26 +44,7 @@ public final class ScxmlApplicationImp implements ScxmlApplication {
         }
     }
 
-    /**
-     *
-     * Will return a string with all the custom actions bound
-     * to this class and the size of the cache.
-     *
-     * @return A string representation of this class.
-     */
-    @Override
-    public String toString() {
 
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("CustomActions \n");
-
-        for (CustomAction customAction : actions) {
-            builder.append(customAction.getLocalName()).append("\n");
-        }
-        builder.append("Cache size = ").append(CACHE.size()).append("\n");
-        return builder.toString();
-    }
 
     @Override
     public boolean isCache() {
