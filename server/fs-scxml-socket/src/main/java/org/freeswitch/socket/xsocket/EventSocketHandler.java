@@ -19,6 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.freeswitch.adapter.api.CommandExecutor;
 import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.EventName;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.adapter.api.SessionFactory;
 import org.freeswitch.scxml.ApplicationLauncher;
@@ -71,40 +72,33 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
      * @return true
      */
     @Override
-    public boolean onData(final INonBlockingConnection nonblockconnection) {
+    public boolean onData(final INonBlockingConnection connection) {
         
         try {
-            LOG.debug("onData:  connection[{}] {} bytes available", nonblockconnection,
-                    nonblockconnection.available());
             
-            if (nonblockconnection.available() == -1) {
+            if (connection.available() == -1) {
                 LOG.debug("no data available, Channel has reached End Of Stream");
                 return true;
             }
             
-            
-            String header = nonblockconnection.readStringByDelimiter("\n\n");
-            LOG.trace("header ===============\n{}\n===========", header);
+            String header = connection.readStringByDelimiter("\n\n");            
+            if (commandReply(header) || disconnectNotice(header)) {
+                return true;
+            }
             
             String content = null;
+            
             Matcher matcher = CONTENT_LENGTH_PATTERN.matcher(header);
-            if (matcher.find()) {
-                String tmp = matcher.group(1);
-                int length = Integer.parseInt(tmp);
+            if (matcher.find()) {    
+                int length = Integer.parseInt(matcher.group(1));
                 // !! Do not catch BufferUnderflowException !!
-                content = nonblockconnection.readStringByLength(length, UTF8);
+                content = connection.readStringByLength(length, UTF8);
                 LOG.trace("content ==========\n{}=========", content);
             }
             
-            if (header.startsWith("Content-Type: command/reply")) {
-                return true;
-            }
-            
-            if (header.startsWith("Content-Type: text/disconnect-notice")) {
-                return true;
-            }
             
             String eventdata = null;
+            
             if (EVENT_PATTERN.matcher(header).find()) {
                 eventdata = header;
             } else if (EVENT_IN_CONTENT_PATTERN.matcher(header).find()) {
@@ -114,15 +108,15 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
                 return false;
             }
             
-            ServerSessionListener session =
-                    (ServerSessionListener) nonblockconnection.getAttachment();
+            ServerSessionListener session = (ServerSessionListener) connection.getAttachment();
+            
             if (session != null) {
                 // old connection
                 session.onDataEvent(eventdata);
             } else {
                 LOG.debug("New Connection so prepare the call to launch");
                 
-                INonBlockingConnection syncConnection = ConnectionUtils.synchronizedConnection(nonblockconnection);
+                INonBlockingConnection syncConnection = ConnectionUtils.synchronizedConnection(connection);
                 
                 XSocketSocketWriter socketWriter = new XSocketSocketWriter(syncConnection);
                 BlockingQueue<Event> eventQueue = new ArrayBlockingQueue<Event>(50);
@@ -154,6 +148,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
                         } catch (Exception ex) {
                             LOG.error("Application Runnder Thread died \n", ex);
                         }
+                        
                         fss.hangup();
                     }
                 };
@@ -172,6 +167,14 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         
         return true;
     }
+
+    private boolean disconnectNotice(String header) {
+        return header.startsWith("Content-Type: text/disconnect-notice");
+    }
+
+    private boolean commandReply(String header) {
+        return header.startsWith("Content-Type: command/reply");
+    }
     
     @Override
     public boolean onConnect(INonBlockingConnection connection) {
@@ -179,6 +182,8 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
             LOG.debug("onConnect:  connection[{}] {} bytes available", connection, connection.available());
             connection.write("connect\n\n");
             connection.write("myevents\n\n");
+            connection.write("filter Event-Name " + EventName.CHANNEL_EXECUTE_COMPLETE + "\n\n");
+            connection.write("filter Event-Name " + EventName.DTMF + "\n\n");
         } catch (Exception ex) {
             LOG.error("Oops! onConnect error.", ex);
             return false;
@@ -189,8 +194,8 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
     @Override
     public boolean onDisconnect(INonBlockingConnection connection) {
         try {
-            LOG.debug("onDisconnect:  connection[{}] {} bytes available", connection,
-                    connection.available());
+            LOG.debug("onDisconnect:  connection[{}] {} bytes available", connection, connection.available());
+            
             ServerSessionListener fss = (ServerSessionListener) connection.getAttachment();
             
             if (fss == null) {
