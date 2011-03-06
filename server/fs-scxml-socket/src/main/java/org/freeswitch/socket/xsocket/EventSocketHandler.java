@@ -33,14 +33,15 @@ import org.openide.util.Lookup;
  */
 public final class EventSocketHandler implements IDataHandler, IDisconnectHandler, IConnectHandler {
 
-    public static final String LINE_BREAKS = "\n\n";
+    static final String LINE_BREAKS = "\n\n";
     static final String COMMAND_REPLY = "Content-Type: command/reply";
     static final String DISCONNECT_NOTICE = "Content-Type: text/disconnect-notice";
+    static final String UTF8 = "UTF-8";
+    
     private static final Logger LOG = LoggerFactory.getLogger(EventSocketHandler.class);
     private static final Pattern CONTENT_LENGTH_PATTERN = Pattern.compile("Content-Length:\\s(\\d*)", Pattern.MULTILINE);
     private static final Pattern EVENT_IN_CONTENT_PATTERN = Pattern.compile("Content-Type: text/event-plain", Pattern.MULTILINE);
     private static final Pattern EVENT_PATTERN = Pattern.compile("Event-Name:\\s(.*)", Pattern.MULTILINE);
-    private static final String UTF8 = "UTF-8";
 
     /**
      * This was taken from the FreeSwitch WIKI.
