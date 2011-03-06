@@ -6,7 +6,7 @@
            http://www.freeswitch.org http://freeswitch-scxml.googlecode.com/files/fs-core.xsd' initialstate="intro-main">
     <sc:state id="intro-main">
         <sc:onentry>
-            <fs:playaudio value="sp + 'vm-new_account.wav'" />
+            <fs:playaudio value="'vm-new_account.wav'" />
             <fs:wait value="3s" />            
             <sc:log expr="'Hello world'" />
         </sc:onentry>

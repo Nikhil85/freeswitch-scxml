@@ -3,9 +3,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import org.apache.commons.digester.Digester;
 import org.apache.commons.scxml.Context;
 import org.apache.commons.scxml.SCXMLExecutor;
 import org.apache.commons.scxml.env.SimpleErrorHandler;
+import org.apache.commons.scxml.env.URLResolver;
 import org.apache.commons.scxml.env.jexl.JexlEvaluator;
 import org.apache.commons.scxml.io.SCXMLParser;
 import org.apache.commons.scxml.model.CustomAction;
@@ -37,9 +39,13 @@ public final class StateMachine {
     public StateMachine(final URL document) {
         this.scxmlDocument = document;
         ErrorHandler errHandler = new SimpleErrorHandler();
-        Collection<? extends CustomAction> actions = Lookup.getDefault().lookupAll(CustomAction.class);
+        Collection<? extends CustomAction> actions = Lookup.getDefault().lookupAll(CustomAction.class); 
+        Digester digester = SCXMLParser.newInstance(null, new URLResolver(document), new ArrayList<CustomAction>(actions));
+        digester.setClassLoader(getClass().getClassLoader());
+        digester.setErrorHandler(errHandler);
         try {
-            machine = SCXMLParser.parse(document, errHandler, new ArrayList<CustomAction>(actions));
+            machine = (SCXML) digester.parse(document);
+            SCXMLParser.updateSCXML(machine);
         } catch (IOException ioe) {
             logError(ioe);
         } catch (SAXException sae) {
@@ -60,7 +66,6 @@ public final class StateMachine {
      * @param rootCtx variables to install.
      */
     public void newMachine(final Context rootCtx) {
-
         ScxmlEventDispatcher dispatcher = new ScxmlEventDispatcher(rootCtx);
         SCXMLExecutor engine = new SCXMLExecutor(new JexlEvaluator(),dispatcher, new ErrorReporter());
         dispatcher.setExecutor(engine);
@@ -70,7 +75,6 @@ public final class StateMachine {
         engine.setRootContext(rootCtx);
         rootCtx.set("count", counter);
         engine.addListener(machine, new ScxmlListenerImpl(counter));
-
         try {
             engine.go();
         } catch (ModelException me) {
@@ -96,11 +100,8 @@ public final class StateMachine {
      */
     @Override
     public String toString() {
-
         StringBuilder builder = new StringBuilder();
-
         builder.append("machine working at: ").append(scxmlDocument.getPath()).append("\n");
-
         return builder.toString();
     }
 }
