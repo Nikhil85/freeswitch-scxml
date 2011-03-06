@@ -4,6 +4,8 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -12,7 +14,8 @@ import org.osgi.framework.ServiceListener;
  * @author jocke
  */
 public final class OsgiLookup extends AbstractLookup implements ServiceListener {
-
+    
+    private static final Logger LOG =  LoggerFactory.getLogger(OsgiLookup.class);
     private static final InstanceContent CONTENT = new InstanceContent();
 
     public OsgiLookup() {
@@ -32,11 +35,11 @@ public final class OsgiLookup extends AbstractLookup implements ServiceListener 
         
         if (se.getType() == ServiceEvent.REGISTERED) {
             CONTENT.add(service);
-            System.out.println("Adding " + service.getClass());
+            LOG.debug("Adding " + service.getClass());
 
         } else if (se.getType() == ServiceEvent.UNREGISTERING) {
             CONTENT.remove(service);
-            System.out.println("Removing " + service.getClass());
+            LOG.debug("Removing " + service.getClass());
         }
     }
 }
