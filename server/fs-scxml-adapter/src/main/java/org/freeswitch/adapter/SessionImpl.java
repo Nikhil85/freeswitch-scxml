@@ -107,11 +107,8 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     @Override
     public Event answer() {
         LOG.trace("Session#{}: answer ...");
-
-
         if (notAnswered) {
             excecute(Command.answer());
-            //Collect events until CHANNEL EXECUTE COMPLETE or hangup
             Event evt = new Event.EventCatcher(eventQueue).startPolling().newEvent();
             this.notAnswered = false;
             return evt;
@@ -121,11 +118,9 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     }
 
     @Override
-    public Event say(
-            String moduleName, String sayType, String sayMethod, String value) {
+    public Event say(String moduleName, String sayType, String sayMethod, String value) {
 
         LOG.trace("Session#{}: say ...");
-
         excecute(Command.say(moduleName, sayType, sayMethod, value));
         Event evt = new Event.EventCatcher(eventQueue).startPolling().newEvent();
         return evt;
@@ -196,9 +191,7 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     @Override
     public Event getDigits(int maxdigits, Set<DTMF> terms, long timeout) {
         LOG.debug("Session#{}: getDigits ...");
-        ScheduledFuture<EventName> future =
-                scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
-
+        ScheduledFuture<EventName> future = scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
         Event evt = new Event.EventCatcher(eventQueue).maxDigits(maxdigits).termDigits(terms).startPolling().newEvent();
 
         if (!future.isDone()) {
