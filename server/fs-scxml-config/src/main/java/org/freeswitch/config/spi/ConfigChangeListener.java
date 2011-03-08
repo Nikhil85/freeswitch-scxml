@@ -1,9 +1,13 @@
 package org.freeswitch.config.spi;
 
+import java.util.Set;
+
 /**
  *
  * @author jocke
  */
 public interface ConfigChangeListener {
-    void configChange(String key, Object value);
+    Set<String> getKeys();
+    String getValue(String key);
+    void setValue(String key, String value);
 }
