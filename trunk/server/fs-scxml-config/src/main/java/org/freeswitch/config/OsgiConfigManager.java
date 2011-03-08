@@ -1,77 +1,82 @@
 package org.freeswitch.config;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.freeswitch.config.spi.ConfigChangeListener;
-import org.freeswitch.config.spi.ConfigManager;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author jocke
  */
-public class OsgiConfigManager implements ConfigManager, ManagedService {
+public class OsgiConfigManager implements ManagedService, LookupListener {
 
-    private static final Map<String, Object> PROPS = new HashMap<String, Object>();
-    private static final Map<String, List<ConfigChangeListener>> LISTENERS = new HashMap<String, List<ConfigChangeListener>>();
-
-    @Override
-    public String get(String key) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public boolean getBoolean(String key) {
-      return false;
-    }
-
-    @Override
-    public int getInt(String key) {
-       
-        if(PROPS.containsKey(key)) {
-           return Integer.valueOf((String)PROPS.get(key));
-       
-       } else {
-           return 0;
-       }
-        
-    }
-
-    @Override
-    public void addConfigChangeListener(String key, ConfigChangeListener changeListener) {
-        
-        if (LISTENERS.containsKey(key)) {
-            LISTENERS.get(key).add(changeListener);
-        
-        } else {
-            List<ConfigChangeListener> ls = new ArrayList<ConfigChangeListener>();
-            ls.add(changeListener);
-            LISTENERS.put(key, ls);
-        }
-    }
-    
-    private void fireConfigChange(String key, Object value) {
-        
-        List<ConfigChangeListener> ccls = LISTENERS.get(key);
-        
-        for (ConfigChangeListener listener : ccls) {
-            listener.configChange(key, value);
-        }
-    }
+    private Lookup.Result<ConfigChangeListener> result;
+    private static final Map<String, String> PROPS = new ConcurrentHashMap<String, String>();
+    private static final Logger LOG = LoggerFactory.getLogger(OsgiConfigManager.class);
 
     @Override
     public void updated(Dictionary dict) throws ConfigurationException {
 
-        Enumeration keys = dict.keys();
-
-        while (keys.hasMoreElements()) {
-            Object key = keys.nextElement();
+        if (result == null) {
+            result = Lookup.getDefault().lookupResult(ConfigChangeListener.class);
+            result.addLookupListener(this);
+            result.allInstances();
         }
 
+        if (dict == null) {
+            PROPS.clear();
+
+        } else {
+            Enumeration keys = dict.keys();
+            while (keys.hasMoreElements()) {
+                String key = (String) keys.nextElement();
+                String value = (String) dict.get(key);
+                PROPS.put(key, value);
+                LOG.info("will use Config entry --> Key={}, value={}", key, value);
+            }
+        }
+
+        update();
+    }
+
+    Dictionary<String, Object> getDict() {
+        Hashtable<String, Object> dict = new Hashtable<String, Object>();
+        dict.put(Constants.SERVICE_PID, "org.freeswitch.scxml");
+        return dict;
+    }
+
+    @Override
+    public void resultChanged(LookupEvent le) {
+        update();
+    }
+
+    private void update() {
+
+        Collection<? extends ConfigChangeListener> listeners = Lookup.getDefault().lookupAll(ConfigChangeListener.class);
+
+        for (ConfigChangeListener ls : listeners) {
+            Set<String> keys = ls.getKeys();
+            for (String key : keys) {
+                if (PROPS.containsKey(key) && !PROPS.get(key).equals(ls.getValue(key))) {
+                    
+                    synchronized (ls) {
+                        ls.setValue(key, PROPS.get(key));
+                    }
+                }
+            }
+        }
     }
 }
