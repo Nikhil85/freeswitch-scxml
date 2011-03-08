@@ -20,7 +20,9 @@
         <module>fs-scxml-application-api</module>
         <module>fs-scxml-adapter-api</module>
         <module>fs-scxml-lookup</module>
+        <module>fs-scxml-config</module>
     </modules>
+    
     <repositories>
         <repository>
             <id>netbeans</id>

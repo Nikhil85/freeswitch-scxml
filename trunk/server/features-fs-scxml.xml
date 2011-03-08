@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <features> 
-    <feature name="fs-scxml-feature" version="3.0">
-        <bundle start-level="60" >mvn:org.xsocket/xSocket/2.8</bundle>
+    <feature name="fs-scxml-feature">
+        <bundle start-level="60">mvn:org.xsocket/xSocket/2.8.14</bundle>
         <bundle start-level="60">mvn:org.apache.commons/com.springsource.org.apache.commons.collections/3.2.1</bundle>
         <bundle start-level="60">mvn:org.apache.commons/com.springsource.org.apache.commons.beanutils/1.8.0</bundle>
         <bundle start-level="60">mvn:org.apache.commons/com.springsource.org.apache.commons.digester/1.8.1</bundle>
