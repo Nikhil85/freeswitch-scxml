@@ -1,5 +1,6 @@
 package org.freeswitch.socket.xsocket.module;
 
+import org.freeswitch.config.spi.ConfigChangeListener;
 import org.freeswitch.socket.xsocket.EventSocketHandler;
 import org.freeswitch.socket.xsocket.XsocketTcpServerImpl;
 import org.osgi.framework.BundleActivator;
@@ -17,7 +18,8 @@ public class SocketActivator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         EventSocketHandler handler = new EventSocketHandler();
         serverImpl = new XsocketTcpServerImpl(handler);
-        serverImpl.startServer();  
+        serverImpl.startServer();
+        context.registerService(ConfigChangeListener.class.getName(), serverImpl, null);
     }
 
     @Override

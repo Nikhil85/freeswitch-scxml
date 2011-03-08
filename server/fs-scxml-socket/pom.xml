@@ -31,11 +31,6 @@
         </dependency>
         <dependency>
             <groupId>org.freeswitch.scxml</groupId>
-            <artifactId>org.freeswitch.scxml.socket.api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.freeswitch.scxml</groupId>
             <artifactId>org.freeswitch.scxml.adapter.api</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -48,6 +43,16 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-lookup</artifactId>
             <version>RELEASE70-BETA</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.freeswitch.scxml.socket.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>fs-scxml-config</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
