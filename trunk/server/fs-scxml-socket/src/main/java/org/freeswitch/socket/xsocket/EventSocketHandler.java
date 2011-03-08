@@ -15,6 +15,7 @@ import org.xsocket.connection.IDisconnectHandler;
 import org.xsocket.connection.INonBlockingConnection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.freeswitch.adapter.api.CommandExecutor;
@@ -108,9 +109,8 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
             LOG.warn("No factory found in lookup ");
             return;
         }
-
-        Map<String, Object> channelVars = createVars(evt, eventQueue, socketWriter);
-        final Session fss = factory.create(channelVars);
+        
+        final Session fss = factory.create(createVars(evt, eventQueue, socketWriter));
         runApplication(new ApplicationRunner(fss));
     }
 
@@ -118,6 +118,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         Map<String, Object> channelVars = extractDataToMap(evt);
         channelVars.put(BlockingQueue.class.getName(), eventQueue);
         channelVars.put(CommandExecutor.class.getName(), socketWriter);
+        channelVars.put(ScheduledExecutorService.class.getName(), Lookup.getDefault().lookup(ThreadPoolManager.class).getScheduler());
         return channelVars;
     }
 
@@ -138,9 +139,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         @Override
         public void run() {
             try {
-                ApplicationLauncher applicationLauncher = Lookup.getDefault().lookup(ApplicationLauncher.class);
-                applicationLauncher.launch(fss);
-
+                 Lookup.getDefault().lookup(ApplicationLauncher.class).launch(fss);
             } catch (Exception ex) {
                 LOG.error("Application Runnder Thread died \n", ex);
             }
@@ -153,6 +152,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
             throws IOException, NumberFormatException, BufferUnderflowException {
 
         String content = null;
+        
         Matcher matcher = CONTENT_LENGTH_PATTERN.matcher(header);
 
         if (matcher.find()) {

@@ -42,10 +42,7 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
      * @param eventMatcher
      *        The matcher to ask if the event should be published to the queue.
      */
-    public XsocketServerSession(
-            BlockingQueue<Event> eventQueue,
-            EventMatcher eventMatcher) {
-
+    public XsocketServerSession(BlockingQueue<Event> eventQueue, EventMatcher eventMatcher) {
         this.queue = eventQueue;
         this.eventMatcher = eventMatcher;
     }
@@ -77,17 +74,20 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
     public void onDataEvent(String data) {
         
         EventName fse = findEventName(data);
+        
         if (fse == null) {
             LOG.warn("Data does not have an event '{}' ", data);
             return;
+        
+        } else {
+            LOG.info("Process event " + fse);
         }
 
         Event receivedEvent = null;
 
         if (fse == EventName.DTMF) {
             // DTMF is only one character long. get it.
-            char dtmfChar =
-                    data.charAt(data.indexOf(DTMF_LINE) + DTMF_LINE_LENGTH);
+            char dtmfChar = data.charAt(data.indexOf(DTMF_LINE) + DTMF_LINE_LENGTH);
 
             //But '#' is encoded as '%23'
             if (dtmfChar == '%') {
@@ -97,10 +97,11 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
             receivedEvent = Event.getInstance(DTMF.valueOfChar(dtmfChar));
 
         } else {
-            // XXX vi hittar väl bara application om det är CHANNEL_EXECUTE_COMPLETE
             String application = findApplication(data);
+            
             if (eventMatcher.matches(application)) {
                 receivedEvent = Event.getInstance(fse);
+            
             } else {
                 LOG.warn("Got event from application '{}' not the current transaction", application);
             }
