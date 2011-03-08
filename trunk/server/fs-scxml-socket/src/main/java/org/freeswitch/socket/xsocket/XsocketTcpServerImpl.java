@@ -2,6 +2,7 @@ package org.freeswitch.socket.xsocket;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,8 @@ import org.xsocket.connection.IDataHandler;
 import org.xsocket.connection.IServer;
 import org.xsocket.connection.Server;
 import java.util.Date;
+import java.util.HashSet;
+import org.freeswitch.config.spi.ConfigChangeListener;
 import org.freeswitch.scxml.ThreadPoolManager;
 import org.freeswitch.socket.TcpServer;
 import org.openide.util.Lookup;
@@ -17,17 +20,37 @@ import org.openide.util.Lookup;
  *
  * @author Jocke, Kristofer
  */
-public final class XsocketTcpServerImpl implements TcpServer {
+public final class XsocketTcpServerImpl implements TcpServer, ConfigChangeListener {
+    
+    public static final String TCP_PORT = "tcp.port";
 
     private static final Logger LOG = LoggerFactory.getLogger(XsocketTcpServerImpl.class);
     private final IDataHandler iDataHandler;
     private IServer iServer;
     private int port = 9696;
-    /** The internal state. **/
-    private enum SERVERSTATE { START, STOP, SHUTDOWN };
-    private SERVERSTATE state = SERVERSTATE.START;
+    private static final Set<String> CONFIG_KEYS = new HashSet<String>(1);
+    
+    static {
+        CONFIG_KEYS.add(TCP_PORT);
+    }
 
+    @Override
+    public Set<String> getKeys() {
+        return CONFIG_KEYS;
+    }
 
+    @Override
+    public String getValue(String key) {
+        return Integer.toString(port);
+    }
+
+    @Override
+    public void setValue(String key, String value) {
+        stopServer();
+        this.port = Integer.valueOf(value);
+        startServer();
+    }
+    
     /**
      *
      * Create a new instance of XsocketTcpServerImpl.
@@ -40,20 +63,10 @@ public final class XsocketTcpServerImpl implements TcpServer {
         this.iDataHandler = dataHandler;
     }
 
-    @Override
-    public void setPort(int tcpPort) {
-        this.port = tcpPort;
-    }
-
-    @Override
-    public int getPort() {
-        return this.port;
-    }
 
     @Override
     public void startServer() {
         LOG.info("Try to start Server ...");
-        state = SERVERSTATE.START;
 
         if (iServer != null && iServer.isOpen()) {
             LOG.info("Server is already started");
@@ -97,7 +110,6 @@ public final class XsocketTcpServerImpl implements TcpServer {
     @Override
     public void stopServer() {
         LOG.info("Try to stop Server ...");
-        state = SERVERSTATE.STOP;
 
         if (iServer == null) {
             LOG.debug("Server is not initilized");
@@ -110,24 +122,11 @@ public final class XsocketTcpServerImpl implements TcpServer {
 
         try {
             iServer.close();
+            iServer = null;
+           
         } catch (Exception ex) {
             LOG.warn("Oops! {}", ex.getMessage());
         }
-    }
-
-    @Override
-    public void reload() {
-
-        state = SERVERSTATE.STOP;
-        //threadPoolManager.shutdownAll();
-        stopServer();
-
-        state = SERVERSTATE.START;
-    }
-
-    @Override
-    public String status() {
-      return this.state.name();
     }
 
 }
