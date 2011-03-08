@@ -65,7 +65,7 @@ public class OsgiConfigManager implements ManagedService, LookupListener {
 
     private void update() {
 
-        Collection<? extends ConfigChangeListener> listeners = Lookup.getDefault().lookupAll(ConfigChangeListener.class);
+        Collection<? extends ConfigChangeListener> listeners = getListeners();
 
         for (ConfigChangeListener ls : listeners) {
             Set<String> keys = ls.getKeys();
@@ -78,5 +78,9 @@ public class OsgiConfigManager implements ManagedService, LookupListener {
                 }
             }
         }
+    }
+
+    protected Collection<? extends ConfigChangeListener> getListeners() {
+        return Lookup.getDefault().lookupAll(ConfigChangeListener.class);
     }
 }
