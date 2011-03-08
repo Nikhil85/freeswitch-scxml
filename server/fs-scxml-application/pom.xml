@@ -138,6 +138,11 @@
             <artifactId>org.freeswitch.scxml.adapter.api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.freeswitch.scxml.config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
