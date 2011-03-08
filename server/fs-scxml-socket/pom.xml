@@ -51,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>fs-scxml-config</artifactId>
+            <artifactId>org.freeswitch.scxml.config</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
