@@ -6,9 +6,10 @@
            http://www.freeswitch.org http://freeswitch-scxml.googlecode.com/files/fs-core.xsd' initialstate="intro-main">
     <sc:state id="intro-main">
         <sc:onentry>
-            <fs:playaudio value="'vm-new_account.wav'" />
+            <fs:answer />
+            <fs:playaudio value="'audio/enter_extension_followed_by_pound.wav'" />
             <fs:wait value="3s" />            
-            <sc:log expr="'Hello world'" />
+            <fs:hangup />
         </sc:onentry>
     </sc:state>
 </sc:scxml>
