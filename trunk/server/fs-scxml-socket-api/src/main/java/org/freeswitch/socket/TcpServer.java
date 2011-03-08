@@ -7,19 +7,6 @@ package org.freeswitch.socket;
 public interface TcpServer {
 
     /**
-     * Set the port to listen on.
-     *
-     * @param port The port number.
-     */
-    void setPort(int port);
-
-    /**
-     *
-     * @return the current port.
-     */
-    int getPort();
-
-    /**
      * This will start TCP Server.
      *
      * <p>
@@ -42,15 +29,4 @@ public interface TcpServer {
      */
     void stopServer();
 
-
-    /**
-     * Reload the server.
-     */
-    void reload();
-
-    /**
-     *
-     * @return The current status of the server.
-     */
-    String status();
 }
