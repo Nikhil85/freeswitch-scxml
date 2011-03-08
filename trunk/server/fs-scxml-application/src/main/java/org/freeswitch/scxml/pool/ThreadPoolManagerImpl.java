@@ -1,26 +1,42 @@
 package org.freeswitch.scxml.pool;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import org.freeswitch.scxml.ThreadPoolManager;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.freeswitch.config.spi.ConfigChangeListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  *
  * @author jocke
  */
-public final class ThreadPoolManagerImpl implements ThreadPoolManager {
+public final class ThreadPoolManagerImpl implements ThreadPoolManager, ConfigChangeListener {
+    
+    private static final String SCHEDULER_CORE_POOL_SIZE = "scheduler.corePoolSize";
+    private static final String APP_POOL_N_THREADS = "appPool.nThreads";
+    private static final String WORK_POOL_N_THREADS = "workPool.nThreads";
+    
+    private static final Map<String, String> KEYS = new HashMap<String, String>(3);
 
     private static final Logger LOG = LoggerFactory.getLogger(ThreadPoolManagerImpl.class);
-    private final ScheduledExecutorService schedulerPool;
-    private final ExecutorService workerPool;
+    private final ScheduledThreadPoolExecutor schedulerPool;
+    private final ThreadPoolExecutor workerPool;
     private final ThreadPoolExecutor applicationPool;
+    
+    static {
+        KEYS.put(APP_POOL_N_THREADS, "");
+        KEYS.put(WORK_POOL_N_THREADS, "");
+        KEYS.put(SCHEDULER_CORE_POOL_SIZE, "");
+    }
 
     /**
      * Create a new instance of ThreadPoolManager.
@@ -29,18 +45,39 @@ public final class ThreadPoolManagerImpl implements ThreadPoolManager {
      * @param nThreads     The size of the pool to execute applications.
      *
      */
-    public ThreadPoolManagerImpl() {        
-        this.schedulerPool = Executors.newScheduledThreadPool(Integer.valueOf(200));
-        this.workerPool = Executors.newCachedThreadPool();
-        this.applicationPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(Integer.valueOf(200));
+    public ThreadPoolManagerImpl() {
+        this.schedulerPool = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(10);
+        this.workerPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        this.applicationPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
     }
 
     public int getNumberOfThreadsForApplicationPool() {
         return applicationPool.getCorePoolSize();
     }
 
-    public void start() {
-        LOG.info("Starting thread pools " );
+    @Override
+    public Set<String> getKeys() {
+        return KEYS.keySet();
+    }
+
+    @Override
+    public String getValue(String key) {
+        return KEYS.get(key);
+    }
+
+    @Override
+    public void setValue(String key, String value) {
+        KEYS.put(key, value);
+        
+        if(key.equals(APP_POOL_N_THREADS)) {
+           applicationPool.setCorePoolSize(Integer.valueOf(value));               
+        
+        } else if(key.equals(WORK_POOL_N_THREADS)) {
+           workerPool.setCorePoolSize(Integer.valueOf(value));
+        
+        } else if(key.equals(SCHEDULER_CORE_POOL_SIZE)) {
+           schedulerPool.setCorePoolSize(Integer.valueOf(value));
+        }
     }
 
     /**
