@@ -48,6 +48,28 @@ org.ops4j.pax.url.mvn.repositories= \
     http://repository.springsource.com/maven/bundles/external
 }}}
 
+Create file with content. <br />
+$FS_HOME/conf/dialplan/public/888_hello_world.xml
+{{{
+<include>
+  <extension name="public_scxml">
+    <condition field="destination_number" expression="^(888)$">
+       <action application="socket" data="127.0.0.1:9696 async full"/>
+    </condition>
+  </extension>
+</include>
+}}}
+
+== Start application ==
+Launch apache karf.
+{{{
+$KARAF_HOME/bin/karaf
+}}}
+
+Add features url.
+{{{
+karaf@root> features:addurl https://freeswitch-scxml.googlecode.com/svn/trunk/server/features-fs-scxml.xml
+}}}
 
 
 
