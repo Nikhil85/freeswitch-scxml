@@ -66,10 +66,14 @@ Launch apache karf.
 $KARAF_HOME/bin/karaf
 }}}
 
-Add features url.
+Add feature url.
 {{{
 karaf@root> features:addurl https://freeswitch-scxml.googlecode.com/svn/trunk/server/features-fs-scxml.xml
 }}}
+Start feature
+{{{
+karaf@root> features:install fs-scxml-feature
+}}} 
 
 
 
