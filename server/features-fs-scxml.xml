@@ -3,7 +3,7 @@
    xmlns:f='http://karaf.apache.org/xmlns/features/v1.0.0'
    xsi:schemaLocation='http://karaf.apache.org/xmlns/features/v1.0.0 http://karaf.apache.org/xmlns/features/v1.0.0'>
 
-    <f:feature name="fs-scxml-feature-dep" >
+    <f:feature name="fs-scxml-feature" >
         <f:bundle start-level="60">mvn:org.xsocket/xSocket/2.8.14</f:bundle>
         <f:bundle start-level="60">mvn:org.apache.commons/com.springsource.org.apache.commons.collections/3.2.1</f:bundle>
         <f:bundle start-level="60">mvn:org.apache.commons/com.springsource.org.apache.commons.beanutils/1.8.0</f:bundle>
@@ -16,10 +16,6 @@
         <f:bundle start-level="60">http://freeswitch-scxml.googlecode.com/files/commons-scxml-0.9.jar</f:bundle>
         <f:bundle start-level="60">http://freeswitch-scxml.googlecode.com/files/org-openide-util-lookup.jar</f:bundle>
         <f:bundle start-level="70">mvn:org.freeswitch.scxml/org.freeswitch.scxml.lookup/1.0-SNAPSHOT</f:bundle> 
-    </f:feature>
-
-    <f:feature name="fs-scxml-feature">
-        <f:feature>fs-scxml-feature-dep</f:feature>
         <f:bundle start-level="70">mvn:org.freeswitch.scxml/org.freeswitch.scxml.adapter/1.0-SNAPSHOT</f:bundle> 
         <f:bundle start-level="70">mvn:org.freeswitch.scxml/org.freeswitch.scxml.adapter.api/1.0-SNAPSHOT</f:bundle> 
         <f:bundle start-level="70">mvn:org.freeswitch.scxml/org.freeswitch.scxml.application/1.0-SNAPSHOT</f:bundle> 
