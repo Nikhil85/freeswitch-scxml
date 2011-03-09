@@ -6,11 +6,50 @@ This guide will help you get started with FreeSwitch SCXML.
 == Prerequisite ==
 
 === FreeSwitch ===
-Download and install FreeSwitch <br />
+Download and install FreeSwitch. <br />
 http://wiki.freeswitch.org/wiki/Installation_Guide <br />
 
 === Apache Karaf ===
-Download and install apache karaf <br />
+Download and install apache karaf. <br />
 http://karaf.apache.org/manual/2.1.99-SNAPSHOT/users-guide/installation.html <br />
 
 == Configuration ==
+
+=== Apache Karaf ===
+Create file with content. <br />
+$KARAF_HOME/etc/org.freeswitch.scxml.cfg <br />
+{{{
+#Pools
+scheduler.corePoolSize = 20
+appPool.nThreads = 100
+workPool.nThreads = 100
+
+#paths
+recording.path = /tmp
+
+#Reparse the machines or not
+scxml.use.cache = false
+
+#port
+tcp.port = 9696
+}}}
+
+Add repo url.<br />
+$KARAF_HOME/etc/org.ops4j.pax.url.mvn.cfg 
+
+{{{
+org.ops4j.pax.url.mvn.repositories= \
+    http://repo1.maven.org/maven2, \
+    https://freeswitch-scxml.googlecode.com/svn/repo/, \
+    http://repository.apache.org/content/groups/snapshots-group@snapshots@noreleases, \
+    http://repository.ops4j.org/maven2, \
+    http://svn.apache.org/repos/asf/servicemix/m2-repo, \
+    http://repository.springsource.com/maven/bundles/release, \
+    http://repository.springsource.com/maven/bundles/external
+}}}
+
+
+
+
+
+ 
