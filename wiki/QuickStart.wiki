@@ -3,7 +3,14 @@
 = Install =
 This guide will help you get started with FreeSwitch SCXML. 
 
-= Prerequisite =
-Download and install FreeSwitch <br />
-http://wiki.freeswitch.org/wiki/Installation_Guide 
+== Prerequisite ==
 
+=== FreeSwitch ===
+Download and install FreeSwitch <br />
+http://wiki.freeswitch.org/wiki/Installation_Guide <br />
+
+=== Apache Karaf ===
+Download and install apache karaf <br />
+http://karaf.apache.org/manual/2.1.99-SNAPSHOT/users-guide/installation.html <br />
+
+== Configuration ==
