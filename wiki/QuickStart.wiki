@@ -73,7 +73,35 @@ karaf@root> features:addurl https://freeswitch-scxml.googlecode.com/svn/trunk/se
 Start feature
 {{{
 karaf@root> features:install fs-scxml-feature
-}}} 
+}}}
+List and make sure that all bundles are activated 
+{{{
+karaf@root> list
+}}}
+
+Start FreeSwitch
+
+== Run Hello World ==
+Create file with content 
+
+{{{
+<sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+           xmlns:sc='http://www.w3.org/2005/07/scxml'
+           xmlns:fs='http://www.freeswitch.org'
+           xsi:schemaLocation='
+           http://www.w3.org/2005/07/scxml  http://freeswitch-scxml.googlecode.com/files/scxml.xsd
+           http://www.freeswitch.org http://freeswitch-scxml.googlecode.com/files/fs-core.xsd' initialstate="intro-main">
+    <sc:state id="intro-main">
+        <sc:onentry>
+            <fs:answer />
+            <fs:say>'Hello world'</fs:say>
+            <fs:wait value="3s" />            
+            <fs:hangup />
+        </sc:onentry>
+    </sc:state>
+</sc:scxml>
+}}}
+
 
 
 
