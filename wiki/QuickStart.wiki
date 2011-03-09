@@ -107,7 +107,7 @@ HelloWorld.xml
 }}}
 
 Dial the following sip number. <br />
-sip:888@__IP__or__Domain:5080;scxml=file:/path/to/HelloWorld.xml
+sip:888@Your--ip--here:5080;scxml=file:/path/to/HelloWorld.xml
 
 
 
