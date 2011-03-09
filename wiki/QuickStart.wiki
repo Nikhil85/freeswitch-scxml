@@ -1,0 +1,9 @@
+#summary Quick start.
+
+= Install =
+This guide will help you get started with FreeSwitch SCXML. 
+
+= Prerequisite =
+Download and install FreeSwitch <br />
+http://wiki.freeswitch.org/wiki/Installation_Guide 
+
