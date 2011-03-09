@@ -6,7 +6,7 @@ This guide will help you get started with FreeSwitch SCXML.
 == Prerequisite ==
 
 === FreeSwitch ===
-Download and install FreeSwitch. <br />
+Download and install FreeSwitch. Make sure that you Install the flite module<br />
 http://wiki.freeswitch.org/wiki/Installation_Guide <br />
 
 === Apache Karaf ===
@@ -54,6 +54,8 @@ $FS_HOME/conf/dialplan/public/888_hello_world.xml
 <include>
   <extension name="public_scxml">
     <condition field="destination_number" expression="^(888)$">
+        <action application="set" data="tts_engine=flite"/>
+        <action application="set" data="tts_voice=kal"/>
        <action application="socket" data="127.0.0.1:9696 async full"/>
     </condition>
   </extension>
@@ -82,7 +84,9 @@ karaf@root> list
 Start FreeSwitch
 
 == Run Hello World ==
-Create file with content 
+Create file with content <br />
+
+HelloWorld.xml
 
 {{{
 <sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
@@ -101,6 +105,11 @@ Create file with content
     </sc:state>
 </sc:scxml>
 }}}
+
+Dial the following sip number. <br />
+sip:888@__IP__or__Domain:5080;scxml=file:/path/to/HelloWorld.xml
+
+
 
 
 
