@@ -7,7 +7,7 @@
     <sc:state id="intro-main">
         <sc:onentry>
             <fs:answer />
-            <fs:playaudio value="'audio/enter_extension_followed_by_pound.wav'" />
+            <fs:say>'Hello world'</fs:say>
             <fs:wait value="3s" />            
             <fs:hangup />
         </sc:onentry>
