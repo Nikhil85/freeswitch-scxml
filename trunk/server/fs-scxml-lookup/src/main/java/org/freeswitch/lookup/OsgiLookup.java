@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * NOTE Not thread safe yet
- * 
  * @author jocke
  */
 public final class OsgiLookup extends AbstractLookup implements ServiceListener {
