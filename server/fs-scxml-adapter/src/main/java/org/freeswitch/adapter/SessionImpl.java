@@ -1,10 +1,10 @@
 package org.freeswitch.adapter;
 
+import java.util.Iterator;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.CommandExecutor;
 import org.freeswitch.adapter.api.Session;
-import org.freeswitch.adapter.api.EventName;
 import java.io.IOException;
 
 import java.util.Map;
@@ -14,6 +14,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.EventList.EventListBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,40 +24,20 @@ import org.slf4j.LoggerFactory;
  * @author jocke
  *
  */
-public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
-    
+public final class SessionImpl implements Session, Callable<Event> { //NOPMD
+
     public static final String REC_PATH = "REC_PATH";
-    //
-    // Class variables
-    //
     private static final Logger LOG = LoggerFactory.getLogger(SessionImpl.class);
     private static final String EVENT_MAP_EQUALS = "sip_bye_h_X-EventMap=";
-    //
-    // final instance fields
-    //
     private final Map<String, Object> sessionData;
     private final BlockingQueue<Event> eventQueue;
     private final ScheduledExecutorService scheduler;
-    private final String recPath;
     private final String sessionid;
-    //
-    // instance fields
-    //
     private boolean notAnswered = true;
     private volatile boolean alive = true;
     private final CommandExecutor executor;
 
-    /**
-     * Create a new instance of IvrSession.
-     *
-     * @param data           Variables.
-     * @param con            Connection to write to.
-     * @param eventScheduler Scheduler for events.
-     * @param recordingPath  Where to save recordings.
-     * @param blockingQueue  Queue with events.
-     *
-     */
-    public SessionImpl(
+    SessionImpl(
             final Map<String, Object> data,
             final CommandExecutor executor,
             final ScheduledExecutorService eventScheduler,
@@ -64,7 +46,6 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
 
         this.sessionData = data;
         this.scheduler = eventScheduler;
-        this.recPath = recordingPath;
         this.eventQueue = blockingQueue;
         this.executor = executor;
         this.sessionid = getUuid();
@@ -73,18 +54,11 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     public SessionImpl(Map<String, Object> map) {
         this.sessionData = map;
         this.scheduler = (ScheduledExecutorService) map.get(ScheduledExecutorService.class.getName());
-        this.recPath = (String) map.get(REC_PATH);
         this.eventQueue = (BlockingQueue<Event>) map.get(BlockingQueue.class.getName());
         this.executor = (CommandExecutor) map.get(CommandExecutor.class.getName());
         this.sessionid = getUuid();
     }
 
-    /**
-     * Get the event queue in tests.
-     *
-     *
-     * @return The event queue.
-     */
     public BlockingQueue<Event> getEventQueue() {
         return eventQueue;
     }
@@ -105,94 +79,71 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     }
 
     @Override
-    public Event answer() {
+    public EventList answer() {
         LOG.trace("Session#{}: answer ...");
+
         if (notAnswered) {
             excecute(Command.answer());
-            Event evt = new Event.EventCatcher(eventQueue).startPolling().newEvent();
+            EventList evt = new EventListBuilder(eventQueue).startPolling().build();
             this.notAnswered = false;
             return evt;
+
         } else {
-            return Event.getInstance(EventName.CHANNEL_EXECUTE_COMPLETE);
+            return EventList.single(Event.CHANNEL_EXECUTE_COMPLETE);
         }
     }
 
     @Override
-    public Event say(String moduleName, String sayType, String sayMethod, String value) {
-
+    public EventList say(String moduleName, String sayType, String sayMethod, String value) {
         LOG.trace("Session#{}: say ...");
         excecute(Command.say(moduleName, sayType, sayMethod, value));
-        Event evt = new Event.EventCatcher(eventQueue).startPolling().newEvent();
+        EventList evt = new EventListBuilder(eventQueue).startPolling().build();
         return evt;
     }
 
     @Override
-    public Event beep() {
-        Event.EventCatcher eventcatcher = new Event.EventCatcher(eventQueue);
+    public EventList beep() {
+        EventList.EventListBuilder evtBuilder = new EventList.EventListBuilder(eventQueue);
         excecute(Command.playback("tone_stream://%(500, 0, 800)", true));
-        eventcatcher.startPolling().reset();
-
+        evtBuilder.startPolling().reset();
         excecute(Command.playback("silence_stream://10", true));
-        eventcatcher.startPolling().reset();
-
-        return eventcatcher.newEvent();
+        evtBuilder.startPolling().reset();
+        return evtBuilder.build();
     }
 
     @Override
-    public Event recordFile(
-            final int timeLimitInMillis,
-            final boolean beep,
-            Set<DTMF> terms,
-            String format) {
-
+    public EventList recordFile(final int timeLimitInMillis, final boolean beep, Set<DTMF> terms, String format) {
         LOG.trace("Session#{}: Try to recordFile");
-
-        Event.EventCatcher eventcatcher = new Event.EventCatcher(eventQueue).termDigits(terms);
+        EventListBuilder builder = new EventListBuilder(eventQueue).termDigits(terms);
 
         if (beep) {
-            excecute(Command.playback("tone_stream://%(500, 0, 800)", true));
-            eventcatcher.startPolling().reset();
-
-            excecute(Command.playback("silence_stream://10", true));
-            eventcatcher.startPolling().reset();
+            beep();
         }
 
-        String dstFileName = getRecPath(format);
-        excecute(Command.record(dstFileName, timeLimitInMillis, null, null, false));
+        excecute(Command.record(getRecPath(format), timeLimitInMillis, null, null, false));
 
-        long now = System.nanoTime();
-        eventcatcher.startPolling();
-        long after = System.nanoTime();
+        builder.startPolling();
 
-        if (eventcatcher.endsWithDtmf(terms)) {
-            //Action was stopped because of termdigit.
-            eventcatcher.reset();
-            breakAction(eventcatcher);
+        if (builder.endsWithDtmf(terms)) {
+            builder.reset();
+            breakAction(builder);
         }
 
-        Long duration = TimeUnit.MILLISECONDS.convert(after - now, TimeUnit.NANOSECONDS);
-        sessionData.put("duration", duration);
-        sessionData.put("last_rec", dstFileName);
-        return eventcatcher.newEvent();
+        return builder.build();
     }
 
     @Override
-    public Event speak(String text) {
-
+    public EventList speak(String text) {
         LOG.debug("Session#{}: speak ...");
-
         excecute(Command.speak(text, false));
-
-        Event evt = new Event.EventCatcher(eventQueue).startPolling().newEvent();
-
-        return evt;
+        return new EventList.EventListBuilder(eventQueue).startPolling().build();
     }
 
     @Override
-    public Event getDigits(int maxdigits, Set<DTMF> terms, long timeout) {
+    public EventList getDigits(int maxdigits, Set<DTMF> terms, long timeout) {
         LOG.debug("Session#{}: getDigits ...");
-        ScheduledFuture<EventName> future = scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
-        Event evt = new Event.EventCatcher(eventQueue).maxDigits(maxdigits).termDigits(terms).startPolling().newEvent();
+        ScheduledFuture<Event> future = scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
+        EventList evt = new EventList.EventListBuilder(eventQueue).maxDigits(maxdigits).termDigits(terms).startPolling().build();
 
         if (!future.isDone()) {
             future.cancel(true);
@@ -202,64 +153,53 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     }
 
     @Override
-    public Event read(
-            int maxDigits,
-            String prompt,
-            long timeout,
-            Set<DTMF> terms) {
-
+    public EventList read(int maxDigits, String prompt, long timeout, Set<DTMF> terms) {
         LOG.info("Session#{}: read ...  timeout -->{}", timeout);
 
         excecute(Command.playback(prompt, false));
-//        writeData(String.format(Command.PLAY, prompt));
-        Event.EventCatcher builder =
-                new Event.EventCatcher(eventQueue).maxDigits(maxDigits).termDigits(terms).startPolling();
+        EventListBuilder builder = new EventListBuilder(eventQueue).maxDigits(maxDigits).termDigits(terms).startPolling();
 
-        if (builder.contains(EventName.CHANNEL_EXECUTE_COMPLETE)) {
+        if (builder.contains(Event.CHANNEL_EXECUTE_COMPLETE)) {
             LOG.trace("the prompt playing was stopped, start timer", sessionid);
-            ScheduledFuture<EventName> future =
-                    scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
-
+            ScheduledFuture<Event> future = scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
             builder.reset().startPolling();
+            
             if (!future.isDone()) {
                 future.cancel(false);
             }
 
-        } else if (!builder.contains(EventName.CHANNEL_HANGUP)) {
+        } else if (!builder.contains(Event.CHANNEL_HANGUP)) {
             LOG.trace("the prompt is still playing, cancel it", sessionid);
             breakAction(builder.reset());
         }
 
-        return builder.newEvent();
+        return builder.build();
     }
 
     @Override
-    public Event streamFile(String file) {
+    public EventList streamFile(String file) {
         LOG.debug("Session#{}: StreamFile: {}", sessionid, file);
-
         excecute(Command.playback(file, false));
-
-        return new Event.EventCatcher(eventQueue).startPolling().newEvent();
+        return new EventList.EventListBuilder(eventQueue).startPolling().build();
     }
 
     @Override
-    public Event streamFile(String file, Set<DTMF> terms) {
+    public EventList streamFile(String file, Set<DTMF> terms) {
         LOG.debug("Session#{}: StreamFile: {}, with termination options", sessionid, file);
-
         excecute(Command.playback(file, false));
-
-        Event.EventCatcher builder = new Event.EventCatcher(eventQueue).termDigits(terms).startPolling();
+        EventList.EventListBuilder builder = new EventList.EventListBuilder(eventQueue).termDigits(terms).startPolling();
 
         if (builder.endsWithDtmf(terms)) {
             breakAction(builder.reset());
         }
-        return builder.newEvent();
+
+        return builder.build();
     }
 
     @Override
     public void sleep(long milliseconds) {
+        LOG.debug("Session#{}: Channel Silence for '{}' millis.", sessionid, milliseconds);
         try {
-            LOG.debug("Session#{}: Channel Silence for '{}' millis.", sessionid, milliseconds);
             Thread.sleep(milliseconds);
         } catch (InterruptedException ex) {
             LOG.warn("Session#{}: Thread interupted while sleeping, {}", sessionid, ex.getMessage());
@@ -267,115 +207,91 @@ public final class SessionImpl implements Session, Callable<EventName> { //NOPMD
     }
 
     @Override
-    public Event hangup(Map<String, Object> nameList) {
+    public EventList hangup(Map<String, Object> nameList) {
         LOG.debug("Session#{}: hang up ...", sessionid);
-
         excecute(Command.set(EVENT_MAP_EQUALS + nameList.toString()));
-        Event.EventCatcher builder = new Event.EventCatcher(eventQueue).startPolling();
+        EventListBuilder builder = new EventListBuilder(eventQueue).startPolling();
         builder.reset();
-
         excecute(Command.hangup(null));
-        return builder.startPolling().newEvent();
+        return builder.startPolling().build();
     }
 
     @Override
-    public Event hangup() {
+    public EventList hangup() {
         LOG.trace("Session#{}: hangup ...", sessionid);
 
         if (alive) {
-            //Only call hangup once.
             alive = false;
             excecute(Command.hangup(null));
-            Event evt = new Event.EventCatcher(eventQueue).startPolling().newEvent();
-            return evt;
+            return new EventListBuilder(eventQueue).startPolling().build();
+
         } else {
-            return Event.getInstance(EventName.CHANNEL_EXECUTE_COMPLETE);
+            return EventList.single(Event.CHANNEL_EXECUTE_COMPLETE);
         }
     }
 
     @Override
-    public Event deflect(String target) {
+    public EventList deflect(String target) {
         LOG.trace("Session#{}: deflect ...", sessionid);
         excecute(Command.refer(target));
-        return new Event.EventCatcher(eventQueue).startPolling().newEvent();
+        return new EventListBuilder(eventQueue).startPolling().build();
     }
 
     @Override
     public boolean clearDigits() {
+
         boolean removed = false;
-        if (!eventQueue.isEmpty()) {
-            for (Event ivrEvent : eventQueue) {
-                if (!ivrEvent.contains(EventName.CHANNEL_HANGUP)) {
-                    eventQueue.remove(ivrEvent);
-                    removed = true;
-                }
+        Iterator<Event> it = eventQueue.iterator();
+
+        while (it.hasNext()) {
+            if (it.next().getEventName().equals(Event.DTMF)) {
+                it.remove();
             }
         }
+
         return removed;
     }
 
-    /**
-     * In break we need to consume the the CHANNEL_EXECUTE_COMPLETE
-     * event for break and the action we are breaking.
-     *
-     * @param builder The builder to use.
-     *
-     * @return The events from the break action.
-     */
-    private Event.EventCatcher breakAction(Event.EventCatcher builder) {
+    private EventListBuilder breakAction(EventListBuilder builder) {
         LOG.debug("Session#{}: breakAction ...", sessionid);
-
         excecute(Command.breakcommand());
         sleep(1000L);
         return builder.startPolling().reset().startPolling().reset();
     }
 
     @Override
-    public EventName call() {
-        LOG.trace("Session#{}: call ...", sessionid);
-        eventQueue.add(Event.getInstance(EventName.TIMEOUT));
-
+    public Event call() {
         LOG.debug("Session#{}: Call Action timed out ???", sessionid);
-        return EventName.TIMEOUT;
+        final Event event = new Event(Event.TIMEOUT);
+        eventQueue.add(event);
+        return event;
     }
 
-    /**
-     * Create path to store recording.
-     *
-     * @param  format wav or mp3.
-     *
-     * @return Path to recording
-     *
-     */
     public String getRecPath(String format) {
-        String file = "";
-        if (format != null && "mp3".equalsIgnoreCase(format)) {
-            file = recPath + "/" + getUuid() + ".mp3";
-        } else {
-            file = recPath + "/" + getUuid() + ".wav";
+
+        String recPath = System.getProperty("recording.path");
+
+        if (recPath == null) {
+            recPath = System.getProperty("java.io.tmpdir");
         }
-        return file;
+
+        return "mp3".equalsIgnoreCase(format) ? recPath + "/" + getUuid() + ".mp3" : recPath + "/" + getUuid() + ".wav";
+
     }
 
-    /**
-     * write a string on the socket.
-     *
-     * @param data To send.
-     */
     private void excecute(String data) {
-        
+
         if (executor.isReady()) {
 
             try {
                 executor.execute(data);
-
             } catch (IOException ex) {
                 LOG.error("writeData error, trigger CHANNEL_HANGUP event. {}", ex.getMessage());
-                eventQueue.add(Event.getInstance(EventName.CHANNEL_HANGUP));
+                eventQueue.add(new Event(Event.CHANNEL_HANGUP));
             }
 
         } else {
-            eventQueue.add(Event.getInstance(EventName.CHANNEL_HANGUP));
+            eventQueue.add(new Event(Event.CHANNEL_HANGUP));
         }
     }
 }
