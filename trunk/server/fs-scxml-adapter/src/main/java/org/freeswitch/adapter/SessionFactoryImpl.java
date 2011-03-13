@@ -24,7 +24,6 @@ public class SessionFactoryImpl implements SessionFactory, ConfigChangeListener 
 
     @Override
     public Session create(Map<String, Object> map) {
-        map.put(SessionImpl.REC_PATH, path);
         return new SessionImpl(map);
     }
 
@@ -46,7 +45,7 @@ public class SessionFactoryImpl implements SessionFactory, ConfigChangeListener 
         }
 
         if (new File(value).exists()) {
-            this.path = value;
+            System.setProperty(RECORDING_PATH, value);
         
         } else {
             throw new IllegalArgumentException("The recording path must point to an existing folder -->" + value);
