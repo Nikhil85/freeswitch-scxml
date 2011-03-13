@@ -38,7 +38,7 @@ public interface Session {
      *         the answer action.
      *
      */
-    Event answer();
+    EventList answer();
 
     /**
      * Will shutdown the call and close all media streams.
@@ -51,7 +51,7 @@ public interface Session {
      *         the hangup action.
      *
      */
-    Event hangup();
+    EventList hangup();
 
     /**
      *  Play combined WAV files to the caller in a meaning full way.
@@ -102,7 +102,7 @@ public interface Session {
      * @return An IvrEvent with events that was collected while executing
      *         the say action.
      */
-    Event say(String moduleName, String sayType, String sayMethod, String value);
+    EventList say(String moduleName, String sayType, String sayMethod, String value);
 
     /**
      * Record a file.
@@ -125,7 +125,7 @@ public interface Session {
      * @return              An IvrEvent with events that was collected
      *                      while executing the record file action.
      */
-    Event recordFile(int timeLimitInMs, boolean beep, Set<DTMF> terms,
+    EventList recordFile(int timeLimitInMs, boolean beep, Set<DTMF> terms,
             String format);
 
     /**
@@ -136,7 +136,7 @@ public interface Session {
      * @return     An IvrEvent with events that was collected while executing
      *             the speak action.
      */
-    Event speak(String text);
+    EventList speak(String text);
 
     /**
      *
@@ -154,7 +154,7 @@ public interface Session {
      * @return          An IvrEvent with events that was collected
      *                  while executing the get digits action.
      */
-    Event getDigits(int maxdigits, Set<DTMF> terms, long timeout);
+    EventList getDigits(int maxdigits, Set<DTMF> terms, long timeout);
 
     /**
      * Collect a bunch of {@link com.telmi.msc.fsadapter.fs.DTMFMessage} representing
@@ -174,7 +174,7 @@ public interface Session {
      * @return          An IvrEvent with events that was collected while
      *                  executing the read action.
      */
-    Event read(int maxDigits, String prompt, long timeout, Set<DTMF> terms);
+    EventList read(int maxDigits, String prompt, long timeout, Set<DTMF> terms);
 
     /**
      * Play a sound file to the caller.
@@ -190,7 +190,7 @@ public interface Session {
      * @return An IvrEvent with events that was collected while executing
      *         the stream file action.
      */
-    Event streamFile(String file);
+    EventList streamFile(String file);
 
     /**
      * Play a sound file to the caller. Halt if the caller
@@ -209,7 +209,7 @@ public interface Session {
      * @return An IvrEvent with events that was collected while executing
      *         the stream file action.
      */
-    Event streamFile(String value, Set<DTMF> terms);
+    EventList streamFile(String value, Set<DTMF> terms);
 
     /**
      * Pause the application Thread.
@@ -228,7 +228,7 @@ public interface Session {
      * @return An IvrEvent with events that was collected while executing
      *         the deflect action.
      */
-    Event deflect(String target);
+    EventList deflect(String target);
 
     /**
      * Hangup the call and pass variables to the calling script.
@@ -239,9 +239,9 @@ public interface Session {
      *         the hangup action.
      *
      */
-    Event hangup(Map<String, Object> nameList);
+    EventList hangup(Map<String, Object> nameList);
 
-    Event beep();
+    EventList beep();
 
     /**
      * Empty the digits queue before executing an action.
