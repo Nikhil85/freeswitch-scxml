@@ -1,12 +1,9 @@
 package org.freeswitch.socket.xsocket;
 
-
 import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,20 +14,10 @@ import org.slf4j.LoggerFactory;
 public final class XsocketServerSession implements org.freeswitch.socket.ServerSessionListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(XsocketServerSession.class);
+    private static final Pattern EVENT_PATTERN = Pattern.compile("(Event-Name:)(\\s)(\\w*)", Pattern.MULTILINE);
+    private static final Pattern APP_PATTERN = Pattern.compile("^(Application:)(\\s)(\\w*)$", Pattern.MULTILINE);
     
-    private static final Pattern EVENT_PATTERN =
-            Pattern.compile("(Event-Name:)(\\s)(\\w*)", Pattern.MULTILINE);
-    
-    private static final Pattern APP_PATTERN =
-            Pattern.compile("^(Application:)(\\s)(\\w*)$", Pattern.MULTILINE);
-    
-    private static final String DTMF_LINE = "DTMF-Digit: ";
-    
-    private static final int DTMF_LINE_LENGTH = DTMF_LINE.length();
-
     private final BlockingQueue<Event> queue;
-
-
     private final EventMatcher eventMatcher;
 
     /**
@@ -47,18 +34,15 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
         this.eventMatcher = eventMatcher;
     }
 
-    private EventName findEventName(final String data) {
-        EventName result = null;
+    private String findEventName(final String data) {
+
         Matcher matcher = EVENT_PATTERN.matcher(data);
+
         if (matcher.find()) {
-            String event = matcher.group(3);
-            try {
-                result = EventName.valueOf(event);
-            } catch (IllegalArgumentException e) {
-                LOG.error("Received unknown FreeSwitch Event '{}'.", event);
-            }
+            return matcher.group(3);
         }
-        return result;
+
+        return null;
     }
 
     private String findApplication(final String data) {
@@ -72,60 +56,39 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
 
     @Override
     public void onDataEvent(String data) {
-        
-        EventName fse = findEventName(data);
-        
-        if (fse == null) {
+
+        String evtName = findEventName(data);
+
+        if (evtName == null) {
             LOG.warn("Data does not have an event '{}' ", data);
             return;
+
+        } else {
+            LOG.info("Process event " + evtName);
+        }
+
+        Event event = new Event(evtName, data);
+        String application = findApplication(data);
+                    
+        if (evtName.equals(Event.CHANNEL_EXECUTE_COMPLETE) && eventMatcher.matches(application)) {
+            queue.add(event);
+
+        } else if(!evtName.equals(Event.CHANNEL_EXECUTE_COMPLETE)) {
+           queue.add(event);
         
         } else {
-            LOG.info("Process event " + fse);
-        }
-
-        Event receivedEvent = null;
-
-        if (fse == EventName.DTMF) {
-            // DTMF is only one character long. get it.
-            char dtmfChar = data.charAt(data.indexOf(DTMF_LINE) + DTMF_LINE_LENGTH);
-
-            //But '#' is encoded as '%23'
-            if (dtmfChar == '%') {
-                dtmfChar = '#';
-            }
-
-            receivedEvent = Event.getInstance(DTMF.valueOfChar(dtmfChar));
-
-        } else {
-            String application = findApplication(data);
-            
-            if (eventMatcher.matches(application)) {
-                receivedEvent = Event.getInstance(fse);
-            
-            } else {
-                LOG.warn("Got event from application '{}' not the current transaction", application);
-            }
-        }
-
-        if (receivedEvent != null) {
-            queue.add(receivedEvent);
+            LOG.warn("Got event from application '{}' not the current transaction", application);
         }
     }
 
-    /**
-     * Get the queue.
-     *
-     * @return The queue.
-     */
     public BlockingQueue<Event> getQueue() {
         return queue;
     }
 
     @Override
     public void onClose() {
-
         try {
-            queue.put(Event.getInstance(EventName.CHANNEL_HANGUP));
+            queue.put(new Event(Event.CHANNEL_HANGUP));
         } catch (InterruptedException ex) {
             LOG.info(ex.getMessage());
         }

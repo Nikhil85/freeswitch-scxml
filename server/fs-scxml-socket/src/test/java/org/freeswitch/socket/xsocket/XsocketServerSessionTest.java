@@ -1,7 +1,5 @@
 package org.freeswitch.socket.xsocket;
 
-import org.freeswitch.adapter.api.DTMF;
-import org.freeswitch.adapter.api.EventName;
 import org.freeswitch.adapter.api.Event;
 import org.junit.Assert;
 
@@ -68,7 +66,7 @@ public final class XsocketServerSessionTest {
 
         Event event = session.getQueue().poll();
 
-        Assert.assertTrue("Create a channel event it should be in event queue", event.contains(EventName.CHANNEL_EXECUTE_COMPLETE));
+        Assert.assertTrue("Create a channel event it should be in event queue", event.getEventName().equals(Event.CHANNEL_EXECUTE_COMPLETE));
 
     }
 
@@ -83,9 +81,10 @@ public final class XsocketServerSessionTest {
         session.onDataEvent(data);
 
         Event event = session.getQueue().poll();
+        
+        Assert.assertNotNull(event);
 
-        Assert.assertTrue("Should have a DTMF event ", event.contains(EventName.DTMF));
-        Assert.assertTrue("DTMF event should be one ", event.contains(DTMF.ONE));
+        Assert.assertTrue("Should have a DTMF event ", event.getEventName().equals(Event.DTMF));
 
         String data2 = testEvents.get(DTMF_B);
 
@@ -93,19 +92,8 @@ public final class XsocketServerSessionTest {
 
         Event event2 = session.getQueue().poll();
 
-        Assert.assertTrue("Should have a DTMF event ", event2.contains(EventName.DTMF));
-        Assert.assertTrue("DTMF event should be # ", event2.contains(DTMF.POUND));
+        Assert.assertTrue("Should have a DTMF event ", event2.getEventName().equals(Event.DTMF));
 
     }
 
-    /**
-     * Test so that there is now unknown events that gets by.
-     */
-    @Test()
-    public void testOnDataEventTRASH() {
-        String data = testEvents.get(CHANNEL_CREATE);
-        session.onDataEvent(data);
-        assertTrue("There is no Channel create event, queue should be empty", session.getQueue().isEmpty());
-
-    }
 }
