@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventName;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
@@ -46,9 +46,9 @@ public final class SipReferSender implements Sender {
         Session session =
             (Session) context.get(Session.class.getName());
 
-        Event evt = session.deflect(target);
+        EventList evt = session.deflect(target);
 
-        if (evt.contains(EventName.CHANNEL_HANGUP)) {
+        if (evt.contains(Event.CHANNEL_HANGUP)) {
 
             try {
                 executor.triggerEvent(

@@ -12,7 +12,7 @@ import org.apache.commons.scxml.SCInstance;
 import org.apache.commons.scxml.SCXMLExpressionException;
 import org.apache.commons.scxml.model.ModelException;
 import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventName;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,23 +52,18 @@ public final class ExitActionTest {
      */
     @Test
     @SuppressWarnings("unchecked")
-    public void testHandleActionNamelist()
-            throws ModelException, SCXMLExpressionException {
+    public void testHandleActionNamelist()throws ModelException, SCXMLExpressionException {
 
         Map<String,Object> vars = new HashMap<String, Object>();
         vars.put("test1","value1");
         vars.put("test2","value2");
 
         String nameList = "test1 test2";
-
         action.setNamelist(nameList);
 
         expect(ctx.getVars()).andReturn(vars);
 
-        Event event = Event.getInstance(
-                EventName.CHANNEL_EXECUTE_COMPLETE);
-
-        expect(session.hangup(isA(Map.class))).andReturn(event);
+        expect(session.hangup(isA(Map.class))).andReturn(EventList.single(Event.CHANNEL_HANGUP));
 
         EasyMockUnitils.replay();
 
@@ -93,11 +88,7 @@ public final class ExitActionTest {
         action.setNamelist(nameList);
 
         expect(ctx.getVars()).andReturn(vars);
-
-        Event event = Event.getInstance(
-                EventName.CHANNEL_EXECUTE_COMPLETE);
-
-        expect(session.hangup()).andReturn(event);
+        expect(session.hangup()).andReturn(EventList.single(Event.CHANNEL_EXECUTE_COMPLETE));
 
         EasyMockUnitils.replay();
 

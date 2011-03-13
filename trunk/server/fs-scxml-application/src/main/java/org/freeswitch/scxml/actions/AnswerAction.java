@@ -2,6 +2,7 @@ package org.freeswitch.scxml.actions;
 
 
 import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
@@ -22,7 +23,7 @@ public final class AnswerAction extends AbstractCallXmlAction  {
     @Override
     public void handleAction(Session ivrSession) {
 
-        Event event = ivrSession.answer();
+        EventList event = ivrSession.answer();
 
         //If no hangup or error event
         if (proceed(event)) {
@@ -40,7 +41,7 @@ public final class AnswerAction extends AbstractCallXmlAction  {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("{");
-        builder.append("test=" + getTest());
+        builder.append("test=").append(getTest());
         builder.append("}");
         return builder.toString();
     }

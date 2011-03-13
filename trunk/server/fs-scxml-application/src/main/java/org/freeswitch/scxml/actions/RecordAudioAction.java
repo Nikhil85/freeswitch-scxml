@@ -7,6 +7,7 @@ import java.util.Set;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.DTMF;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
 /**
@@ -167,7 +168,7 @@ public final class RecordAudioAction extends AbstractCallXmlAction {
             fsSession.clearDigits();
         }
 
-        Event event = fsSession.recordFile(
+        EventList event = fsSession.recordFile(
                 getMaxtimeAsMillis(),
                 beep,
                 dtmfTerminationDigits,

@@ -2,7 +2,7 @@ package org.freeswitch.scxml.actions;
 import java.util.Set;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventName;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
@@ -209,7 +209,7 @@ public final class InputDigitsAction extends AbstractCallXmlAction {
             ivrSession.clearDigits();
         }
 
-        Event evt = ivrSession.read(
+        EventList evt = ivrSession.read(
                 maxdigits, file, getMaxTimeAsInt(), terms);
 
 
@@ -240,7 +240,7 @@ public final class InputDigitsAction extends AbstractCallXmlAction {
         } else if (evt.sizeOfDtmfs() >= maxdigits) {
             fireEvent(CallXmlEvent.MAXDIGITS);
 
-        } else if (evt.contains(EventName.TIMEOUT)) {
+        } else if (evt.contains(Event.TIMEOUT)) {
             fireEvent(CallXmlEvent.MAXTIME);
 
         } else {

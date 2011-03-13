@@ -5,6 +5,7 @@ package org.freeswitch.scxml.actions;
 import java.util.Set;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
@@ -67,7 +68,7 @@ public final class PlayAudioAction extends AbstractCallXmlAction {
             return;
         }
 
-        Event event = null;
+        EventList event = null;
 
         if (termdigits == null || termdigits.isEmpty()) {
 

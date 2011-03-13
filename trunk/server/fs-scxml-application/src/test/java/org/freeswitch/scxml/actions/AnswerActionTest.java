@@ -10,7 +10,7 @@ import org.apache.commons.scxml.Evaluator;
 import org.apache.commons.scxml.TriggerEvent;
 import org.easymock.EasyMock;
 import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventName;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.junit.Before;
@@ -50,7 +50,7 @@ public final class AnswerActionTest {
     @Test
     public void testHandleActionAnswer() {
 
-        Event event = Event.getInstance(EventName.CHANNEL_EXECUTE_COMPLETE);
+        EventList event = EventList.single(Event.CHANNEL_EXECUTE_COMPLETE);
 
         action.derivedEvents = new ArrayList<TriggerEvent>();
         EasyMock.expect(session.answer()).andReturn(event);
@@ -71,7 +71,7 @@ public final class AnswerActionTest {
     @Test
     public void testHandleActionHangup() {
 
-        Event hangup = Event.getInstance(EventName.CHANNEL_HANGUP);
+        EventList hangup = EventList.single(Event.CHANNEL_HANGUP);
 
         TriggerEvent event = handleAction(hangup);
 
@@ -87,7 +87,7 @@ public final class AnswerActionTest {
      * @return      The trigger event found in action.derivedEvents.
      *
      */
-    private TriggerEvent handleAction(Event event) {
+    private TriggerEvent handleAction(EventList event) {
 
         action.derivedEvents = new ArrayList<TriggerEvent>();
 
