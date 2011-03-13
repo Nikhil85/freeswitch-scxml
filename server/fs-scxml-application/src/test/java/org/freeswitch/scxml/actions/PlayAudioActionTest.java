@@ -2,6 +2,7 @@ package org.freeswitch.scxml.actions;
 
 
 
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.adapter.api.Event;
@@ -16,7 +17,6 @@ import org.apache.commons.scxml.Evaluator;
 import org.apache.commons.scxml.SCInstance;
 import org.apache.commons.scxml.SCXMLExpressionException;
 import org.apache.commons.scxml.TriggerEvent;
-import org.freeswitch.adapter.api.EventName;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,7 +71,7 @@ public final class PlayAudioActionTest {
 
         expect(ctx.get("base")).andReturn(new URL(BASE));
 
-        Event evt = Event.getInstance(DTMF.POUND);
+        EventList evt = EventList.single(DTMF.POUND);
 
         Set<DTMF> terms = EnumSet.of(DTMF.STAR, DTMF.POUND);
 
@@ -104,7 +104,7 @@ public final class PlayAudioActionTest {
         expect(evaluator.eval(ctx, VALUE)).andReturn(VALUE);
         expect(ctx.get("base")).andReturn(new URL(BASE));
 
-        Event evt = Event.getInstance(EventName.DTMF);
+        EventList evt = EventList.single(DTMF.ZERO);
 
         expect(session.streamFile("/home/test/path.wav")).andReturn(evt);
 
@@ -112,8 +112,7 @@ public final class PlayAudioActionTest {
 
         action.handleAction(session);
 
-        assertTrue("No event should be triggered ",
-                action.derivedEvents.isEmpty());
+        assertTrue("No event should be triggered ", action.derivedEvents.isEmpty());
 
     }
 }

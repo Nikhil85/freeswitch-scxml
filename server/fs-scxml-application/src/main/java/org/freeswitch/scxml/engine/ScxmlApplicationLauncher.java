@@ -4,8 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +19,10 @@ import org.openide.util.Lookup;
  */
 public final class ScxmlApplicationLauncher implements ApplicationLauncher {
 
-    /**
-     * The scxml parameter.
-     */
     public static final String SIP_TO_PARAMS = "variable_sip_to_params";
-    /**
-     * Encoding to use.
-     */
+    public static final String SCXML_VAR = "variable_scxml";
     public static final String UTF8 = "UTF-8";
-    private static final Logger LOG =  LoggerFactory.getLogger(ScxmlApplicationLauncher.class);
-    private static final Pattern MAP_STRIP = Pattern.compile("(\\{|}|\\s)");
+    private static final Logger LOG = LoggerFactory.getLogger(ScxmlApplicationLauncher.class);
 
     /**
      * Create a new ScxmlApplicationLauncher instance.
@@ -48,25 +40,28 @@ public final class ScxmlApplicationLauncher implements ApplicationLauncher {
         try {
             // Get all variables passed in from Freeswitch
             Map<String, Object> vars = session.getVars();
+            String targetUrl = (String) (vars.containsKey(SIP_TO_PARAMS) ? vars.get(SIP_TO_PARAMS) : vars.get(SCXML_VAR));
 
-            vars = extractEventData(vars);
-
-            String param = (String) vars.get(SIP_TO_PARAMS);
-
-            if (param == null) {
+            if (targetUrl == null) {
                 session.hangup();
                 LOG.info("No SCXML param in request! No way to" + " launch application");
                 return;
             }
 
-            param = URLDecoder.decode(param, UTF8);
-            String[] prop = param.split("=");
-            URL url = new URL(prop[1]);
-            vars.put(Session.class.getName(), session);
-            
+            targetUrl = URLDecoder.decode(targetUrl, UTF8);
+
+            if (targetUrl.contains("=")) {
+                targetUrl = targetUrl.split("=")[1];
+            }
+
+            URL url = new URL(targetUrl);
+
             ScxmlApplication app = Lookup.getDefault().lookup(ScxmlApplication.class);
-            if(app != null) {
+
+            if (app != null) {
+                vars.put(Session.class.getName(), session);
                 app.createAndStartMachine(url, vars);
+            
             } else {
                 LOG.warn("New scxml application was found unable to launch application");
             }
@@ -77,44 +72,6 @@ public final class ScxmlApplicationLauncher implements ApplicationLauncher {
             LOG.error(mex.getMessage());
         } catch (UnsupportedEncodingException uex) {
             LOG.error(uex.getMessage());
-        }
-
-        session.hangup();
-
-    }
-
-    /**
-     * Extract variables from the arrived event map.
-     *
-     * @param  vars To add the extracted data to.
-     * @return The same Map but with all new variables.
-     * @throws UnsupportedEncodingException when encoding is not supported.
-     */
-    private Map<String, Object> extractEventData(Map<String, Object> vars)
-            throws UnsupportedEncodingException {
-
-        String eventMap = (String) vars.get("variable_sip_h_X-Eventmap");
-
-        if (eventMap == null) {
-            LOG.info("No event map in message ");
-            return vars;
-
-        } else {
-
-            String evtS = URLDecoder.decode(eventMap, UTF8);
-
-            Matcher matcher = MAP_STRIP.matcher(evtS);
-            String params = matcher.replaceAll("");
-
-            String[] param = params.split(",");
-
-            for (String string : param) {
-                String[] valuePair = string.split("=");
-                vars.put(valuePair[0], valuePair[1]);
-            }
-
-
-            return vars;
         }
 
     }

@@ -4,7 +4,7 @@ package org.freeswitch.scxml.actions;
 import java.util.Set;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventName;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
@@ -147,13 +147,11 @@ public final class GetDigitsAction extends AbstractCallXmlAction {
 
         Set<DTMF> terms = DTMF.createCollectionFromString(termdigits);
 
-
-
         if (cleardigits) {
             ivrSession.clearDigits();
         }
 
-        Event evt = ivrSession.getDigits(
+        EventList evt = ivrSession.getDigits(
                 maxdigits, terms, getMaxTimeAsInt());
 
         if (evt.containsAny(terms)) {
@@ -162,7 +160,7 @@ public final class GetDigitsAction extends AbstractCallXmlAction {
         } else if (evt.sizeOfDtmfs() >= maxdigits) {
             fireEvent(CallXmlEvent.MAXDIGITS);
 
-        } else if (evt.contains(EventName.TIMEOUT)) {
+        } else if (evt.contains(Event.TIMEOUT)) {
             fireEvent(CallXmlEvent.MAXTIME);
 
         } else {
@@ -174,7 +172,6 @@ public final class GetDigitsAction extends AbstractCallXmlAction {
             setContextVar(var, evt.dtmfsAsString());
 
         } else {
-
             setContextVar(var, evt.dtmfsAsString(terms));
         }
 

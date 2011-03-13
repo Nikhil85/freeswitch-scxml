@@ -3,7 +3,7 @@ package org.freeswitch.scxml.actions;
 import java.util.Set;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventName;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
@@ -172,7 +172,7 @@ public final class MenuAction extends AbstractCallXmlAction {
             ivrSession.clearDigits();
         }
 
-        Event evt = ivrSession.read(1, file, maxTime, terms);
+        EventList evt = ivrSession.read(1, file, maxTime, terms);
 
         if (proceed(evt)) {
 
@@ -181,7 +181,7 @@ public final class MenuAction extends AbstractCallXmlAction {
             if (evt.containsAny(terms)) {
                 fireEvent(CallXmlEvent.TERMDIGIT);
 
-            } else if (evt.contains(EventName.TIMEOUT)) {
+            } else if (evt.contains(Event.TIMEOUT)) {
                 fireEvent(CallXmlEvent.MAXTIME);
 
             } else if (evt.sizeOfDtmfs() > 0) {
@@ -211,12 +211,12 @@ public final class MenuAction extends AbstractCallXmlAction {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("{");
-        builder.append("say=" + say);
-        builder.append(", cleardigits=" + cleardigits);
-        builder.append(", maxtime=" + maxtime);
-        builder.append(", termdigits=" + termdigits);
-        builder.append(", value=" + value);
-        builder.append(", choices=" + choices);
+        builder.append("say=").append(say);
+        builder.append(", cleardigits=").append(cleardigits);
+        builder.append(", maxtime=").append(maxtime);
+        builder.append(", termdigits=").append(termdigits);
+        builder.append(", value=").append(value);
+        builder.append(", choices=").append(choices);
         builder.append("}");
         return builder.toString();
     }

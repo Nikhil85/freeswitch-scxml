@@ -1,18 +1,15 @@
 package org.freeswitch.scxml.actions;
 
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.scxml.engine.CallXmlEvent;
-import org.freeswitch.adapter.api.EventName;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.Session;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import org.apache.commons.scxml.Context;
 import org.apache.commons.scxml.Evaluator;
-import org.apache.commons.scxml.SCInstance;
 import org.apache.commons.scxml.TriggerEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,39 +59,12 @@ public final class GetDigitsActionTest {
     @Test
     public void testHandleActionMaxtime() {
 
-        Event maxtime = Event.getInstance(EventName.TIMEOUT);
-        TriggerEvent event = handleAction(action, maxtime, "");
+
+        TriggerEvent event = handleAction(action, EventList.single(Event.TIMEOUT), "");
 
         assertSame("IvrEvent was timeout, trigger event should be maxtime ",
                 event.getName(), CallXmlEvent.MAXTIME.toString());
 
-    }
-
-    /**
-     * Test so that GetDigits action triggers an maxdigit event.
-     *
-     * @throws InterruptedException If we fail to add events to queue.
-     */
-    @Test
-    public void testHandleActionMaxdigits() throws InterruptedException {
-
-        BlockingQueue<Event> queue = new ArrayBlockingQueue<Event>(20);
-        queue.put(Event.getInstance(EventName.DTMF));
-        queue.put(Event.getInstance(DTMF.ONE));
-        queue.put(Event.getInstance(DTMF.TWO));
-        queue.put(Event.getInstance(DTMF.THREE));
-        queue.put(Event.getInstance(DTMF.FOUR));
-        queue.put(Event.getInstance(DTMF.FIVE));
-        queue.put(Event.getInstance(DTMF.SIX));
-        queue.put(Event.getInstance(DTMF.SEVEN));
-
-        Event maxDigits = new Event.EventCatcher(queue).maxDigits(MAX_DIGITS).startPolling().newEvent();
-
-        // CallXmlEvent.MAXDIGITS
-        TriggerEvent event = handleAction(action, maxDigits, "1234567");
-
-        assertSame("IvrEvent has 7 digits, trigger event should be maxdigits ",
-                event.getName(), CallXmlEvent.MAXDIGITS.toString());
     }
 
     /**
@@ -103,7 +73,7 @@ public final class GetDigitsActionTest {
     @Test
     public void testHandleActionTermdigit() {
 
-        Event termDigitEvent = Event.getInstance(DTMF.POUND);
+        EventList termDigitEvent = EventList.single(DTMF.POUND);
         TriggerEvent event = handleAction(action, termDigitEvent, "");
 
         assertSame("IvrEvent contains term digit trigger event should be "
@@ -120,7 +90,7 @@ public final class GetDigitsActionTest {
      *
      * @return The event that triggered.
      */
-    private TriggerEvent handleAction(GetDigitsAction getDigits, Event event, String result) {
+    private TriggerEvent handleAction(GetDigitsAction getDigits, EventList event, String result) {
 
         getDigits.derivedEvents = new ArrayList<TriggerEvent>();
         Set<DTMF> terms = EnumSet.of(DTMF.STAR, DTMF.POUND);

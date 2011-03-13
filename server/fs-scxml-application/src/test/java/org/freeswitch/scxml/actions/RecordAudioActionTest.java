@@ -2,7 +2,6 @@ package org.freeswitch.scxml.actions;
 
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventName;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import java.util.Set;
 import org.apache.commons.scxml.Context;
 import org.apache.commons.scxml.Evaluator;
 import org.apache.commons.scxml.TriggerEvent;
+import org.freeswitch.adapter.api.EventList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,11 +62,8 @@ public final class RecordAudioActionTest {
     @Test
     public void testHandleActionTermdigit() {
 
-       Event event = Event.getInstance(DTMF.POUND);
-
        expect(session.clearDigits()).andReturn(Boolean.TRUE);
-       expect(session.recordFile(TIME_LIMIT, true, terms, "wav"))
-               .andReturn(event);
+       expect(session.recordFile(TIME_LIMIT, true, terms, "wav")).andReturn(EventList.single(DTMF.POUND));
 
        Map<String, Object> vars = new HashMap<String, Object>();
        vars.put("last_rec", RECORD);
@@ -93,12 +90,9 @@ public final class RecordAudioActionTest {
     @Test
     public void testHandleActionMaxtime() {
 
-       Event event =  Event.getInstance(EventName.TIMEOUT);
-
        expect(session.clearDigits()).andReturn(Boolean.TRUE);
 
-       expect(session.recordFile(TIME_LIMIT, true, terms, "wav"))
-               .andReturn(event);
+       expect(session.recordFile(TIME_LIMIT, true, terms, "wav")).andReturn(EventList.single(Event.TIMEOUT));
 
        Map<String, Object> vars = new HashMap<String, Object>();
        vars.put("last_rec", RECORD);
@@ -114,9 +108,7 @@ public final class RecordAudioActionTest {
        action.handleAction(session);
 
        TriggerEvent triggerEvent = action.derivedEvents.iterator().next();
-
-       assertEquals("Event should be maxtime ",
-               triggerEvent.getName(), CallXmlEvent.MAXTIME.toString());
+       assertEquals("Event should be maxtime ", triggerEvent.getName(), CallXmlEvent.MAXTIME.toString());
 
     }
 }

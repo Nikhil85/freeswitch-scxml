@@ -1,6 +1,7 @@
 package org.freeswitch.scxml.actions;
 
 import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 
 
@@ -96,7 +97,7 @@ public final class PhraseAction extends AbstractCallXmlAction {
     @Override
     public void handleAction(Session fsSession) {
         String phrase = eval(value);
-        Event evt =  fsSession.say("sv", format, method, phrase);
+        EventList evt =  fsSession.say("sv", format, method, phrase);
         proceed(evt);
     }
 }

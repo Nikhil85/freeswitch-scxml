@@ -23,7 +23,7 @@ import org.apache.commons.scxml.Evaluator;
 import org.apache.commons.scxml.model.Action;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventName;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
@@ -129,20 +129,20 @@ public abstract class AbstractCallXmlAction extends Action {
      *
      * @return true If the action should proceed false otherwise.
      */
-    public final boolean proceed(Event event) {
+    public final boolean proceed(EventList evtl) {
         boolean proceed = false;
 
-        if (event == null) {
+        if (evtl == null) {
             fireEvent(CallXmlEvent.HANGUP);
             log.warn("Event is null should not happen");
             ctx.set("isconnected", Boolean.FALSE);
 
-        } else if (event.contains(EventName.CHANNEL_HANGUP)) {
+        } else if (evtl.contains(Event.CHANNEL_HANGUP)) {
             fireEvent(CallXmlEvent.HANGUP);
             log.debug("Procced is false call hangup ");
             ctx.set("isconnected", Boolean.FALSE);
 
-        } else if (event.contains(EventName.ERROR)) {
+        } else if (evtl.contains(Event.ERROR)) {
             fireEvent(CallXmlEvent.ERROR);
             log.debug("Procced is false call error ");
 

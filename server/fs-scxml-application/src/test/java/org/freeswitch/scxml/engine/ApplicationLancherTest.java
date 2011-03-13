@@ -15,7 +15,7 @@ import org.unitils.easymock.annotation.Mock;
 
 import java.net.URL;
 import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventName;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.junit.Ignore;
 
@@ -56,31 +56,17 @@ public final class ApplicationLancherTest  {
         expect(session.getVars()).andReturn(vars);
         application.createAndStartMachine(isA(URL.class), isA(Map.class));
         
-        expect(session.hangup()).andReturn(Event.getInstance(
-                EventName.CHANNEL_EXECUTE_COMPLETE));
+        expect(session.hangup()).andReturn(EventList.single(Event.CHANNEL_EXECUTE_COMPLETE));
 
         EasyMockUnitils.replay();
 
         launcher.launch(session);
 
-        assertTrue("The ivr session has not been addded.",
-                vars.containsKey(Session.class.getName()));
-
-        assertTrue("The ivr session has not been addded.",
-                vars.containsValue(session));
-
-        assertTrue("Sas id has not been added. ",
-                vars.containsKey("SASID"));
-
-        assertTrue("remote part has not been added. ",
-                vars.containsKey("remote"));
-
-        assertTrue("Sas id has not been added",
-                vars.containsValue("-313313177"));
-
-        assertTrue("remote part has not been added. ",
-                vars.containsValue("1000"));
-
-
+        assertTrue("The ivr session has not been addded.", vars.containsKey(Session.class.getName()));
+        assertTrue("The ivr session has not been addded.", vars.containsValue(session));
+        assertTrue("Sas id has not been added. ", vars.containsKey("SASID"));
+        assertTrue("remote part has not been added. ", vars.containsKey("remote"));
+        assertTrue("Sas id has not been added", vars.containsValue("-313313177"));
+        assertTrue("remote part has not been added. ", vars.containsValue("1000"));
     }
 }
