@@ -24,7 +24,6 @@ import org.freeswitch.adapter.api.CommandExecutor;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.adapter.api.SessionFactory;
-import org.freeswitch.scxml.ApplicationLauncher;
 import org.freeswitch.scxml.ThreadPoolManager;
 import org.freeswitch.socket.ServerSessionListener;
 import org.openide.util.Lookup;
@@ -124,28 +123,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
 
     private void runApplication(Runnable appRunner) {
         LOG.info("launch applicationLauncher in new thread");
-        ThreadPoolManager manager = Lookup.getDefault().lookup(ThreadPoolManager.class);
-        manager.getWorkerPool().execute(appRunner);
-    }
-
-    private static class ApplicationRunner implements Runnable {
-
-        private final Session fss;
-
-        public ApplicationRunner(Session fss) {
-            this.fss = fss;
-        }
-
-        @Override
-        public void run() {
-            try {
-                Lookup.getDefault().lookup(ApplicationLauncher.class).launch(fss);
-            } catch (Exception ex) {
-                LOG.error("Application Runnder Thread died \n", ex);
-            }
-
-            fss.hangup();
-        }
+        Lookup.getDefault().lookup(ThreadPoolManager.class).getWorkerPool().execute(appRunner);
     }
 
     private String readEventByLength(String header, final INonBlockingConnection connection)
