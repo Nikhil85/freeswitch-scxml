@@ -1,10 +1,12 @@
 package org.freeswitch.socket.xsocket;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.BufferUnderflowException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.freeswitch.adapter.api.CommandExecutor;
 import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventName;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.adapter.api.SessionFactory;
 import org.freeswitch.scxml.ApplicationLauncher;
@@ -33,16 +34,15 @@ import org.openide.util.Lookup;
  * @author jocke
  */
 public final class EventSocketHandler implements IDataHandler, IDisconnectHandler, IConnectHandler {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(EventSocketHandler.class);
     static final String LINE_BREAKS = "\n\n";
     static final String COMMAND_REPLY = "Content-Type: command/reply";
     static final String DISCONNECT_NOTICE = "Content-Type: text/disconnect-notice";
-    static final String UTF8 = "UTF-8";
-    
-    private static final Logger LOG = LoggerFactory.getLogger(EventSocketHandler.class);
     private static final Pattern CONTENT_LENGTH_PATTERN = Pattern.compile("Content-Length:\\s(\\d*)", Pattern.MULTILINE);
     private static final Pattern EVENT_IN_CONTENT_PATTERN = Pattern.compile("Content-Type: text/event-plain", Pattern.MULTILINE);
     private static final Pattern EVENT_PATTERN = Pattern.compile("Event-Name:\\s(.*)", Pattern.MULTILINE);
+    public static final String UTF8 = "UTF-8";
 
     /**
      * This was taken from the FreeSwitch WIKI.
@@ -94,27 +94,27 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         return true;
     }
 
-    private void initSession(String evt, final INonBlockingConnection connection) {
+    private void initSession(String evt, final INonBlockingConnection connection) throws UnsupportedEncodingException {
         LOG.debug("New Connection so prepare the call to launch");
 
         XSocketSocketWriter socketWriter = new XSocketSocketWriter(connection);
-        
+
         BlockingQueue<Event> eventQueue = new ArrayBlockingQueue<Event>(50);
         final XsocketServerSession serverSession = new XsocketServerSession(eventQueue, socketWriter);
         connection.setAttachment(serverSession);
-        
+
         SessionFactory factory = Lookup.getDefault().lookup(SessionFactory.class);
 
         if (factory == null) {
             LOG.warn("No factory found in lookup ");
             return;
         }
-        
+
         final Session fss = factory.create(createVars(evt, eventQueue, socketWriter));
         runApplication(new ApplicationRunner(fss));
     }
 
-    private Map<String, Object> createVars(String evt, BlockingQueue<Event> eventQueue, XSocketSocketWriter socketWriter) {
+    private Map<String, Object> createVars(String evt, BlockingQueue<Event> eventQueue, XSocketSocketWriter socketWriter) throws UnsupportedEncodingException {
         Map<String, Object> channelVars = extractDataToMap(evt);
         channelVars.put(BlockingQueue.class.getName(), eventQueue);
         channelVars.put(CommandExecutor.class.getName(), socketWriter);
@@ -139,7 +139,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         @Override
         public void run() {
             try {
-                 Lookup.getDefault().lookup(ApplicationLauncher.class).launch(fss);
+                Lookup.getDefault().lookup(ApplicationLauncher.class).launch(fss);
             } catch (Exception ex) {
                 LOG.error("Application Runnder Thread died \n", ex);
             }
@@ -152,7 +152,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
             throws IOException, NumberFormatException, BufferUnderflowException {
 
         String content = null;
-        
+
         Matcher matcher = CONTENT_LENGTH_PATTERN.matcher(header);
 
         if (matcher.find()) {
@@ -185,22 +185,19 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         return evt;
     }
 
-    private Map<String, Object> extractDataToMap(final String data) {
-        Map<String, Object> map = new HashMap<String, Object>();
+    private Map<String, Object> extractDataToMap(final String data) throws UnsupportedEncodingException {
 
-        String trimedData = data.replaceAll(":", "");
-        Scanner scanner = new Scanner(trimedData);
-        while (scanner.hasNext()) {
-            String key = null;
-            String value = null;
+        Map<String, Object> map = new HashMap<String, Object>();
+        Scanner scanner = new Scanner(data.replaceAll(":", ""));
+
+        while (scanner.hasNext()) {            
             try {
-                key = scanner.next();
-                value = scanner.next();
-                map.put(key, URLDecoder.decode(value, "UTF-8"));
-            } catch (Exception ex) {
-                LOG.warn("Error while adding {}={} to data map", key, value);
+                map.put(scanner.next(), URLDecoder.decode(scanner.next(), UTF8));
+            } catch(NoSuchElementException nsee) {
+                LOG.error(nsee.getMessage());
             }
         }
+
         return map;
     }
 
@@ -240,8 +237,8 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
             LOG.debug("onConnect:  connection[{}] {} bytes available", connection, connection.available());
             connection.write("connect\n\n");
             connection.write("myevents\n\n");
-            connection.write("filter Event-Name " + EventName.CHANNEL_EXECUTE_COMPLETE + "\n\n");
-            connection.write("filter Event-Name " + EventName.DTMF + "\n\n");
+            connection.write("filter Event-Name " + Event.CHANNEL_EXECUTE_COMPLETE + "\n\n");
+            connection.write("filter Event-Name " + Event.DTMF + "\n\n");
         } catch (Exception ex) {
             LOG.error("Oops! onConnect error.", ex);
             return false;
