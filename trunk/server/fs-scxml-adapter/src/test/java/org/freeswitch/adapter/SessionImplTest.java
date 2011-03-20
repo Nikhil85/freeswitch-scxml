@@ -4,22 +4,22 @@ import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.CommandExecutor;
 import java.io.IOException;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import java.io.FileNotFoundException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import org.easymock.EasyMock;
+import org.easymock.Capture;
+import org.easymock.CaptureType;
 import org.freeswitch.adapter.api.EventList;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
+import static org.easymock.EasyMock.*;
 
 /**
  *
@@ -29,6 +29,7 @@ public final class SessionImplTest {
 
     private static final int TEST_TIME_OUT = 2000;
     private CommandExecutor connection;
+    private ArrayBlockingQueue<Event> evtQueue;
     private ScheduledExecutorService scheduler;
     private ScheduledFuture<Event> future;
     private SessionImpl session;
@@ -41,10 +42,11 @@ public final class SessionImplTest {
     @Before
     @SuppressWarnings("unchecked")
     public void setUp() throws FileNotFoundException {
-        connection = EasyMock.createMock(CommandExecutor.class);
-        scheduler = EasyMock.createMock(ScheduledExecutorService.class);
-        future = EasyMock.createMock(ScheduledFuture.class);
-        session = new SessionImpl(new HashMap<String, Object>(), connection, scheduler, "/tmp", new ArrayBlockingQueue<Event>(50));
+        connection = createMock(CommandExecutor.class);
+        scheduler = createMock(ScheduledExecutorService.class);
+        future = createMock(ScheduledFuture.class);
+        evtQueue = new ArrayBlockingQueue<Event>(50);
+        session = new SessionImpl(new HashMap<String, Object>(), connection, scheduler, "/tmp", evtQueue);
 
     }
 
@@ -55,22 +57,16 @@ public final class SessionImplTest {
     @Test
     public void testAnswer() throws IOException {
 
-        session.getEventQueue().add(new Event(Event.CHANNEL_EXECUTE_COMPLETE));
-
-        EasyMock.expect(connection.isReady()).andReturn(Boolean.TRUE);
+        evtQueue.add(new Event(Event.CHANNEL_EXECUTE_COMPLETE));
+        expect(connection.isReady()).andReturn(Boolean.TRUE);
         connection.execute(Command.answer());
 
-        EasyMock.replay(connection);
-
+        replay(connection);
         EventList event = session.answer();
+        verify(connection);
 
-        assertTrue("No DTMF event was added!! should be empty ",
-                event.sizeOfDtmfs() == 0);
-
-        assertTrue("Event was added should contain it ",
-                event.contains(Event.CHANNEL_EXECUTE_COMPLETE));
-
-        EasyMock.verify(connection);
+        assertTrue("No DTMF event was added!! should be empty ", event.sizeOfDtmfs() == 0);
+        assertTrue("Event was added should contain it ", event.contains(Event.CHANNEL_EXECUTE_COMPLETE));
 
     }
 
@@ -83,29 +79,19 @@ public final class SessionImplTest {
     @Test(timeout = TEST_TIME_OUT)
     public void testGetDigitsTimeout() throws Exception {
 
-        EasyMock.expect(
-                scheduler.schedule(
-                session, 10000, TimeUnit.MILLISECONDS)).andReturn(future);
-
-        //Simulate a timeout
+        expect(scheduler.schedule(session, 10000, TimeUnit.MILLISECONDS)).andReturn(future);
         session.call();
-
-        EasyMock.expect(future.isDone()).andReturn(Boolean.TRUE);
-
-        EasyMock.replay(future);
-        EasyMock.replay(scheduler);
-        Set<DTMF> terms = EnumSet.of(DTMF.POUND);
+        expect(future.isDone()).andReturn(Boolean.TRUE);
 
         long timeout = 10000L;
         int maxdigits = 5;
 
-        EventList event = session.getDigits(maxdigits, terms, timeout);
+        replay(future, scheduler);
+        EventList event = session.getDigits(maxdigits, EnumSet.of(DTMF.POUND), timeout);
+        verify(future, scheduler);
 
-        assertTrue("Should contain timeout event ",
-                event.contains(Event.TIMEOUT));
+        assertTrue("Should contain timeout event ", event.contains(Event.TIMEOUT));
 
-        EasyMock.verify(future);
-        EasyMock.verify(scheduler);
 
     }
 
@@ -116,26 +102,64 @@ public final class SessionImplTest {
     @Test
     public void testGetDigitsMax() {
 
-        assertTrue("Test not started should be empty ", session.getEventQueue().isEmpty());
+        assertTrue("Test not started should be empty ", evtQueue.isEmpty());
         fillQueue();
 
-        EasyMock.expect(scheduler.schedule(session, 10000, TimeUnit.MILLISECONDS)).andReturn(future);
-        EasyMock.expect(future.isDone()).andReturn(Boolean.FALSE);
-        EasyMock.expect(future.cancel(true)).andReturn(Boolean.TRUE);
+        expect(scheduler.schedule(session, 10000, TimeUnit.MILLISECONDS)).andReturn(future);
+        expect(future.isDone()).andReturn(Boolean.FALSE);
+        expect(future.cancel(true)).andReturn(Boolean.TRUE);
 
-        EasyMock.replay(scheduler, future);
+        replay(scheduler, future);
+        EventList event = session.getDigits(5, EnumSet.of(DTMF.POUND), 10000L);
+        verify(future, scheduler);
 
-        Set<DTMF> terms = EnumSet.of(DTMF.POUND);
-
-        EventList event = session.getDigits(5, terms, 10000L);
-        
-        System.out.println(event.dtmfsAsString());
-        System.out.println(terms);
-
-        assertFalse("No dtmf terminator should be in event ", event.containsAny(terms));
+        assertFalse("No dtmf terminator should be in event ", event.containsAny(EnumSet.of(DTMF.POUND)));
         assertTrue("Should have a DTMF event ", event.contains(Event.DTMF));
         assertTrue("Wrong size of digits should be 5 is " + event.sizeOfDtmfs(), event.sizeOfDtmfs() == 5);
-        EasyMock.verify(future, scheduler);
+
+    }
+
+    @Test(timeout = 2000)
+    public void testSpeak() throws IOException {
+
+        evtQueue.add(Event.named(Event.CHANNEL_EXECUTE_COMPLETE));
+        final String toSpeak = "hello world";
+
+        Capture<String> cap = new Capture<String>();
+        connection.execute(capture(cap));
+        expect(connection.isReady()).andReturn(Boolean.TRUE);
+
+        replay(connection);
+        EventList speak = session.speak(toSpeak);
+        verify(connection);
+
+        assertTrue(speak.contains(Event.CHANNEL_EXECUTE_COMPLETE));
+        
+        assertThat(cap.getValue(),  CommandMatcher.appName("speak").args("hello world"));
+
+
+    }
+
+    @Test(timeout = 2000)
+    public void testBeep() throws IOException {
+
+        Capture<String> commandCapture = new Capture<String>(CaptureType.ALL);
+
+        evtQueue.add(Event.named(Event.CHANNEL_EXECUTE_COMPLETE));
+        evtQueue.add(Event.named(Event.CHANNEL_EXECUTE_COMPLETE));
+        expect(connection.isReady()).andReturn(Boolean.TRUE).anyTimes();
+        connection.execute(capture(commandCapture));
+        connection.execute(capture(commandCapture));
+
+
+
+        replay(connection);
+        EventList beep = session.beep();
+        verify(connection);
+
+        assertThat(commandCapture.getValues().get(0), CommandMatcher.appName("playback").args(SessionImpl.BEEP_TONE));
+        assertThat(commandCapture.getValues().get(1), CommandMatcher.appName("playback").args(SessionImpl.SILENCE_STREAM));
+
 
     }
 
