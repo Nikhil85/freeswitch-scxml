@@ -16,7 +16,6 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
     private static final Logger LOG = LoggerFactory.getLogger(XsocketServerSession.class);
     private static final Pattern EVENT_PATTERN = Pattern.compile("(Event-Name:)(\\s)(\\w*)", Pattern.MULTILINE);
     private static final Pattern APP_PATTERN = Pattern.compile("^(Application:)(\\s)(\\w*)$", Pattern.MULTILINE);
-    
     private final BlockingQueue<Event> queue;
     private final EventMatcher eventMatcher;
 
@@ -67,18 +66,16 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
             LOG.info("Process event " + evtName);
         }
 
-        Event event = new Event(evtName, data);
-        String application = findApplication(data);
-                    
-        if (evtName.equals(Event.CHANNEL_EXECUTE_COMPLETE) && eventMatcher.matches(application)) {
-            queue.add(event);
+        if (evtName.equals(Event.CHANNEL_EXECUTE_COMPLETE) && isCurrentTransaktion(data)) {
+            queue.add(new Event(evtName, data));
 
-        } else if(!evtName.equals(Event.CHANNEL_EXECUTE_COMPLETE)) {
-           queue.add(event);
-        
-        } else {
-            LOG.warn("Got event from application '{}' not the current transaction", application);
+        } else if (!evtName.equals(Event.CHANNEL_EXECUTE_COMPLETE)) {
+            queue.add(new Event(evtName, data));
         }
+    }
+
+    private boolean isCurrentTransaktion(String data) {
+        return eventMatcher.matches(findApplication(data));
     }
 
     public BlockingQueue<Event> getQueue() {
@@ -88,7 +85,7 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
     @Override
     public void onClose() {
         try {
-            queue.put(new Event(Event.CHANNEL_HANGUP));
+            queue.put(Event.named(Event.CHANNEL_HANGUP));
         } catch (InterruptedException ex) {
             LOG.info(ex.getMessage());
         }
