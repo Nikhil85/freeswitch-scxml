@@ -75,6 +75,7 @@ public final class StateMachine {
         engine.setRootContext(rootCtx);
         rootCtx.set("count", counter);
         engine.addListener(machine, new ScxmlListenerImpl(counter));
+        
         try {
             engine.go();
         } catch (ModelException me) {
