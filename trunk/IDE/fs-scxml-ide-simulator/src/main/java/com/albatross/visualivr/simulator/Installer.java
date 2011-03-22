@@ -1,12 +1,11 @@
 package com.albatross.visualivr.simulator;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.telmi.msc.fsadapter.pool.PoolModule;
-import com.telmi.msc.scxml.engine.ScxmlModule;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.logging.Logger;
+import org.apache.commons.scxml.model.CustomAction;
 import org.openide.modules.ModuleInstall;
+import org.openide.util.Lookup;
 
 /**
  * Manages a module's lifecycle. Remember that an installer is optional and
@@ -15,8 +14,7 @@ import org.openide.modules.ModuleInstall;
 public class Installer extends ModuleInstall {
     
     private static final Logger LOG = Logger.getLogger(Installer.class.getName());
-    IvrSimulatorLauncher launcher;
-    Injector injector;
+    private IvrSimulatorLauncher launcher;
     
     @Override
     public void restored() {
@@ -24,24 +22,15 @@ public class Installer extends ModuleInstall {
         properties.setProperty("scheduler.corePoolSize", "10");
         properties.setProperty("appPool.nThreads", "2");
         properties.setProperty("recording.path", "/tmp");
-        properties.setProperty("scxml.cache", "false");
-    
-        injector = Guice.createInjector(new PoolModule(), new ScxmlModule(), new IVRSimulatorModule(properties));
-        
-        launcher = injector.getInstance(IvrSimulatorLauncher.class);
-        
-        launcher.init();
+        properties.setProperty("scxml.cache", "false");     
         
         LOG.info("Simulator is up");
-    
+        Collection<? extends CustomAction> lookupAll = Lookup.getDefault().lookupAll(CustomAction.class);
     }
 
     @Override
     public boolean closing() {
         
-        if(launcher != null) {
-            launcher.destroy();
-        }
         
         return true;
     }    

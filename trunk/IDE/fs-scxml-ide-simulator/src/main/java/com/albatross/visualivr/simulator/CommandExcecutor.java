@@ -1,10 +1,6 @@
 package com.albatross.visualivr.simulator;
 
 import com.albatross.visualivr.simulator.api.CommandSimulator;
-import com.telmi.msc.freeswitch.FSEvent;
-import com.telmi.msc.freeswitch.FSEventName;
-import com.telmi.msc.fsadapter.pool.ThreadPoolManager;
-import com.telmi.msc.fsadapter.transport.SocketWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Queue;
@@ -12,6 +8,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.freeswitch.adapter.api.Event;
+import org.freeswitch.scxml.ThreadPoolManager;
+import org.freeswitch.socket.SocketWriter;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
@@ -26,7 +25,7 @@ public class CommandExcecutor implements SocketWriter {
     private static final Pattern APP_ARGS = Pattern.compile("^(execute-app-arg:)(\\s)(.*)$", Pattern.MULTILINE);
     private Map<String, CommandSimulator> executors;
     
-    private Queue<FSEvent> events;
+    private Queue<Event> events;
     
     private ThreadPoolManager threadPoolManager;
     
@@ -34,7 +33,7 @@ public class CommandExcecutor implements SocketWriter {
     
     private AbstractLookup lookup;
 
-    public CommandExcecutor(Queue<FSEvent> events, ThreadPoolManager threadPoolManager, Map<String, CommandSimulator> executors) {
+    public CommandExcecutor(Queue<Event> events, ThreadPoolManager threadPoolManager, Map<String, CommandSimulator> executors) {
         this.events = events;
         this.threadPoolManager = threadPoolManager;
         this.content = new InstanceContent();
@@ -59,7 +58,7 @@ public class CommandExcecutor implements SocketWriter {
                 if (simulator != null) {
                     LOG.log(Level.INFO, "Will break current action {0} ", simulator.supports());
                     simulator.breakAction();
-                    events.offer(FSEvent.getInstance(FSEventName.CHANNEL_EXECUTE_COMPLETE)); // The break
+                    events.offer(Event.named(Event.CHANNEL_EXECUTE_COMPLETE)); // The break
                
                 } else {
                     LOG.log(Level.WARNING, "Failed to break action not found");

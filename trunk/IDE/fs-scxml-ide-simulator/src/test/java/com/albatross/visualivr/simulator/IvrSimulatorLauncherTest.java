@@ -23,7 +23,7 @@ public class IvrSimulatorLauncherTest {
     
     @Before
     public void setUp() {
-      launcher = new IvrSimulatorLauncher(null, null);
+      launcher = new IvrSimulatorLauncher();
     }
 
     @After
@@ -38,7 +38,7 @@ public class IvrSimulatorLauncherTest {
     public void testInit() {
         System.out.println("init");
         launcher.init();
-        EventLookup.getDefault().add(new RunProjectEvent(null));
+        //EventLookup.getDefault().add(new RunProjectEvent(null));
     }
 
 

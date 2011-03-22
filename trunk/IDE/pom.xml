@@ -8,9 +8,6 @@
     <packaging>pom</packaging>
 
     <name>fs-scxml-ide-parent</name>
-   
-   
-
 
     <repositories>
         <!--

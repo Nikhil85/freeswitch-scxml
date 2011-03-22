@@ -1,7 +1,5 @@
 package com.albatross.visualivr.simulator.api;
 
-import com.telmi.msc.freeswitch.FSEvent;
-import com.telmi.msc.freeswitch.FSEventName;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +16,7 @@ import javax.sound.sampled.LineEvent.Type;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import org.freeswitch.adapter.api.Event;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -30,15 +29,15 @@ public class PlaybackCommandSimulator implements CommandSimulator, LineListener 
     
     public static final String PLAYBACK = "playback";
 
-    private Queue<FSEvent> events;
+    private Queue<Event> events;
     private static final Logger LOG = Logger.getLogger(PlaybackCommandSimulator.class.getName());
     private Clip clip;
 
     public PlaybackCommandSimulator() {
-        events = new LinkedList<FSEvent>();
+        events = new LinkedList<Event>();
     }
 
-    public PlaybackCommandSimulator(Queue<FSEvent> events) {
+    public PlaybackCommandSimulator(Queue<Event> events) {
         this.events = events;
     }
 
@@ -70,17 +69,13 @@ public class PlaybackCommandSimulator implements CommandSimulator, LineListener 
                 }
 
             } catch (FileNotFoundException ex) {
-                Exceptions.printStackTrace(ex);
-                events.offer(FSEvent.getInstance(FSEventName.CHANNEL_EXECUTE_COMPLETE));
+              handleError(ex);
             } catch (IOException ioe) {
-                Exceptions.printStackTrace(ioe);
-                events.offer(FSEvent.getInstance(FSEventName.CHANNEL_EXECUTE_COMPLETE));
+               handleError(ioe);
             } catch (LineUnavailableException lue) {
-                Exceptions.printStackTrace(lue);
-                events.offer(FSEvent.getInstance(FSEventName.CHANNEL_EXECUTE_COMPLETE));
+                handleError(lue);
             } catch (UnsupportedAudioFileException uafe) {
-                Exceptions.printStackTrace(uafe);
-                events.offer(FSEvent.getInstance(FSEventName.CHANNEL_EXECUTE_COMPLETE));
+                handleError(uafe);
 
             } finally {
 
@@ -95,6 +90,11 @@ public class PlaybackCommandSimulator implements CommandSimulator, LineListener 
 
         }
 
+    }
+
+    private void handleError(Throwable uafe) {
+        Exceptions.printStackTrace(uafe);
+        events.offer(Event.named(Event.CHANNEL_EXECUTE_COMPLETE));
     }
 
     @Override
@@ -124,7 +124,7 @@ public class PlaybackCommandSimulator implements CommandSimulator, LineListener 
         if (type.equals(Type.STOP)) {
             LOG.info("Playing CHANNEL_EXECUTE_COMPLETE");
             clip.close();
-            events.offer(FSEvent.getInstance(FSEventName.CHANNEL_EXECUTE_COMPLETE));
+            events.offer(Event.named(Event.CHANNEL_EXECUTE_COMPLETE));
         }
 
     }
