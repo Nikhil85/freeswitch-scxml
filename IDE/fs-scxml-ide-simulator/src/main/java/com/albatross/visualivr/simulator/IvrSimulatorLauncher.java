@@ -3,14 +3,6 @@ package com.albatross.visualivr.simulator;
 import com.albatross.visualivr.simulator.api.CommandSimulator;
 import com.albatross.visualivr.simulator.ui.SoftPhoneDialog;
 import com.albatross.visualivr.utils.EventLookup;
-import com.albatross.visualivr.utils.event.RunProjectEvent;
-import com.telmi.msc.freeswitch.FSEvent;
-import com.telmi.msc.freeswitch.FSSession;
-import com.telmi.msc.freeswitch.FSSessionImpl;
-import com.telmi.msc.fsadapter.ivr.ApplicationLauncher;
-import com.telmi.msc.fsadapter.pool.ThreadPoolManager;
-import com.telmi.msc.fsadapter.transport.SocketWriter;
-import com.telmi.msc.scxml.engine.ScxmlApplication;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -21,43 +13,48 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.inject.Inject;
+import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.Session;
+import org.freeswitch.scxml.ApplicationLauncher;
+import org.freeswitch.scxml.ThreadPoolManager;
+import org.freeswitch.scxml.engine.ScxmlApplication;
+import org.freeswitch.socket.SocketWriter;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileStateInvalidException;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
+import com.albatross.visualivr.utils.event.RunProjectEvent;
+import org.freeswitch.adapter.SessionImpl;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author jocke
  */
+@ServiceProvider(service = ApplicationLauncher.class)
 public class IvrSimulatorLauncher implements ApplicationLauncher, LookupListener {
 
     public static final String APP_URL = "app.url";
     private static final Logger LOG = Logger.getLogger(IvrSimulatorLauncher.class.getName());
     private ScxmlApplication application;
     private Lookup.Result<RunProjectEvent> result;
-    private final ThreadPoolManager poolManager;
+    private ThreadPoolManager poolManager;
     private Map<String, CommandSimulator> executors = new HashMap<String, CommandSimulator>();
 
-    @Inject
-    public IvrSimulatorLauncher(ScxmlApplication application, ThreadPoolManager poolManager) {
-        this.application = application;
-        this.poolManager = poolManager;
+    public IvrSimulatorLauncher() {
     }
 
     @Override
-    public void launch(FSSession session) {
-
-        Map<String, Object> vars = session.getVars();
-
-        vars.put(FSSession.class.getName(), session);
-
-        URL url = (URL) vars.get(APP_URL);
-
+    public void launch(Session session) {
         try {
+            Map<String, Object> vars = session.getVars();
+
+            vars.put(Session.class.getName(), session);
+
+            URL url = (URL) vars.get(APP_URL);
+
             application.createAndStartMachine(url, vars);
         } catch (MalformedURLException ex) {
             Exceptions.printStackTrace(ex);
@@ -70,7 +67,6 @@ public class IvrSimulatorLauncher implements ApplicationLauncher, LookupListener
 
         LOG.info("Simulator is listening for events");
 
-
         this.result = EventLookup.getDefault().lookupResult(RunProjectEvent.class);
 
         this.result.addLookupListener(this);
@@ -82,14 +78,12 @@ public class IvrSimulatorLauncher implements ApplicationLauncher, LookupListener
             executors.put(sc.supports(), sc);
             LOG.log(Level.INFO, "Adding support for {0}", sc.supports());
         }
-        
+
     }
-    
-    
-    
+
     public void destroy() {
-       result.removeLookupListener(this);
-       poolManager.shutdownAll();
+        result.removeLookupListener(this);
+        poolManager.shutdownAll();
     }
 
     @Override
@@ -109,13 +103,13 @@ public class IvrSimulatorLauncher implements ApplicationLauncher, LookupListener
             data.put(APP_URL, url);
             data.put("Channel-Unique-ID", UUID.randomUUID());
 
-            BlockingQueue<FSEvent> events = new LinkedBlockingQueue<FSEvent>();
+            BlockingQueue<Event> events = new LinkedBlockingQueue<Event>();
             SoftPhoneDialog dialog = new SoftPhoneDialog(events);
             dialog.setLocationRelativeTo(null);
-            
+
             dialog.setVisible(true);
             SocketWriter writer = new CommandExcecutor(events, poolManager, executors);
-            final FSSession session = new FSSessionImpl(data, writer, poolManager.getScheduler(), "/tmp", events);
+            final Session session = new SessionImpl(data);
 
             Runnable runnable = new Runnable() {
 

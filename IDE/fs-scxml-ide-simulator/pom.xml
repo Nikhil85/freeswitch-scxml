@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-     <parent>
+    <parent>
         <artifactId>fs-scxml-ide</artifactId>
         <groupId>com.albatross</groupId>
         <version>1.0-SNAPSHOT</version>
@@ -42,43 +42,6 @@
         </dependency>
         
         <dependency>
-            <groupId>com.telmi.msc</groupId>
-            <artifactId>fsadapter-lib</artifactId>
-            <version>2.0-SNAPSHOT</version>
-            
-            <exclusions>
-                <exclusion>
-                    <groupId>org.xsocket</groupId>
-                    <artifactId>xSocket</artifactId>
-                </exclusion>
-            </exclusions>    
-        </dependency>
-        
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>3.0-rc2</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-multibindings</artifactId>
-            <version>3.0-rc2</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject-tck</artifactId>
-            <version>1</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>net.jcip</groupId>
-            <artifactId>jcip-annotations</artifactId>
-            <version>1.0</version>
-        </dependency>
-        
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
             <version>1.5.11</version>
@@ -116,6 +79,36 @@
             <artifactId>fs-scxml-ide-utils</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.freeswitch.scxml</groupId>
+            <artifactId>org.freeswitch.scxml.adapter.api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freeswitch.scxml</groupId>
+            <artifactId>org.freeswitch.scxml.application.api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freeswitch.scxml</groupId>
+            <artifactId>org.freeswitch.scxml.socket.api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freeswitch.scxml</groupId>
+            <artifactId>org.freeswitch.scxml.application</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>fs-scxml-ide-utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freeswitch.scxml</groupId>
+            <artifactId>org.freeswitch.scxml.adapter</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -123,7 +116,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
-                <version>3.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
@@ -132,6 +124,7 @@
                         <publicPackage>org.apache.commons.scxml.model</publicPackage>
                         <publicPackage>org.xml.sax</publicPackage>
                     </publicPackages>
+                   <!-- <useOSGiDependencies>true</useOSGiDependencies>-->
                 </configuration>
             </plugin>
 

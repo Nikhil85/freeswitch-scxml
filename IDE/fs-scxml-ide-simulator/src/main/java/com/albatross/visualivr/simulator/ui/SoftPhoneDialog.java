@@ -5,11 +5,10 @@
  */
 package com.albatross.visualivr.simulator.ui;
 
-import com.telmi.msc.freeswitch.DTMFMessage;
-import com.telmi.msc.freeswitch.FSEvent;
-import com.telmi.msc.freeswitch.FSEventName;
 import java.util.Queue;
 import javax.swing.JButton;
+import org.freeswitch.adapter.api.DTMF;
+import org.freeswitch.adapter.api.Event;
 
 /**
  *
@@ -17,9 +16,9 @@ import javax.swing.JButton;
  */
 public class SoftPhoneDialog extends javax.swing.JDialog {
 
-    private Queue<FSEvent> events;
+    private Queue<Event> events;
 
-    public SoftPhoneDialog(Queue<FSEvent> events) {
+    public SoftPhoneDialog(Queue<Event> events) {
         this.events = events;
         initComponents();
     }
@@ -257,12 +256,12 @@ public class SoftPhoneDialog extends javax.swing.JDialog {
 
         JButton button = (JButton) evt.getSource();
         char[] toCharArray = button.getText().toCharArray();
-        DTMFMessage dtmf = DTMFMessage.valueOfChar(toCharArray[0]);
-        events.offer(FSEvent.getInstance(dtmf));
+        DTMF dtmf = DTMF.valueOfChar(toCharArray[0]);
+        events.offer(Event.named(Event.DTMF));
     }//GEN-LAST:event_dtmfPressed
 
     private void hangupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hangupButtonActionPerformed
-        events.offer(FSEvent.getInstance(FSEventName.CHANNEL_HANGUP));
+        events.offer(Event.named(Event.CHANNEL_HANGUP));
     }//GEN-LAST:event_hangupButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton hangupButton;

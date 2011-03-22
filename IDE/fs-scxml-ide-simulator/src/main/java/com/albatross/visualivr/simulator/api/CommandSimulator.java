@@ -1,7 +1,7 @@
 package com.albatross.visualivr.simulator.api;
 
-import com.telmi.msc.freeswitch.FSEvent;
 import java.util.Queue;
+import org.freeswitch.adapter.api.Event;
 
 /**
  *
@@ -38,6 +38,6 @@ void execute(String[] args);
   * @return a new instance ready to be executed
   * 
   */
- CommandSimulator create(Queue<FSEvent> queue);
+ CommandSimulator create(Queue<Event> queue);
  
 }
