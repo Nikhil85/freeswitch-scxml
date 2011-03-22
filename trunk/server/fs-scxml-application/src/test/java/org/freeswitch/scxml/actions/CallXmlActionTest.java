@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.apache.commons.scxml.Context;
 import org.apache.commons.scxml.Evaluator;
-import org.apache.commons.scxml.SCInstance;
 import org.apache.commons.scxml.TriggerEvent;
 import org.freeswitch.adapter.api.Session;
 import org.junit.Before;
