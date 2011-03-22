@@ -25,6 +25,7 @@ import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
+import org.freeswitch.scxml.engine.ActionSupport;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
 /**
@@ -34,16 +35,12 @@ import org.freeswitch.scxml.engine.CallXmlEvent;
 public abstract class AbstractCallXmlAction extends Action {
 
     private static final long serialVersionUID = -1141223857669398177L;
-
     protected final Logger log = LoggerFactory.getLogger(getClass());
-
     private String test;
+    private ActionSupport actionSupport;
 //    SCInstance scInstance;
-
     Collection<TriggerEvent> derivedEvents;
-
     Context ctx;
-
     Evaluator evaluator;
 
     /**
@@ -70,10 +67,7 @@ public abstract class AbstractCallXmlAction extends Action {
      * @param event The event to fire.
      */
     public final void fireEvent(CallXmlEvent event) {
-
-        derivedEvents.add(new TriggerEvent(
-                event.toString(),
-                TriggerEvent.SIGNAL_EVENT));
+      actionSupport.fireEvent(event);
     }
 
     /**
@@ -83,9 +77,7 @@ public abstract class AbstractCallXmlAction extends Action {
      *
      */
     public final void fireChoiceEvent(DTMF dtmf) {
-        derivedEvents.add(
-                new TriggerEvent("choice:" + dtmf.toString(),
-                TriggerEvent.SIGNAL_EVENT));
+      actionSupport.fireChoiceEvent(dtmf);
     }
 
     /**
@@ -94,10 +86,7 @@ public abstract class AbstractCallXmlAction extends Action {
      * @param dTMF The matching DTMF.
      */
     public final void fireMatchEvent(DTMF dTMF) {
-        derivedEvents.add(new TriggerEvent(
-                CallXmlEvent.MATCH.toString(),
-                TriggerEvent.SIGNAL_EVENT,
-                dTMF.toString()));
+      actionSupport.fireMatchEvent(dTMF);
     }
 
     /**
@@ -106,9 +95,7 @@ public abstract class AbstractCallXmlAction extends Action {
      * @param event The event that occurred.
      */
     public final void fireErrorEvent(CallXmlEvent event) {
-
-        derivedEvents.add(
-                new TriggerEvent(event.toString(), TriggerEvent.ERROR_EVENT));
+      actionSupport.fireErrorEvent(event);
     }
 
     /**
@@ -117,8 +104,7 @@ public abstract class AbstractCallXmlAction extends Action {
      * @param event The event that occurred.
      */
     public final void fireEvent(String event) {
-        derivedEvents.add(
-                new TriggerEvent(event, TriggerEvent.SIGNAL_EVENT));
+       actionSupport.fireEvent(event);
     }
 
     /**
@@ -130,28 +116,7 @@ public abstract class AbstractCallXmlAction extends Action {
      * @return true If the action should proceed false otherwise.
      */
     public final boolean proceed(EventList evtl) {
-        boolean proceed = false;
-
-        if (evtl == null) {
-            fireEvent(CallXmlEvent.HANGUP);
-            log.warn("Event is null should not happen");
-            ctx.set("isconnected", Boolean.FALSE);
-
-        } else if (evtl.contains(Event.CHANNEL_HANGUP)) {
-            fireEvent(CallXmlEvent.HANGUP);
-            log.debug("Procced is false call hangup ");
-            ctx.set("isconnected", Boolean.FALSE);
-
-        } else if (evtl.contains(Event.ERROR)) {
-            fireEvent(CallXmlEvent.ERROR);
-            log.debug("Procced is false call error ");
-
-        } else {
-            proceed = true;
-
-        }
-
-        return proceed;
+      return actionSupport.proceed(evtl);
     }
 
     /**
@@ -225,29 +190,7 @@ public abstract class AbstractCallXmlAction extends Action {
      *         was given as an argument, if evaluation fails.
      */
     public final String eval(final String toEval) {
-        Object eval = null;
-
-        if (toEval == null || toEval.isEmpty()) {
-            log.error("Can't eval empty field !!!!");
-            return "";
-
-        } else {
-            try {
-
-                eval = evaluator.eval(ctx, toEval);
-            } catch (SCXMLExpressionException ex) {
-                log.error(ex.getMessage());
-                fireErrorEvent(CallXmlEvent.ERROR);
-            }
-        }
-
-        if (eval != null) {
-            return eval.toString();
-
-        } else {
-            return toEval;
-        }
-
+        return actionSupport.eval(toEval);
     }
 
     /**
@@ -267,29 +210,7 @@ public abstract class AbstractCallXmlAction extends Action {
      *         or an empty map.
      */
     public final Map<String, Object> getNameListAsMap(String vars) {
-
-        if (vars == null || vars.isEmpty()) {
-            return Collections.emptyMap();
-
-        } else {
-
-            String[] varNames = vars.split("\\s+");
-
-            Map<?, ?> ctxVarMap = ctx.getVars();
-            Map<String, Object> copyToMap = new HashMap<String, Object>();
-
-            for (int i = 0; i < varNames.length; i++) {
-
-                String var = varNames[i];
-
-                if (ctxVarMap.containsKey(var)) {
-                    copyToMap.put(var, ctxVarMap.get(var));
-                }
-            }
-
-            return copyToMap;
-
-        }
+      return actionSupport.getNameListAsMap(vars);
     }
 
     @Override
@@ -305,6 +226,8 @@ public abstract class AbstractCallXmlAction extends Action {
         this.derivedEvents = derivedEvents;
         this.ctx = scInstance.getRootContext();
         this.evaluator = scInstance.getEvaluator();
+        this.actionSupport = new ActionSupport(derivedEvents, ctx, evaluator);
+
 
         if (actionShouldExecute()) {
             Session fss = (Session) ctx.get(Session.class.getName());
@@ -315,7 +238,7 @@ public abstract class AbstractCallXmlAction extends Action {
             } else {
                 fireErrorEvent(CallXmlEvent.HANGUP);
             }
-            
+
         } else {
             log.info("rejected action because test evaluated to false ");
         }
@@ -327,23 +250,7 @@ public abstract class AbstractCallXmlAction extends Action {
      * @return true if the action should false otherwise.
      */
     private boolean actionShouldExecute() {
-
-        boolean result = true;
-
-        if (test == null) {
-            log.trace("actionShouldExecute: test == null, so return true");
-            return true;
-        }
-
-        try {
-
-            result = evaluator.evalCond(ctx, test);
-        } catch (SCXMLExpressionException ex) {
-            log.error(ex.getMessage());
-        }
-
-
-        return result;
+        return actionSupport.actionShouldExecute(test);
     }
 
     /**
@@ -355,27 +262,7 @@ public abstract class AbstractCallXmlAction extends Action {
      * @return The path.
      */
     protected String getPath(String expr) {
-        String target = eval(expr);
-
-        URL base = (URL) ctx.get("base");
-        URL targetU = null;
-
-        try {
-            targetU = new URL(base, target);
-            return targetU.getFile();
-
-        } catch (MalformedURLException ex) {
-            log.error(ex.getMessage());
-
-            Session ivrSession =
-                    (Session) ctx.get(Session.class.getName());
-
-            ivrSession.hangup();
-
-            throw new IllegalStateException("Failed to get prompt");
-        }
-
-
+        return actionSupport.getPath(expr);
     }
 
     /**
@@ -401,40 +288,6 @@ public abstract class AbstractCallXmlAction extends Action {
      *
      **/
     public int getMillisFromString(String time) throws NumberFormatException {
-
-        if (time == null) {
-            throw new IllegalArgumentException("Time value string can not be null");
-//            log.error("Time is null will return default value ");
-//            return 10000;
-        }
-
-        int timeInt = 0;
-        StringBuilder strBuff = new StringBuilder();
-
-        char candidate;
-
-        for (int i = 0; i < time.length(); i++) {
-            candidate = time.charAt(i);
-
-            if (Character.isDigit(candidate)) {
-                strBuff.append(candidate);
-            }
-        }
-
-        int digits = Integer.parseInt(strBuff.toString());
-
-        if (time.endsWith("ms")) {
-            timeInt = digits;
-
-        } else if (time.endsWith("s")) {
-            timeInt = digits * 1000;
-
-        } else if (time.endsWith("m")) {
-            timeInt = digits * 1000 * 60;
-
-        }
-
-        return timeInt;
-
+        return actionSupport.getMillisFromString(time);
     }
 }

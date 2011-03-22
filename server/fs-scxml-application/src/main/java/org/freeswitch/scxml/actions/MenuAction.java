@@ -241,11 +241,8 @@ public final class MenuAction extends AbstractCallXmlAction {
             dtmfChoices = DTMF.createCollectionFromString(eval(choicesexpr));
 
         } else {
-
             fireErrorEvent(CallXmlEvent.ERROR);
-            throw new IllegalArgumentException(
-                    "A menu with no choices is not a menu");
-
+            throw new IllegalArgumentException("A menu with no choices is not a menu");
         }
 
         return dtmfChoices;
