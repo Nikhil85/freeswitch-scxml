@@ -1,7 +1,6 @@
 package org.freeswitch.scxml.actions;
 
 
-import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
@@ -15,7 +14,7 @@ import org.freeswitch.scxml.engine.CallXmlEvent;
  *
  * @author jocke
  */
-public final class AnswerAction extends AbstractCallXmlAction  {
+public final class AnswerAction extends AbstractAction  {
 
     private static final long serialVersionUID = 6083371816365155944L;
 
@@ -29,9 +28,10 @@ public final class AnswerAction extends AbstractCallXmlAction  {
         if (proceed(event)) {
             fireEvent(CallXmlEvent.ANSWER);
             setContextVar("isconnected", Boolean.TRUE);
+        
         } else {
+            setContextVar("isconnected", Boolean.FALSE);
             log.debug("Error or hangup in answer {} ", event );
-
         }
 
     }
