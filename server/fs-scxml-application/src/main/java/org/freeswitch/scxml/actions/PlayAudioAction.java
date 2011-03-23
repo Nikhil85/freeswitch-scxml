@@ -19,7 +19,7 @@ import org.freeswitch.scxml.engine.CallXmlEvent;
  *
  * @author jocke
  */
-public final class PlayAudioAction extends AbstractCallXmlAction {
+public final class PlayAudioAction extends AbstractAction {
 
     private static final long serialVersionUID = 6273133241974401037L;
     private String value;
@@ -84,7 +84,7 @@ public final class PlayAudioAction extends AbstractCallXmlAction {
             if (proceed(event)) {
 
                 if (event.containsAny(terms)) {
-                    fireErrorEvent(CallXmlEvent.TERMDIGIT);
+                    fireEvent(CallXmlEvent.TERMDIGIT);
                 }
 
             } else {
