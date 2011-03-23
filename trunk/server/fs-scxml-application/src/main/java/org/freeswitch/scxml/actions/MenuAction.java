@@ -16,7 +16,7 @@ import org.freeswitch.scxml.engine.CallXmlEvent;
  *
  * @author jocke
  */
-public final class MenuAction extends AbstractCallXmlAction {
+public final class MenuAction extends AbstractAction {
 
     private static final int DEFAULT_MAXTIME = 30000;
     private static final long serialVersionUID = 357676526855898765L;
