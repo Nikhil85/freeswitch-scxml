@@ -8,47 +8,36 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.unitils.UnitilsJUnit4TestClassRunner;
-import org.unitils.easymock.EasyMockUnitils;
-import org.unitils.easymock.annotation.Mock;
 
 import java.net.URL;
+import org.easymock.EasyMock;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
-import org.junit.Ignore;
+import org.junit.Before;
 
 /**
  *
  * @author jocke
  */
-@RunWith(UnitilsJUnit4TestClassRunner.class)
-public final class ApplicationLancherTest  {
+public final class ApplicationLancherTest {
 
-    @Mock
     private Session session;
-
-    @Mock
     private ScxmlApplication application;
+    private String eventMap = "{SASID=-313313177, remote=1000}";
+    private ScxmlApplicationLauncher launcher;
 
-    /**
-     * {SASID=-313313177, remote=1000}
-     *
-     * Test of launch method, of class ApplicationLancher.
-     *
-     * @throws Exception any.
-     */
-    @SuppressWarnings("unchecked")
+    @Before
+    public void setUp() {
+        session = EasyMock.createMock(Session.class);
+        application = EasyMock.createMock(ScxmlApplication.class);
+        launcher = new ScxmlApplicationLauncher();
+    }
+
     @Test
-    @Ignore
     public void testLaunch() throws Exception {
-
-        ScxmlApplicationLauncher launcher = new ScxmlApplicationLauncher();
-
+        
         Map<String, Object> vars = new HashMap<String, Object>();
-
-        String eventMap = "{SASID=-313313177, remote=1000}";
 
         vars.put("variable_sip_h_X-Eventmap", eventMap);
         vars.put("variable_sip_to_params", "scxml=file:/home/test/test.xml");
@@ -56,11 +45,9 @@ public final class ApplicationLancherTest  {
         expect(session.getVars()).andReturn(vars);
         application.createAndStartMachine(isA(URL.class), isA(Map.class));
         
-        expect(session.hangup()).andReturn(EventList.single(Event.CHANNEL_EXECUTE_COMPLETE));
-
-        EasyMockUnitils.replay();
-
+        EasyMock.replay(session, application);
         launcher.launch(session);
+        EasyMock.verify(session, application);
 
         assertTrue("The ivr session has not been addded.", vars.containsKey(Session.class.getName()));
         assertTrue("The ivr session has not been addded.", vars.containsValue(session));

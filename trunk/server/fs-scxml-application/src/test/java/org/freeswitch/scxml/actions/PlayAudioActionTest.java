@@ -1,118 +1,65 @@
 package org.freeswitch.scxml.actions;
 
-
-
 import org.freeswitch.adapter.api.EventList;
-import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.freeswitch.adapter.api.Session;
-import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.DTMF;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Set;
-import org.apache.commons.scxml.Context;
-import org.apache.commons.scxml.Evaluator;
-import org.apache.commons.scxml.SCInstance;
 import org.apache.commons.scxml.SCXMLExpressionException;
-import org.apache.commons.scxml.TriggerEvent;
+import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.unitils.UnitilsJUnit4TestClassRunner;
-import org.unitils.easymock.EasyMockUnitils;
-import org.unitils.easymock.annotation.Mock;
-import static org.junit.Assert.*;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.*;
 
 /**
  *
  * @author jocke
  */
-@RunWith(UnitilsJUnit4TestClassRunner.class)
 public final class PlayAudioActionTest {
 
+    public static final String PROMPT = "/home/test/path.wav";
     private static final String VALUE = "path.wav";
-    private static final String BASE = "file:/home/test/test.xml";
-    @Mock private Session session;
-    @Mock private Context ctx;
-    @Mock private Evaluator evaluator;
+    private Session session;
     private PlayAudioAction action;
+    private ActionSupport actionSupport;
 
     /**
      * Set up the test.
      */
     @Before
     public void setUp() {
+        actionSupport = createMock(ActionSupport.class);
+        session = createMock(Session.class);
         action = new PlayAudioAction();
-        action.ctx = ctx;
-        action.evaluator = evaluator;
         action.setValue(VALUE);
         action.setTermdigits("#");
-
-
+        action.setActionSupport(actionSupport);
     }
 
-    /**
-     * Test of handleAction method, of class PlayAudioAction.
-     *
-     * @throws MalformedURLException    If it happens.
-     * @throws SCXMLExpressionException If it happens.
-     */
     @Test
-    public void testHandleActionTermdigit()
-            throws SCXMLExpressionException, MalformedURLException {
-
-        action.derivedEvents = new ArrayList<TriggerEvent>();
+    public void testHandleActionTermdigit() throws SCXMLExpressionException, MalformedURLException {
+        EventList evtl = EventList.single(DTMF.POUND);
         action.setTermdigits("#*");
-
-        expect(evaluator.eval(ctx, VALUE)).andReturn(VALUE);
-
-        expect(ctx.get("base")).andReturn(new URL(BASE));
-
-        EventList evt = EventList.single(DTMF.POUND);
-
-        Set<DTMF> terms = EnumSet.of(DTMF.STAR, DTMF.POUND);
-
-        expect(session.streamFile("/home/test/path.wav", terms)).andReturn(evt);
-
-        EasyMockUnitils.replay();
-
+        expect(actionSupport.getPath(VALUE)).andReturn(PROMPT);
+        expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);
+        expect(session.streamFile(PROMPT, EnumSet.of(DTMF.STAR, DTMF.POUND))).andReturn(evtl);
+        actionSupport.fireEvent(CallXmlEvent.TERMDIGIT);
+        replay(session, actionSupport);
         action.handleAction(session);
-
-        TriggerEvent event = action.derivedEvents.iterator().next();
-
-        assertTrue("We should have triggered a termdigit event ",
-                event.getName().equals(CallXmlEvent.TERMDIGIT.toString()));
-
+        verify(session, actionSupport);
     }
 
-    /**
-     * Test of handleAction method, of class PlayAudioAction.
-     *
-     * @throws MalformedURLException    If it happens.
-     * @throws SCXMLExpressionException If it happens.
-     */
     @Test
-    public void testHandleActionNoTermdigit()
-            throws SCXMLExpressionException, MalformedURLException {
+    public void testHandleActionNoTermdigit() throws Exception {
 
-        action.derivedEvents = new ArrayList<TriggerEvent>();
+        EventList evtl = EventList.single(DTMF.POUND);
         action.setTermdigits("");
-
-        expect(evaluator.eval(ctx, VALUE)).andReturn(VALUE);
-        expect(ctx.get("base")).andReturn(new URL(BASE));
-
-        EventList evt = EventList.single(DTMF.ZERO);
-
-        expect(session.streamFile("/home/test/path.wav")).andReturn(evt);
-
-        EasyMockUnitils.replay();
-
+        expect(actionSupport.getPath(VALUE)).andReturn(PROMPT);
+        expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);
+        expect(session.streamFile(PROMPT)).andReturn(evtl);
+        replay(session, actionSupport);
         action.handleAction(session);
-
-        assertTrue("No event should be triggered ", action.derivedEvents.isEmpty());
+        verify(session, actionSupport);
 
     }
 }
