@@ -11,7 +11,7 @@ import org.freeswitch.adapter.api.Session;
  *
  * @author jocke
  */
-public final class WaitAction extends AbstractCallXmlAction {
+public final class WaitAction extends AbstractAction {
 
     /**
      *
