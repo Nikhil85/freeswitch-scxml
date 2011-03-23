@@ -110,7 +110,8 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
     }
 
     @Override
-    public EventList recordFile(final int timeLimitInMillis, final boolean beep, Set<DTMF> terms, String format) {
+    public EventList recordFile(int timeLimitInMillis, boolean beep, Set<DTMF> terms, String format) {
+        
         LOG.trace("Session#{}: Try to recordFile");
         EventListBuilder builder = new EventListBuilder(eventQueue).termDigits(terms);
 
