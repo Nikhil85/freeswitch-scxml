@@ -7,7 +7,7 @@ import org.freeswitch.adapter.api.Session;
  *
  * @author jocke
  */
-public final class GenToneAction extends AbstractCallXmlAction {
+public final class GenToneAction extends AbstractAction {
 
     private static final long serialVersionUID = -7786026569545937761L;
 
