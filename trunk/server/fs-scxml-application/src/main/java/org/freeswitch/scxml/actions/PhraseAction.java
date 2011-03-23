@@ -10,7 +10,7 @@ import org.freeswitch.adapter.api.Session;
  *
  * @author jocke
  */
-public final class PhraseAction extends AbstractCallXmlAction {
+public final class PhraseAction extends AbstractAction {
 
     private static final long serialVersionUID = -2177874537238327910L;
     private String value;
