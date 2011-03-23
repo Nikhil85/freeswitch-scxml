@@ -18,7 +18,7 @@ import org.freeswitch.scxml.engine.CallXmlEvent;
  *
  * @author jocke
  */
-public final class GetDigitsAction extends AbstractCallXmlAction {
+public final class GetDigitsAction extends AbstractAction {
 
     private static final long serialVersionUID = -4891858110607406908L;
     private boolean cleardigits = false;
@@ -28,112 +28,54 @@ public final class GetDigitsAction extends AbstractCallXmlAction {
     private String termdigits = "#";
     private String var;
 
-    /**
-     * A method that transforms a string with a qualifier like
-     * 10m 10ms 10s to time in milliseconds.
-     *
-     * @return The time as a integer.
-     */
     public int getMaxTimeAsInt() {
         return getMillisFromString(maxtime);
     }
 
-    /**
-     * A get method for the cleardigits attribute.
-     *
-     * @return cleardigits
-     */
     public boolean isCleardigits() {
         return cleardigits;
     }
 
-    /**
-     *  A set method for the cleardigits attribute.
-     *
-     * @param clear If to clear or not.
-     */
     public void setCleardigits(boolean clear) {
         this.cleardigits = clear;
     }
 
-    /**
-     * A get method for the includetermdigit attribute.
-     *
-     * @return includetermdigit
-     */
     public boolean isIncludetermdigit() {
         return includetermdigit;
     }
 
-    /**
-     *  A set method for the includetermdigit attribute.
-     *
-     * @param include To include terminators or not.
-     */
     public void setIncludetermdigit(boolean include) {
         this.includetermdigit = include;
     }
 
-    /**
-     *
-     * @return maxdigits
-     */
     public int getMaxdigits() {
         return maxdigits;
     }
 
-    /**
-     *
-     * @param max Number of digits to collect as most.
-     */
     public void setMaxdigits(int max) {
         this.maxdigits = max;
     }
 
-    /**
-     *
-     * @return maxtime
-     */
     public String getMaxtime() {
         return maxtime;
     }
 
-    /**
-     *
-     * @param time Max time to collect.
-     */
     public void setMaxtime(String time) {
         this.maxtime = time;
     }
 
-    /**
-     *
-     * @return termdigits
-     */
     public String getTermdigits() {
         return termdigits;
     }
 
-    /**
-     *
-     * @param digits Digits that will stop the collecting.
-     */
     public void setTermdigits(String digits) {
         this.termdigits = digits;
     }
 
-    /**
-     *
-     * @return The name of collected digits.
-     */
     public String getVar() {
         return var;
     }
 
-    /**
-     *
-     * @param varName set the name of collected digits.
-     */
     public void setVar(String varName) {
         this.var = varName;
     }
@@ -151,8 +93,7 @@ public final class GetDigitsAction extends AbstractCallXmlAction {
             ivrSession.clearDigits();
         }
 
-        EventList evt = ivrSession.getDigits(
-                maxdigits, terms, getMaxTimeAsInt());
+        EventList evt = ivrSession.getDigits(maxdigits, terms, getMaxTimeAsInt());
 
         if (evt.containsAny(terms)) {
             fireEvent(CallXmlEvent.TERMDIGIT);
@@ -181,9 +122,9 @@ public final class GetDigitsAction extends AbstractCallXmlAction {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("{");
-        builder.append(", maxtime=" + maxtime);
-        builder.append(", termdigits=" + termdigits);
-        builder.append(", var=" + var);
+        builder.append(", maxtime=").append(maxtime);
+        builder.append(", termdigits=").append(termdigits);
+        builder.append(", var=").append(var);
         builder.append("}");
         return builder.toString();
     }
