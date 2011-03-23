@@ -18,7 +18,7 @@ import org.freeswitch.adapter.api.Session;
  * @author jocke
  */
 public final class SayAction
-        extends AbstractCallXmlAction
+        extends AbstractAction
         implements ExternalContent {
 
     private static final long serialVersionUID = -4993804632786018147L;
