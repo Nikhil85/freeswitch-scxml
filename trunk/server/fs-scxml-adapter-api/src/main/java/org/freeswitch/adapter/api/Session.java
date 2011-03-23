@@ -125,8 +125,7 @@ public interface Session {
      * @return              An IvrEvent with events that was collected
      *                      while executing the record file action.
      */
-    EventList recordFile(int timeLimitInMs, boolean beep, Set<DTMF> terms,
-            String format);
+    EventList recordFile(int timeLimitInMs, boolean beep, Set<DTMF> terms, String format);
 
     /**
      * Speak a text using the default TTS Engine.

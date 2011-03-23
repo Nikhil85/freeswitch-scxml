@@ -25,13 +25,13 @@ public final class EventList {
     private EventList() {
     }
 
-    private boolean add(Event e) {
+    private EventList add(Event e) {
 
         if (e.getEventName().endsWith(Event.DTMF)) {
             dtmfs.add(DTMF.valueOfString(e.getVar("DTMF-Digit"))); //TODO Will fail %23 == #
         }
-
-        return events.add(e);
+        events.add(e);
+        return this;
     }
 
     public int sizeOfDtmfs() {
@@ -106,14 +106,57 @@ public final class EventList {
         el.add(new Event(event));
         return el;
     }
-    
+
+    public static EventList single(Event event) {
+        EventList el = new EventList();
+        el.add(event);
+        return el;
+    }
+
     public static EventList single(DTMF dtmf) {
         EventList el = new EventList();
+        createDtmfEvent(dtmf, el);
+        return el;
+    }
+
+    public static EventList list(String dtmfChars) {
+        return createList(dtmfChars);
+    }
+
+    public static EventList list(String dtmfChars, String event) {
+        return createList(dtmfChars).add(new Event(event));
+    }
+
+    private static EventList createList(String dtmfChars) {
+        Set<DTMF> dtmfs = DTMF.createCollectionFromString(dtmfChars);
+        EventList el = new EventList();
+        for (DTMF dtmf : dtmfs) {
+            createDtmfEvent(dtmf, el);
+        }
+        return el;
+    }
+
+    private static void createDtmfEvent(DTMF dtmf, EventList el) {
         Map<String, String> vars = new HashMap<String, String>();
         vars.put("DTMF-Digit", dtmf.toString());
         Event event = new Event(Event.DTMF, vars);
         el.add(event);
-        return el;
+    }
+
+    @Override
+    public String toString() {
+        return "EventList{" + "events=" + events + ", dtmfs=" + dtmfs + '}';
+    }
+
+    public Event get(String event) {
+
+        for (Event evt : events) {
+            if (evt.getEventName().equalsIgnoreCase(event)) {
+                return evt;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -143,7 +186,7 @@ public final class EventList {
             return this;
         }
 
-        public EventListBuilder startPolling() {
+        public EventListBuilder consume() {
             do {
 
                 Event event = null;

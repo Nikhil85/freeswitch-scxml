@@ -44,7 +44,7 @@ public final class EventListTest {
 
         final EventList.EventListBuilder builder = new EventList.EventListBuilder(queue);
 
-        EventList evtl = builder.startPolling().build();
+        EventList evtl = builder.consume().build();
 
         assertTrue(evtl.contains(DTMF.ONE));
         assertTrue(evtl.contains(DTMF.FIVE));
@@ -67,7 +67,7 @@ public final class EventListTest {
         queue.put(getInstance(DTMF.SIX));
 
         queue.put(new Event(Event.CHANNEL_EXECUTE_COMPLETE));
-        final EventList evtl = new EventList.EventListBuilder(queue).maxDigits(5).startPolling().build();
+        final EventList evtl = new EventList.EventListBuilder(queue).maxDigits(5).consume().build();
         assertTrue("Size of dtmf should be 5 is " + evtl.sizeOfDtmfs(), evtl.sizeOfDtmfs() == 5);
     }
 
@@ -89,7 +89,7 @@ public final class EventListTest {
         Set<DTMF> terms = EnumSet.of(DTMF.POUND, DTMF.STAR);
 
         EventList evt = new EventList.EventListBuilder(queue)
-                .maxDigits(10).termDigits(terms).startPolling().build();
+                .maxDigits(10).termDigits(terms).consume().build();
 
 
         assertTrue(evt.sizeOfDtmfs() == 8);
