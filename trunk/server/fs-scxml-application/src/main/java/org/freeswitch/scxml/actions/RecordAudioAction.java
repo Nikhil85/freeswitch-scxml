@@ -21,7 +21,9 @@ import org.freeswitch.scxml.engine.CallXmlEvent;
  *
  * @author jocke
  */
-public final class RecordAudioAction extends AbstractCallXmlAction {
+public final class RecordAudioAction extends AbstractAction {
+    public static final String RECORD_MS = "record_ms";
+    public static final String RECORD_PATH = "record_path";
 
     private static final long serialVersionUID = 4365016762809054332L;
     private boolean beep = true;
@@ -168,28 +170,19 @@ public final class RecordAudioAction extends AbstractCallXmlAction {
             fsSession.clearDigits();
         }
 
-        EventList event = fsSession.recordFile(
-                getMaxtimeAsMillis(),
-                beep,
-                dtmfTerminationDigits,
-                format);
+        EventList eventList = fsSession.recordFile(getMaxtimeAsMillis(), beep, dtmfTerminationDigits, format);
+        Event event = eventList.get(Event.CHANNEL_EXECUTE_COMPLETE);
+        
+        setContextVar(var, event.getVar(RECORD_PATH));
+        setContextVar(getTimevar(), event.getVar(RECORD_MS));
 
-        Map<String, Object> vars = fsSession.getVars();
+        if (proceed(eventList)) {
 
-        String path = (String) vars.get("last_rec");
-        Long duration = (Long) vars.get("duration");
-
-        setContextVar(var, path);
-        setContextVar(getTimevar(), duration);
-
-        if (proceed(event)) {
-
-            if (event.containsAny(dtmfTerminationDigits)) {
+            if (eventList.containsAny(dtmfTerminationDigits)) {
                 fireEvent(CallXmlEvent.TERMDIGIT);
 
             } else {
                 fireEvent(CallXmlEvent.MAXTIME);
-
             }
         }
     }
