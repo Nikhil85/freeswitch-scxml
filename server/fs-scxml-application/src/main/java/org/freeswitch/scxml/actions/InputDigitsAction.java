@@ -10,7 +10,7 @@ import org.freeswitch.scxml.engine.CallXmlEvent;
  *
  * @author jocke
  */
-public final class InputDigitsAction extends AbstractCallXmlAction {
+public final class InputDigitsAction extends AbstractAction {
 
     private static final long serialVersionUID = 6771517398770261304L;
     private boolean cleardigits = false;
