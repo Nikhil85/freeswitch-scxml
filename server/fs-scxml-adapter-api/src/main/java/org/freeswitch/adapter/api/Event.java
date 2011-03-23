@@ -79,4 +79,9 @@ public class Event {
     private Matcher getVariableMatcher(String var) {
         return Pattern.compile("^(" + var + ":)(\\s)(\\.*)$", Pattern.MULTILINE).matcher(body);
     }
+
+    @Override
+    public String toString() {
+        return "Event{" + "eventName=" + eventName + '}';
+    }
 }
