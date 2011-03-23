@@ -15,7 +15,7 @@ import org.freeswitch.adapter.api.Session;
  *
  * @author jocke
  */
-public final class HangupAction extends AbstractCallXmlAction {
+public final class HangupAction extends AbstractAction {
 
     private static final long serialVersionUID = -6083018410619271886L;
 
