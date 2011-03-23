@@ -1,108 +1,79 @@
 package org.freeswitch.scxml.actions;
 
-import org.freeswitch.adapter.api.EventList;
-import org.freeswitch.adapter.api.DTMF;
-import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.Session;
-import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.Set;
-import org.apache.commons.scxml.Context;
-import org.apache.commons.scxml.Evaluator;
-import org.apache.commons.scxml.TriggerEvent;
+import org.freeswitch.adapter.api.DTMF;
+import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.Session;
+import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.unitils.UnitilsJUnit4TestClassRunner;
-import org.unitils.easymock.EasyMockUnitils;
-import org.unitils.easymock.annotation.Mock;
-import static org.junit.Assert.*;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.*;
 
 /**
  *
  * @author jocke
  */
-@RunWith(UnitilsJUnit4TestClassRunner.class)
 public final class GetDigitsActionTest {
 
+    public static final String MAX_TIME_STRING = "40s";
+    public static final String NUMBER = "number";
     private static final int MAX_DIGITS = 7;
     private static final int MAX_TIME = 40000;
-    @Mock
     private Session session;
-    @Mock
-    private Context ctx;
-    @Mock
-    private Evaluator evaluator;
     private GetDigitsAction action;
+    private ActionSupport actionSupport;
 
-    /**
-     * Set up the test.
-     */
     @Before
     public void setUp() {
+        actionSupport = createMock(ActionSupport.class);
+        session = createMock(Session.class);
         action = new GetDigitsAction();
-        action.evaluator = evaluator;
-        action.ctx = ctx;
-        action.setVar("number");
+        action.setVar(NUMBER);
         action.setTermdigits("#*");
         action.setMaxdigits(MAX_DIGITS);
-        action.setMaxtime("40s");
+        action.setMaxtime(MAX_TIME_STRING);
         action.setIncludetermdigit(false);
+        action.setActionSupport(actionSupport);
     }
 
-    /**
-     * Test so that the GetDigits action triggers an timeout event if such
-     * event is returned.
-     */
     @Test
     public void testHandleActionMaxtime() {
-
-
-        TriggerEvent event = handleAction(action, EventList.single(Event.TIMEOUT), "");
-
-        assertSame("IvrEvent was timeout, trigger event should be maxtime ",
-                event.getName(), CallXmlEvent.MAXTIME.toString());
-
+        String dtmfs = "123467";
+        EventList list = EventList.list(dtmfs, Event.TIMEOUT);
+        expect(actionSupport.getMillisFromString(MAX_TIME_STRING)).andReturn(MAX_TIME);
+        expect(session.getDigits(MAX_DIGITS, getTermDigits(), MAX_TIME)).andReturn(list);
+        actionSupport.fireEvent(CallXmlEvent.MAXTIME);
+        actionSupport.setContextVar(NUMBER, dtmfs);
+        replay(actionSupport, session);
+        action.handleAction(session);
+        verify(actionSupport, session);
     }
 
-    /**
-     * Test so that GetDigits triggers an termdigit event.
-     */
     @Test
     public void testHandleActionTermdigit() {
-
-        EventList termDigitEvent = EventList.single(DTMF.POUND);
-        TriggerEvent event = handleAction(action, termDigitEvent, "");
-
-        assertSame("IvrEvent contains term digit trigger event should be "
-                + "termdigit",
-                event.getName(),
-                CallXmlEvent.TERMDIGIT.toString());
+        expect(actionSupport.getMillisFromString(MAX_TIME_STRING)).andReturn(MAX_TIME);
+        expect(session.getDigits(MAX_DIGITS, getTermDigits(), MAX_TIME)).andReturn(EventList.list("123467#"));
+        actionSupport.fireEvent(CallXmlEvent.TERMDIGIT);
+        actionSupport.setContextVar(NUMBER, "123467");
+        replay(actionSupport, session);
+        action.handleAction(session);
+        verify(actionSupport, session);
     }
-
-    /**
-     *
-     * @param getDigits    GetDigitsAction to test.
-     * @param event     IvrEvent return from session.
-     * @param result    Expected variable value.
-     *
-     * @return The event that triggered.
-     */
-    private TriggerEvent handleAction(GetDigitsAction getDigits, EventList event, String result) {
-
-        getDigits.derivedEvents = new ArrayList<TriggerEvent>();
-        Set<DTMF> terms = EnumSet.of(DTMF.STAR, DTMF.POUND);
-
-        expect(session.getDigits(MAX_DIGITS, terms, MAX_TIME)).andReturn(event);
-        ctx.set(getDigits.getVar(), result);
-
-        EasyMockUnitils.replay();
-        getDigits.handleAction(session);
-
-        TriggerEvent triggerEvent = getDigits.derivedEvents.iterator().next();
-        return triggerEvent;
-
+  
+    @Test
+    public void testHandleActionMaxDigits() {
+        expect(actionSupport.getMillisFromString(MAX_TIME_STRING)).andReturn(MAX_TIME);
+        String digits = "12345678";
+        expect(session.getDigits(MAX_DIGITS, getTermDigits(), MAX_TIME)).andReturn(EventList.list(digits));
+        actionSupport.fireEvent(CallXmlEvent.MAXDIGITS);
+        actionSupport.setContextVar(NUMBER, digits);
+        replay(actionSupport, session);
+        action.handleAction(session);
+        verify(actionSupport, session);
+    }
+    
+    private Set<DTMF> getTermDigits() {
+        return DTMF.createCollectionFromString(action.getTermdigits());
     }
 }

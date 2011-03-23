@@ -1,114 +1,68 @@
 package org.freeswitch.scxml.actions;
 
+import java.util.HashMap;
+import java.util.EnumSet;
+import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import org.apache.commons.scxml.Context;
-import org.apache.commons.scxml.Evaluator;
-import org.apache.commons.scxml.TriggerEvent;
-import org.freeswitch.adapter.api.EventList;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.unitils.UnitilsJUnit4TestClassRunner;
-import org.unitils.easymock.EasyMockUnitils;
-import org.unitils.easymock.annotation.Mock;
-import static org.junit.Assert.*;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.*;
 
 /**
  *
  * @author jocke
  */
-@RunWith(UnitilsJUnit4TestClassRunner.class)
 public final class RecordAudioActionTest {
 
-    private  static final int TIME_LIMIT = 60000;
+    private static final int TIME_LIMIT = 60000;
     private static final String RECORD = "/tmp/ndskdac454dcc15ac44.wav";
-
-    @Mock private Session session;
-    @Mock private Context ctx;
-    @Mock private Evaluator evaluator;
-
-    private final Set<DTMF> terms = EnumSet.of(DTMF.POUND);
+    private Session session;
     private RecordAudioAction action;
+    private ActionSupport actionSupport;
 
     /**
      * Set up the test.
      */
     @Before
     public void setUp() {
+        actionSupport = createMock(ActionSupport.class);
+        session = createMock(Session.class);
         action = new RecordAudioAction();
-        action.ctx = ctx;
-        action.evaluator = evaluator;
-        action.derivedEvents = new ArrayList<TriggerEvent>();
         action.setBeep(true);
         action.setVar("recording");
         action.setMaxtime("60s");
         action.setFormat("wav");
         action.setTermdigits("#");
+        action.setActionSupport(actionSupport);
     }
 
-
-    /**
-     * Test of handleAction method, of class RecordAudioAction.
-     */
-    @Test
-    public void testHandleActionTermdigit() {
-
-       expect(session.clearDigits()).andReturn(Boolean.TRUE);
-       expect(session.recordFile(TIME_LIMIT, true, terms, "wav")).andReturn(EventList.single(DTMF.POUND));
-
-       Map<String, Object> vars = new HashMap<String, Object>();
-       vars.put("last_rec", RECORD);
-       vars.put("duration", 2000L);
-
-       expect(session.getVars()).andReturn(vars);
-
-       ctx.set(action.getVar(), RECORD);
-       ctx.set(action.getTimevar(), 2000L);
-
-       EasyMockUnitils.replay();
-
-       action.handleAction(session);
-
-       TriggerEvent triggerEvent = action.derivedEvents.iterator().next();
-
-       assertEquals("The event should be termdigit ",
-               triggerEvent.getName(), CallXmlEvent.TERMDIGIT.toString());
-
-    }
     /**
      * Test of handleAction method, of class RecordAudioAction.
      */
     @Test
     public void testHandleActionMaxtime() {
-
-       expect(session.clearDigits()).andReturn(Boolean.TRUE);
-
-       expect(session.recordFile(TIME_LIMIT, true, terms, "wav")).andReturn(EventList.single(Event.TIMEOUT));
-
-       Map<String, Object> vars = new HashMap<String, Object>();
-       vars.put("last_rec", RECORD);
-       vars.put("duration", 2000L);
-
-       expect(session.getVars()).andReturn(vars);
-
-       ctx.set(action.getVar(), RECORD);
-       ctx.set(action.getTimevar(), 2000L);
-
-       EasyMockUnitils.replay();
-
-       action.handleAction(session);
-
-       TriggerEvent triggerEvent = action.derivedEvents.iterator().next();
-       assertEquals("Event should be maxtime ", triggerEvent.getName(), CallXmlEvent.MAXTIME.toString());
+        HashMap<String, String> vars = new HashMap<String, String>();
+        String rec = "/home/test/test.wav";
+        final String time = "2000";
+        
+        vars.put(RecordAudioAction.RECORD_MS, time);
+        vars.put(RecordAudioAction.RECORD_PATH, rec);
+        
+        expect(session.clearDigits()).andReturn(Boolean.TRUE);
+        expect(actionSupport.getMillisFromString("60s")).andReturn(60000);
+        expect(session.recordFile(TIME_LIMIT, true, EnumSet.of(DTMF.POUND), "wav"))
+                .andReturn(EventList.single(new Event(Event.CHANNEL_EXECUTE_COMPLETE, vars)));
+        expect(actionSupport.proceed(isA(EventList.class))).andReturn(Boolean.TRUE);
+        actionSupport.setContextVar(action.getVar(), rec);
+        actionSupport.setContextVar(action.getTimevar(), time);
+        actionSupport.fireEvent(CallXmlEvent.MAXTIME);
+        
+        replay(session, actionSupport);
+        action.handleAction(session);
+        verify(session, actionSupport);
 
     }
 }

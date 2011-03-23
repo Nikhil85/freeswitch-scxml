@@ -3,51 +3,36 @@ package org.freeswitch.scxml.actions;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.scxml.Context;
 import org.apache.commons.scxml.Evaluator;
-import org.apache.commons.scxml.TriggerEvent;
-import org.freeswitch.adapter.api.Session;
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.unitils.UnitilsJUnit4TestClassRunner;
-import org.unitils.easymock.EasyMockUnitils;
-import org.unitils.easymock.annotation.Mock;
 
 
 /**
  *
  * @author jocke
  */
-@RunWith(UnitilsJUnit4TestClassRunner.class)
-public final class CallXmlActionTest {
+public final class ActionSupportTest {
 
-    @Mock private Context ctx;
-    @Mock private Evaluator evaluator;
-    private AbstractCallXmlAction action;
-
+    private Context ctx;
+    private Evaluator evaluator;
+    private ActionSupport actionSupport;
+    
+    
     /**
      * Set up the test.
      */
 
     @Before
     public void setUp() {
-        action = new AbstractCallXmlAction() {
-            private static final long serialVersionUID = 5182026492258468210L;
-
-            @Override
-            public void handleAction(Session sSession) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        };
-
-        action.evaluator = evaluator;
-        action.ctx = ctx;
-        action.derivedEvents = new ArrayList<TriggerEvent>();
+      evaluator = EasyMock.createMock(Evaluator.class);
+      ctx = EasyMock.createMock(Context.class);
+      actionSupport = new ActionSupport(null, ctx, evaluator);
     }
 
 
@@ -58,20 +43,14 @@ public final class CallXmlActionTest {
     public void testGetNameListAsMap() {
 
         String vars = "var1 var2  var3      var4";
-
-        Map<String, Object> ctxVarMap = new HashMap<String, Object>();
-
-        ctxVarMap.put("var1", "value1");
-        ctxVarMap.put("var2", "value2");
-        ctxVarMap.put("var3", "value3");
-        ctxVarMap.put("var4", "value4");
+        Map<String, Object> ctxVarMap = createVarMap();
 
         expect(ctx.getVars()).andReturn(ctxVarMap);
-
-        EasyMockUnitils.replay();
-
-        Map<String, Object> nListMap = action.getNameListAsMap(vars);
-
+        
+        EasyMock.replay(ctx);
+        Map<String, Object> nListMap = actionSupport.getNameListAsMap(vars);
+        EasyMock.verify(ctx);
+        
         assertTrue("Should contain var1 ", nListMap.containsKey("var1"));
         assertTrue("Should contain var2 ", nListMap.containsKey("var2"));
         assertTrue("Should contain var3 ", nListMap.containsKey("var3"));
@@ -83,21 +62,25 @@ public final class CallXmlActionTest {
 
     }
 
+    private Map<String, Object> createVarMap() {
+        Map<String, Object> ctxVarMap = new HashMap<String, Object>();
+        ctxVarMap.put("var1", "value1");
+        ctxVarMap.put("var2", "value2");
+        ctxVarMap.put("var3", "value3");
+        ctxVarMap.put("var4", "value4");
+        return ctxVarMap;
+    }
+
     /**
      * Test of getNameListAsMap method, of class CallXmlAction.
      */
     @Test
     public void testGetNameListAsMapNullOrEmpty() {
 
-        Map<String, Object> nListMap = action.getNameListAsMap("");
+        Map<String, Object> nListMap = actionSupport.getNameListAsMap("");
+        assertTrue("Empty String was passed in should be empty ", nListMap.isEmpty());
 
-        assertTrue("Empty String was passed in should be empty ",
-            nListMap.isEmpty());
-
-        Map<String, Object> emptyMap = action.getNameListAsMap(null);
-
+        Map<String, Object> emptyMap = actionSupport.getNameListAsMap(null);
         assertTrue("null was passed in should be empty ", emptyMap.isEmpty());
-
-
     }
 }
