@@ -13,7 +13,7 @@ import org.freeswitch.adapter.api.Session;
  * @see <a href="http://www.w3.org/TR/voicexml20/#dml5.3.9" >VoiceXML</a>
  *
  */
-public final class ExitAction extends AbstractCallXmlAction {
+public final class ExitAction extends AbstractAction {
 
     private static final long serialVersionUID = -4665515971899256028L;
     private String namelist;
