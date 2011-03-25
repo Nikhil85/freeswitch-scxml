@@ -11,9 +11,9 @@ import org.junit.Test;
 
 import java.net.URL;
 import org.easymock.EasyMock;
-import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
+import org.freeswitch.scxml.ApplicationLauncher;
+import org.freeswitch.test.utils.MockLookup;
 import org.junit.Before;
 
 /**
@@ -24,22 +24,19 @@ public final class ApplicationLancherTest {
 
     private Session session;
     private ScxmlApplication application;
-    private String eventMap = "{SASID=-313313177, remote=1000}";
-    private ScxmlApplicationLauncher launcher;
+    private ApplicationLauncher launcher;
 
     @Before
     public void setUp() {
         session = EasyMock.createMock(Session.class);
         application = EasyMock.createMock(ScxmlApplication.class);
         launcher = new ScxmlApplicationLauncher();
+        MockLookup.setInstances(application);
     }
 
     @Test
     public void testLaunch() throws Exception {
-        
         Map<String, Object> vars = new HashMap<String, Object>();
-
-        vars.put("variable_sip_h_X-Eventmap", eventMap);
         vars.put("variable_sip_to_params", "scxml=file:/home/test/test.xml");
 
         expect(session.getVars()).andReturn(vars);
@@ -51,9 +48,5 @@ public final class ApplicationLancherTest {
 
         assertTrue("The ivr session has not been addded.", vars.containsKey(Session.class.getName()));
         assertTrue("The ivr session has not been addded.", vars.containsValue(session));
-        assertTrue("Sas id has not been added. ", vars.containsKey("SASID"));
-        assertTrue("remote part has not been added. ", vars.containsKey("remote"));
-        assertTrue("Sas id has not been added", vars.containsValue("-313313177"));
-        assertTrue("remote part has not been added. ", vars.containsValue("1000"));
     }
 }

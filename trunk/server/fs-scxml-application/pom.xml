@@ -129,6 +129,12 @@
             <artifactId>org.freeswitch.scxml.config</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.freeswitch</groupId>
+            <artifactId>fs-scxml-test-utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
