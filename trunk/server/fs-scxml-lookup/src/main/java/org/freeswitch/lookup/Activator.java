@@ -1,53 +1,48 @@
 package org.freeswitch.lookup;
 
+import java.lang.reflect.Field;
 import org.openide.util.Lookup;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
-   
-    private static final Logger LOG = LoggerFactory.getLogger(Activator.class);
-            
+
     @Override
     public void start(BundleContext context) throws Exception {
-        
+
         Thread.currentThread().setContextClassLoader(new BundleWrapperClassLoader(context.getBundle()));
         System.setProperty("org.openide.util.Lookup", OsgiLookup.class.getName());
-        
-        Lookup lookup = Lookup.getDefault();
 
-        if (lookup instanceof OsgiLookup) {
-            OsgiLookup ol = (OsgiLookup) lookup;
-            context.addServiceListener(ol);
-            LOG.info("System will use lookup " + lookup.getClass().getName());
-            Bundle[] bundles = context.getBundles();
-            
-            for (int i = 0; i < bundles.length; i++) {
-                registerBundleServices(bundles[i], ol);
+        if (!(Lookup.getDefault() instanceof OsgiLookup)) {
+            if (!(forceCreateLookup() instanceof OsgiLookup)) {
+                throw new IllegalStateException("Failed to create a lookup");
             }
-
-        } else {
-            System.err.println("Lookup creation failed");
-            return;
         }
 
+        OsgiLookup ol = (OsgiLookup) Lookup.getDefault();
+        context.addServiceListener(ol);
+        Bundle[] bundles = context.getBundles();
+
+        for (int i = 0; i < bundles.length; i++) {
+            registerBundleServices(bundles[i].getRegisteredServices(), ol);
+        }
 
     }
 
-    private void registerBundleServices(Bundle bundle, OsgiLookup ol) {
-        
-        ServiceReference[] registeredServices = bundle.getRegisteredServices();
+    private Lookup forceCreateLookup() throws SecurityException, IllegalAccessException, IllegalArgumentException, NoSuchFieldException {
+        Field defaultLookup = Lookup.class.getDeclaredField("defaultLookup");
+        defaultLookup.setAccessible(true);
+        defaultLookup.set(null, null);
+        return Lookup.getDefault();
+    }
 
+    private void registerBundleServices(ServiceReference[] registeredServices, OsgiLookup ol) {
         if (registeredServices != null) {
             for (int j = 0; j < registeredServices.length; j++) {
-                ServiceReference serviceReference = registeredServices[j];
-                ServiceEvent event = new ServiceEvent(ServiceEvent.REGISTERED, serviceReference);
-                ol.serviceChanged(event);
+                ol.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, registeredServices[j]));
             }
         }
     }
