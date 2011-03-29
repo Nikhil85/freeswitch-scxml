@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module-Localizing-Bundle: com/albatross/visualivr/project/Bundle.properties
-OpenIDE-Module-Layer: com/albatross/visualivr/project/layer.xml
