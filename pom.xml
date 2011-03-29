@@ -10,7 +10,7 @@
 
     <name>fs-scxml-parent</name>
 
-    <description>FreeSwitch to SCXML</description>
+    <description>FreeSwitch SCXML</description>
 
     <modules>
         <module>fs-scxml-socket</module>
