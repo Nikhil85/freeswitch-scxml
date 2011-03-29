@@ -77,11 +77,11 @@ public final class XsocketTcpServerImpl implements TcpServer, ConfigChangeListen
             try {
                 iServer = new Server(port, iDataHandler);
             } catch (UnknownHostException e) {
-                System.out.println(e.getMessage());
+                LOG.error(e.getMessage());
                 return;
                
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                LOG.error(e.getMessage());
                 return;
             }
         }
