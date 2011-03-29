@@ -24,6 +24,7 @@ public final class OsgiLookup extends AbstractLookup implements ServiceListener 
     public void serviceChanged(ServiceEvent se) {
         
         Object service = se.getServiceReference().getBundle().getBundleContext().getService(se.getServiceReference());
+        
         String name = service.getClass().getName();
         
         /** Should really be configurable */
@@ -33,11 +34,11 @@ public final class OsgiLookup extends AbstractLookup implements ServiceListener 
         
         if (se.getType() == ServiceEvent.REGISTERED) {
             CONTENT.add(service);
-            LOG.debug("Adding " + service.getClass());
+            LOG.debug("Adding {} " , service.getClass());
 
         } else if (se.getType() == ServiceEvent.UNREGISTERING) {
             CONTENT.remove(service);
-            LOG.debug("Removing " + service.getClass());
+            LOG.debug("Removing {}" , service.getClass());
         }
     }
 }
