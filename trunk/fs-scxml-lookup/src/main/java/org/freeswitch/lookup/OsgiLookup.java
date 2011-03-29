@@ -1,5 +1,6 @@
 package org.freeswitch.lookup;
 
+import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.osgi.framework.ServiceEvent;
@@ -11,15 +12,22 @@ import org.slf4j.LoggerFactory;
  * 
  * @author jocke
  */
-public final class OsgiLookup extends AbstractLookup implements ServiceListener {
+public final class OsgiLookup extends Lookup implements ServiceListener {
     
     private static final Logger LOG =  LoggerFactory.getLogger(OsgiLookup.class);
-    private static final InstanceContent CONTENT = new InstanceContent();
-
-    public OsgiLookup() {
-        super(CONTENT);
-    }
+    private final InstanceContent content;
+    private final AbstractLookup lookup;
     
+    public OsgiLookup() {
+        this.content = new InstanceContent();
+        this.lookup = new AbstractLookup(content);
+    }
+
+    OsgiLookup(InstanceContent content) {
+        this.content = content;
+        this.lookup = new AbstractLookup(content);
+    }
+     
     @Override
     public void serviceChanged(ServiceEvent se) {
         
@@ -31,14 +39,25 @@ public final class OsgiLookup extends AbstractLookup implements ServiceListener 
         if(name.startsWith("org.apache.karaf") || name.startsWith("org.apache.aries")) {
             return;
         }
+        final int type = se.getType();
         
-        if (se.getType() == ServiceEvent.REGISTERED) {
-            CONTENT.add(service);
+        if (type == ServiceEvent.REGISTERED) {
+            content.add(service);
             LOG.debug("Adding {} " , service.getClass());
 
-        } else if (se.getType() == ServiceEvent.UNREGISTERING) {
-            CONTENT.remove(service);
+        } else if (type == ServiceEvent.UNREGISTERING) {
+            content.remove(service);
             LOG.debug("Removing {}" , service.getClass());
         }
+    }
+
+    @Override
+    public <T> T lookup(Class<T> clazz) {
+        return lookup.lookup(clazz);
+    }
+
+    @Override
+    public <T> Result<T> lookup(Template<T> template) {
+        return lookup.lookup(template);
     }
 }
