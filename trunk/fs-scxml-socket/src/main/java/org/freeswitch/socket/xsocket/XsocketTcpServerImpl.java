@@ -18,7 +18,7 @@ import org.openide.util.Lookup;
 
 /**
  *
- * @author Jocke, Kristofer
+ * @author Jocke
  */
 public final class XsocketTcpServerImpl implements TcpServer, ConfigChangeListener {
     
