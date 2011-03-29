@@ -21,8 +21,9 @@
         <module>fs-scxml-adapter-api</module>
         <module>fs-scxml-lookup</module>
         <module>fs-scxml-config</module>
-    <module>fs-scxml-integration-test</module>
-  </modules>
+        <module>fs-scxml-integration-test</module>
+        <module>fs-scxml-test-utils</module>
+    </modules>
     
     <repositories>
         <repository>
