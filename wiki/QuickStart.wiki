@@ -70,7 +70,7 @@ $KARAF_HOME/bin/karaf
 
 Add feature url.
 {{{
-karaf@root> features:addurl https://freeswitch-scxml.googlecode.com/svn/trunk/server/features-fs-scxml.xml
+karaf@root> features:addurl https://freeswitch-scxml.googlecode.com/svn/trunk/features-fs-scxml.xml
 }}}
 Start feature
 {{{
