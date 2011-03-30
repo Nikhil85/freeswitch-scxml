@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -14,6 +16,7 @@ import java.util.regex.Pattern;
  */
 public class Event {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Event.class);
     public static final String CHANNEL_EXECUTE_COMPLETE = "CHANNEL_EXECUTE_COMPLETE";
     public static final String CHANNEL_CREATE = "CHANNEL_CREATE";
     public static final String CHANNEL_EXECUTE = "CHANNEL_EXECUTE";
@@ -59,25 +62,42 @@ public class Event {
         } else {
             Matcher matcher = getVariableMatcher(name);
 
-            if (matcher.matches()) {
+            if (matcher.find()) {
                 try {
-                    vars.put(matcher.group(1), URLDecoder.decode(matcher.group(3), "UTF-8"));
+                    String var = URLDecoder.decode(matcher.group(3), "UTF-8");
+                    vars.put(name, var);
+                    return var;
                 } catch (UnsupportedEncodingException ex) {
                     throw new IllegalStateException("No decoder for UTF-8", ex);
                 }
+            } else {
+                LOG.warn("Failed to get var {} ", name);
+                LOG.trace(body);
+                return null;
             }
-            
-            return vars.get(name);
+
+
         }
 
     }
-    
+
+    public DTMF getDtmf() {
+        if (!this.getEventName().equals(DTMF)) {
+            throw new IllegalStateException("This is not an DTMF event");
+
+        } else {
+            return org.freeswitch.adapter.api.DTMF.valueOfString(getVar("DTMF-Digit"));
+        }
+
+    }
+
     public static Event named(String name) {
         return new Event(name);
     }
 
+    //TODO cache patterns 
     private Matcher getVariableMatcher(String var) {
-        return Pattern.compile("^(" + var + ":)(\\s)(\\.*)$", Pattern.MULTILINE).matcher(body);
+        return Pattern.compile("^(" + var + ":)(\\s)(.*)$", Pattern.MULTILINE).matcher(body);
     }
 
     @Override
