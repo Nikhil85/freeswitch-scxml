@@ -28,7 +28,7 @@ public final class EventList {
     private EventList add(Event e) {
 
         if (e.getEventName().endsWith(Event.DTMF)) {
-            dtmfs.add(DTMF.valueOfString(e.getVar("DTMF-Digit"))); //TODO Will fail %23 == #
+            dtmfs.add(e.getDtmf());
         }
         events.add(e);
         return this;
