@@ -112,7 +112,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
     @Override
     public EventList recordFile(int timeLimitInMillis, boolean beep, Set<DTMF> terms, String format) {
         
-        LOG.trace("Session#{}: Try to recordFile");
+        LOG.trace("Session#{}: Try to recordFile", sessionid);
         EventListBuilder builder = new EventListBuilder(eventQueue).termDigits(terms);
 
         if (beep) {
@@ -133,14 +133,14 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
 
     @Override
     public EventList speak(String text) {
-        LOG.debug("Session#{}: speak ...");
+        LOG.debug("Session#{}: speak ...", sessionid);
         excecute(Command.speak(text, false));
         return new EventList.EventListBuilder(eventQueue).consume().build();
     }
 
     @Override
     public EventList getDigits(int maxdigits, Set<DTMF> terms, long timeout) {
-        LOG.debug("Session#{}: getDigits ...");
+        LOG.debug("Session#{}: getDigits ...", sessionid);
         ScheduledFuture<Event> future = scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
         EventList evt = new EventList.EventListBuilder(eventQueue).maxDigits(maxdigits).termDigits(terms).consume().build();
 
@@ -153,7 +153,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
 
     @Override
     public EventList read(int maxDigits, String prompt, long timeout, Set<DTMF> terms) {
-        LOG.info("Session#{}: read ...  timeout -->{}", timeout);
+        LOG.info("Session#{}: read ...  timeout -->{}", sessionid, timeout);
 
         excecute(Command.playback(prompt, false));
         EventListBuilder builder = new EventListBuilder(eventQueue)
