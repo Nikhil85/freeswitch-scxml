@@ -1,7 +1,7 @@
 #summary How to use the gentone tag.
 
 = Gentone =
-The gentone element is not that useful at the moment, but it will generate busy or ringtone to caller. 
+The gentone element is not that useful at the moment, but it will generate busy or ringtone to the caller. 
 
 == Attributes ==
 || *Name*      || *Default* || *Type*      || *Description*                                  ||
