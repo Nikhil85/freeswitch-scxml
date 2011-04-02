@@ -1,8 +1,8 @@
-#summary How to use the hangup tag.
+#summary How to use the answer tag.
 
 = Answer =
 The answer tag is not mandatory but it will make sure 
-That the media is ready. 
+that the media is ready when you start issuing commands. 
 
 == Attributes ==
 || *Name*      || *Default* || *Type*      || *Description*                                  ||

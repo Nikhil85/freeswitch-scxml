@@ -4,7 +4,7 @@
 The exit tag is like the hangup tag, unlike the hangup tag the exit 
 tag will let you pass a reason phrase that will be seen in the SIP message.
 If this dialog is started by a server that can read sip headers, then there is also
-a way to pass variables back to that server. This is useful if you using this server
+a way to pass variables back to that server. This is useful if you using this FreeSwitch
 as an media server and want to handle call control by an other server for instance.   
 
 == Attributes ==
