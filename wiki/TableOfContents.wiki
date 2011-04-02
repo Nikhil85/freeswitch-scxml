@@ -3,4 +3,5 @@
     * [Answer Answer]
     * [Exit Exit]
     * [Hangup Hangup]
+    * [GenTone GenTone]
     * [Menu Menu]
