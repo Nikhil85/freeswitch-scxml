@@ -3,6 +3,26 @@
             targetNamespace="http://www.freeswitch.org"
             xmlns:tns="http://www.freeswitch.org"
             elementFormDefault="qualified">
+    <xsd:element name="gentone">
+        <xsd:annotation>
+            <xsd:appinfo/>
+            <xsd:documentation xml:lang="en">
+                This element could be used to generate busy or ring tone back to the caller.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute ref="tns:test" />
+            <xsd:attribute name="repeat" type="xsd:integer"/>
+            <xsd:attribute name="value" type="xsd:anyURI">
+                <xsd:annotation>
+                    <xsd:documentation xml:lang="en" source="">
+                      one of ring or busy
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
     <xsd:element name="playaudio">
         <xsd:annotation>
             <xsd:appinfo/>

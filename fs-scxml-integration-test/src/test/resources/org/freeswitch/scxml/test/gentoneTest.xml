@@ -1,0 +1,26 @@
+
+<sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+           xmlns:sc="http://www.w3.org/2005/07/scxml"
+           xmlns:fs="http://www.freeswitch.org"
+           xsi:schemaLocation="http://www.w3.org/2005/07/scxml 
+           scxml.xsd
+           http://www.freeswitch.org 
+           fs-core.xsd"
+           initialstate="intro-main">
+               
+    <sc:state id="intro-main">
+        <sc:onentry>
+            <fs:answer/>
+        </sc:onentry>
+        <sc:transition target="exit">
+            <fs:gentone  value="ring" repeat="10"/>
+            <fs:gentone value="busy" repeat="10" />
+        </sc:transition>
+    </sc:state>
+    <sc:state id="exit" final="true">
+        <sc:onentry>
+            <fs:say>Bye</fs:say>
+            <fs:hangup />
+        </sc:onentry>                
+    </sc:state>
+</sc:scxml>

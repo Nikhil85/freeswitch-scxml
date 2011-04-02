@@ -19,13 +19,15 @@ import static org.junit.Assert.*;
  * @author jocke
  */
 public class MockConnection {
-    
+
     public static final String HANGUP = "hangup";
+    public static final String ANSWER = "answer";
+    public static final String PLAYBACK = "playback";
+    public static final String SPEAK = "speak";
     
     private static final String DLM = "\n\n";
     private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s)(\\w*)$", Pattern.MULTILINE);
     private static final Pattern ARGS_PATTERN = Pattern.compile("^(execute-app-arg:)(\\s)(.*)$?", Pattern.MULTILINE);
-    
     private final String uid;
     private IBlockingConnection ibc;
     private String delimiter = "\n\n";
@@ -54,11 +56,11 @@ public class MockConnection {
 
     public void fireEvent(String event) {
     }
- 
+
     public void fireEvent(DTMF dtmf) throws IOException {
         Map<String, String> data = new HashMap<String, String>();
         data.put("DTMF-Digit", dtmf.toString());
-        fireEvent(Event.DTMF, data);                
+        fireEvent(Event.DTMF, data);
     }
 
     public Reply expectApp(String application) throws IOException {
@@ -84,7 +86,7 @@ public class MockConnection {
             return null;
         }
     }
-    
+
     private String getArgs(String appCommand) {
         Matcher matcher = ARGS_PATTERN.matcher(appCommand);
 
@@ -95,7 +97,7 @@ public class MockConnection {
             return null;
         }
     }
-    
+
     private String createEvent(String event, Map<String, String> vars) throws UnsupportedEncodingException {
         StringBuilder builder = new StringBuilder();
         builder.append("Event-Name: ").append(event).append("\n");
@@ -108,7 +110,7 @@ public class MockConnection {
         return builder.toString();
     }
 
-   public final class Reply {
+    public final class Reply {
 
         private String app;
 
