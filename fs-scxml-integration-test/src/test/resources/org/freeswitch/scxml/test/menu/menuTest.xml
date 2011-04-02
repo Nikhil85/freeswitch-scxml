@@ -1,8 +1,11 @@
 
 <sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-           xmlns:sc='http://www.w3.org/2005/07/scxml'
-           xmlns:fs='http://www.freeswitch.org'
-           xsi:schemaLocation=' http://www.w3.org/2005/07/scxml  http://freeswitch-scxml.googlecode.com/files/scxml.xsd http://www.freeswitch.org http://freeswitch-scxml.googlecode.com/files/fs-core.xsd' 
+           xmlns:sc="http://www.w3.org/2005/07/scxml"
+           xmlns:fs="http://www.freeswitch.org"
+           xsi:schemaLocation="http://www.w3.org/2005/07/scxml 
+           ../scxml.xsd
+           http://www.freeswitch.org 
+           ../fs-core.xsd"
            initialstate="intro-main">
     
     <sc:state id="intro-main">
