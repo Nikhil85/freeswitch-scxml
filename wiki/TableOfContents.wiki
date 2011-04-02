@@ -1,3 +1,6 @@
   * [QuickStart Quick start]
   * [Elements]
+    * [Answer Answer]
+    * [Exit Exit]
+    * [Hangup Hangup]
     * [Menu Menu]
