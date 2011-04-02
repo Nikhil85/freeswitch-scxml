@@ -1,3 +1,6 @@
+#sidebar TableOfContents
+
+
 #summary How to use the menu tag.
 
 = Menu =
