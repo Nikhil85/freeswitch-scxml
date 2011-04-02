@@ -2,8 +2,10 @@
 
 = Menu =
 
-The menu tag....
-
+The menu tag is a great tag to use when you want your users 
+to be able to navigate from one state to the other, based
+on the choices the user makes. It's a good convention to have
+a choice that will let the user get back to the initial state. 
 
 = Attributes =
-This is attribues test
+This is attributes test
