@@ -13,6 +13,7 @@
         
         <sc:transition event="choice:1" target="exit">
             <fs:say>'Choice one'</fs:say>
+            <sc:log label="menu-test" expr="'Choice one'" />
         </sc:transition>
         
         <sc:transition event="choice:2" target="exit" >
