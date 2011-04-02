@@ -1,4 +1,4 @@
-package org.freeswitch.scxml.test.menu;
+package org.freeswitch.scxml.test;
 
 import java.util.Map;
 import org.freeswitch.scxml.test.MockConnection;
