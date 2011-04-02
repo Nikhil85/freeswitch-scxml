@@ -22,7 +22,7 @@ a choice that will let the user get back to the initial state.
 || *Name*      || *Description* ||
 || hangup      || The caller hung up the phone ||
 || error       || An error occurred||
-|| maxtime     || Excited the max time ||
+|| maxtime     || Exceeded the max time ||
 || termdigit   || A term digit was pressed ||
 || choice:?    || Choice was made, ex choice:1 ||
 || nomatch     || No match was found ||
