@@ -53,8 +53,8 @@ public final class WaitAction extends AbstractAction {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("{");
-        builder.append(", test=" + getTest());
-        builder.append(", vaue=" + value);
+        builder.append(", test=").append(getTest());
+        builder.append(", vaue=").append(value);
         builder.append("}");
         return builder.toString();
     }

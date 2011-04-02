@@ -70,7 +70,6 @@ public final class ExitAction extends AbstractAction {
 
         } else {
             ivrSession.hangup(vars);
-
         }
     }
 

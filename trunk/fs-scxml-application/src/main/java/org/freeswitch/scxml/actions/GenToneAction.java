@@ -11,21 +11,11 @@ public final class GenToneAction extends AbstractAction {
 
     private static final long serialVersionUID = -7786026569545937761L;
 
-    /**
-     * busy.
-     */
     public static final String BUSY = "busy";
-
-    /**
-     * ring.
-     */
     public static final String RING = "ring";
 
-    private static final String RINGING =
-            "tone_stream://L=-repeat-%(2000,4000,440,480);%(2000,4000,440,480)";
-
-    private static final String BUSY_TONE =
-            "tone_stream://L=-repeat-%(425,425,390,390);%(425,425,390,390)";
+    private static final String RINGING = "tone_stream://L=-repeat-%(2000,4000,440,480);%(2000,4000,440,480)";
+    private static final String BUSY_TONE = "tone_stream://L=-repeat-%(425,425,390,390);%(425,425,390,390)";
 
     private String value;
     private int repeat;
@@ -72,18 +62,13 @@ public final class GenToneAction extends AbstractAction {
     public void handleAction(Session ivrSession) {
 
         if (value.equalsIgnoreCase(RING)) {
-            ivrSession.streamFile(
-                    RINGING.replace("-repeat-", Integer.toString(repeat)));
+            ivrSession.streamFile(RINGING.replace("-repeat-", Integer.toString(repeat)));
 
         } else if (value.equalsIgnoreCase(BUSY)) {
-
-            ivrSession.streamFile(
-                    BUSY_TONE.replace("-repeat-", Integer.toString(repeat)));
+            ivrSession.streamFile(BUSY_TONE.replace("-repeat-", Integer.toString(repeat)));
 
         } else {
-            throw new IllegalStateException(
-                "Gentone value should be one off -->" + BUSY + "," + RINGING);
-
+            throw new IllegalStateException("Gentone value should be one off -->" + BUSY + "," + RINGING);
         }
 
     }
