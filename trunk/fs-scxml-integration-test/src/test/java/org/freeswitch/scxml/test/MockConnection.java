@@ -19,12 +19,16 @@ import static org.junit.Assert.*;
  * @author jocke
  */
 public class MockConnection {
-
-    public static final String DLM = "\n\n";
+    
+    public static final String HANGUP = "hangup";
+    
+    private static final String DLM = "\n\n";
+    private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s)(\\w*)$", Pattern.MULTILINE);
+    private static final Pattern ARGS_PATTERN = Pattern.compile("^(execute-app-arg:)(\\s)(.*)$?", Pattern.MULTILINE);
+    
+    private final String uid;
     private IBlockingConnection ibc;
     private String delimiter = "\n\n";
-    private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s)(\\w*)$", Pattern.MULTILINE);
-    private final String uid;
 
     public MockConnection(int port) throws IOException {
         ibc = new BlockingConnection("localhost", port);
@@ -63,6 +67,13 @@ public class MockConnection {
         return new Reply(application);
     }
 
+    public Reply expectApp(String application, String args) throws IOException {
+        String appCommand = ibc.readStringByDelimiter(DLM);
+        assertEquals(application, getApp(appCommand));
+        assertEquals("Not same args ", args, getArgs(appCommand));
+        return new Reply(application);
+    }
+
     private String getApp(String appCommand) {
         Matcher matcher = APP_PATTERN.matcher(appCommand);
 
@@ -73,7 +84,18 @@ public class MockConnection {
             return null;
         }
     }
+    
+    private String getArgs(String appCommand) {
+        Matcher matcher = ARGS_PATTERN.matcher(appCommand);
 
+        if (matcher.find()) {
+            return matcher.group(3);
+
+        } else {
+            return null;
+        }
+    }
+    
     private String createEvent(String event, Map<String, String> vars) throws UnsupportedEncodingException {
         StringBuilder builder = new StringBuilder();
         builder.append("Event-Name: ").append(event).append("\n");
