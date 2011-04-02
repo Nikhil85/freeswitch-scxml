@@ -1,7 +1,5 @@
 package org.freeswitch.scxml.actions;
 
-import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 
 
@@ -15,7 +13,6 @@ public final class PhraseAction extends AbstractAction {
     private static final long serialVersionUID = -2177874537238327910L;
     private String value;
     private String format;
-    private String termdigits;
     private String method;
 
     /**
@@ -35,28 +32,7 @@ public final class PhraseAction extends AbstractAction {
     public void setMethod(String methodToUse) {
         this.method = methodToUse;
     }
-
-
-    /**
-     * Get the value of termdigits.
-     *
-     * @return the value of termdigits.
-     */
-    public String getTermdigits() {
-        return termdigits;
-    }
-
-    /**
-     * Set the value of termdigits.
-     *
-     * @param digits new value of termdigits.
-     */
-    public void setTermdigits(String digits) {
-        this.termdigits = digits;
-    }
-
-
-
+    
     /**
      * Get the value of format.
      *
@@ -96,8 +72,6 @@ public final class PhraseAction extends AbstractAction {
 
     @Override
     public void handleAction(Session fsSession) {
-        String phrase = eval(value);
-        EventList evt =  fsSession.say("sv", format, method, phrase);
-        proceed(evt);
+        proceed(fsSession.say("sv", format, method, eval(value)));
     }
 }
