@@ -11,37 +11,30 @@
     <sc:state id="intro-main">
         <sc:onentry>
             <fs:answer/>
-            <fs:menu fs:choices="12" fs:termdigits="#" maxtime="10s" fs:say="'enter one or two'" />
+            <fs:say>'Enter some digits'</fs:say>
+            <fs:getdigits var="digits" maxdigits="5" fs:termdigits="#" maxtime="10s" />
         </sc:onentry>
-        
-        <sc:transition event="choice:1" target="exit">
-            <fs:say>'Choice one'</fs:say>
-            <sc:log label="menu-test" expr="'Choice one'" />
-        </sc:transition>
-        
-        <sc:transition event="choice:2" target="exit" >
-            <fs:say>'Choice two'</fs:say>
-        </sc:transition>
-        
-        <sc:transition event="maxtime" target="intro-main" >
-            <fs:say>'Max time'</fs:say>
-        </sc:transition>
-
-        <sc:transition event="termdigit" target="intro-main">
-            <fs:say>'Termdigit'</fs:say>
-        </sc:transition>
-
-        <sc:transition event="nomatch" target="intro-main">
-            <fs:say>'No match'</fs:say>
+       
+        <sc:transition event="maxdigits" target="exit">
+            <fs:say>'maxdigits ' + digits</fs:say>
         </sc:transition>
        
+        <sc:transition event="maxtime" target="exit">
+            <fs:say>'maxtime'</fs:say>
+        </sc:transition>
+
+        <sc:transition event="termdigit" target="exit">
+            <fs:say>'termdigit collected ' + digits</fs:say>
+        </sc:transition>
+       
+        <sc:transition event="hangup" />
+       
     </sc:state>
-    
+   
     <sc:state id="exit" final="true">
         <sc:onentry>
             <fs:say>Bye</fs:say>
             <fs:hangup />
         </sc:onentry>                
     </sc:state>
-    
 </sc:scxml>

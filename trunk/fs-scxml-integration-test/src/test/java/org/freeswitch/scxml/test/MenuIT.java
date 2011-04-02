@@ -1,7 +1,6 @@
 package org.freeswitch.scxml.test;
 
 import java.util.Map;
-import org.freeswitch.scxml.test.MockConnection;
 import java.io.IOException;
 import java.util.HashMap;
 import org.freeswitch.adapter.api.DTMF;
@@ -16,11 +15,7 @@ import static org.freeswitch.scxml.test.MockConnection.*;
  * @author jocke
  */
 public class MenuIT {
-    
-    public static final String ANSWER = "answer";
-    public static final String PLAYBACK = "playback";
-    public static final String SPEAK = "speak";
-   
+       
     private MockConnection con;
     
     @Before
