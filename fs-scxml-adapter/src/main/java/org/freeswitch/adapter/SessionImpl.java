@@ -94,7 +94,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
 
     @Override
     public EventList say(String moduleName, String sayType, String sayMethod, String value) {
-        LOG.trace("Session#{}: say ...");
+        LOG.trace("Session#{}: say ...", sessionid);
         excecute(Command.say(moduleName, sayType, sayMethod, value));
         return new EventListBuilder(eventQueue).consume().build();
     }
