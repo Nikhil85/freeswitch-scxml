@@ -1,6 +1,3 @@
-#sidebar TableOfContents
-
-
 #summary How to use the menu tag.
 
 = Menu =
@@ -10,5 +7,6 @@ to be able to navigate from one state to the other, based
 on the choices the user makes. It's a good convention to have
 a choice that will let the user get back to the initial state. 
 
-= Attributes =
-This is attributes test
+== Attributes ==
+||*Name*||*Default*||*Type*  ||*Description*                                  ||
+||test  ||true     ||boolean ||Test if this action should execute or not      ||
