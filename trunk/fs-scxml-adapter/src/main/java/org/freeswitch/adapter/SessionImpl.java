@@ -81,7 +81,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
 
     @Override
     public EventList answer() {
-        LOG.trace("Session#{}: answer ...");
+        LOG.trace("Session#{}: answer ...", sessionid);
 
         if (notAnswered) {
             excecute(Command.answer());
@@ -162,7 +162,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
                 .consume();
 
         if (builder.contains(Event.CHANNEL_EXECUTE_COMPLETE)) {
-            LOG.trace("the prompt playing was stopped, start timer", sessionid);
+            LOG.trace("Session#{} the prompt playing was stopped, start timer", sessionid);
             ScheduledFuture<Event> future = scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
             builder.reset()
                    .consume();
@@ -172,7 +172,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
             }
 
         } else if (!builder.contains(Event.CHANNEL_HANGUP)) {
-            LOG.trace("the prompt is still playing, cancel it", sessionid);
+            LOG.trace("Session#{} the prompt is still playing, cancel it", sessionid);
             breakAction(builder.reset());
         }
 
