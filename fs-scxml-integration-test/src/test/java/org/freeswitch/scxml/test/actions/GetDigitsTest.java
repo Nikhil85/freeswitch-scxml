@@ -1,11 +1,13 @@
-package org.freeswitch.scxml.test;
+package org.freeswitch.scxml.test.actions;
 
+import java.lang.annotation.Annotation;
 import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 import org.freeswitch.adapter.api.Event;
 import java.io.IOException;
 import org.freeswitch.adapter.api.DTMF;
+import org.freeswitch.scxml.test.MockConnection;
 import org.junit.After;
 import org.junit.Before;
 import static org.freeswitch.scxml.test.MockConnection.*;
@@ -15,7 +17,7 @@ import static org.junit.Assert.*;
  *
  * @author jocke
  */
-public class GetDigitsIT {
+public class GetDigitsTest {
 
     private MockConnection con;
 
@@ -75,7 +77,7 @@ public class GetDigitsIT {
 
     private Map<String, String> createDataEvent() {
         Map<String, String> data = new HashMap<String, String>();
-        data.put("variable_scxml", getClass().getResource("getdigitsTest.xml").toString());
+        data.put("variable_scxml",this.getClass().getClassLoader().getResource("org/freeswitch/scxml/test/getdigitsTest.xml").toString());
         return data;
     }
 }

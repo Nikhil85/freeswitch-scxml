@@ -1,20 +1,23 @@
-package org.freeswitch.scxml.test;
+package org.freeswitch.scxml.test.actions;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.io.IOException;
 import java.util.HashMap;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
+import org.freeswitch.scxml.test.MockConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.freeswitch.scxml.test.MockConnection.*;
+import org.osgi.framework.BundleContext;
 
 /**
  *
  * @author jocke
  */
-public class MenuIT {
+public class MenuTest {
        
     private MockConnection con;
     
@@ -77,7 +80,7 @@ public class MenuIT {
     
     private Map<String, String> createDataEvent() {
         Map<String, String> data =  new HashMap<String, String>();
-        data.put("variable_scxml", getClass().getResource("menuTest.xml").toString());
+        data.put("variable_scxml", this.getClass().getClassLoader().getResource("org/freeswitch/scxml/test/menuTest.xml").toString());
         return data;
     }
 

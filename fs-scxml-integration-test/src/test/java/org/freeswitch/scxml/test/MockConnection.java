@@ -42,6 +42,7 @@ public class MockConnection {
         assertTrue(ibc.readStringByDelimiter(delimiter).equals("myevents"));
         assertTrue(ibc.readStringByDelimiter(delimiter).contains("filter Event-Name"));
         assertTrue(ibc.readStringByDelimiter(delimiter).contains("filter Event-Name"));
+        System.out.println("Connected");
         return this;
     }
 
