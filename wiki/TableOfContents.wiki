@@ -4,4 +4,5 @@
     * [Exit Exit]
     * [Hangup Hangup]
     * [GenTone GenTone]
+    * [GetDigits GetDigits]
     * [Menu Menu]
