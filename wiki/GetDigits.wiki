@@ -1,6 +1,6 @@
-#summary How to use the GetDigits tag.
+#summary How to use the getdigits tag.
 
-= Gentone =
+= getdigits =
 The getdigits action is useful for collecting phonenumbers, pins and passwords. 
 
 == Attributes ==
