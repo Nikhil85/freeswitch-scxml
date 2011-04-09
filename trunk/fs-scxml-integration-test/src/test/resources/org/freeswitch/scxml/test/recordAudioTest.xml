@@ -1,0 +1,39 @@
+
+<sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+           xmlns:sc="http://www.w3.org/2005/07/scxml"
+           xmlns:fs="http://www.freeswitch.org"
+           xsi:schemaLocation="http://www.w3.org/2005/07/scxml 
+           scxml.xsd
+           http://www.freeswitch.org 
+           fs-core.xsd"
+           initialstate="intro-main">
+              
+    <sc:state id="intro-main">
+        <sc:onentry>
+            <fs:answer /> 
+            <fs:say>'Start your recording after the beep'</fs:say>
+            <fs:recordaudio var="rec" beep="true" fs:termdigits="#" maxtime="10s" timevar="dur" />
+        </sc:onentry>
+        
+        <sc:transition event="termdigit" target="exit"  >
+            <fs:say>You said</fs:say>
+            <fs:playaudio value="rec" />
+            <fs:say>'Duration of the recording is ' + dur + ' seconds'</fs:say>
+        </sc:transition>
+        
+        <sc:transition event="maxtime"  target="exit"  >
+            <fs:say>You said</fs:say>
+            <fs:playaudio value="rec" />
+            <fs:say>'Duration of the recording is ' + dur + ' seconds'</fs:say>
+        </sc:transition>
+            
+     </sc:state>    
+        
+    <sc:state id="exit" final="true">
+        <sc:onentry>
+            <fs:say>'bye'</fs:say>
+            <fs:hangup />
+        </sc:onentry>                
+    </sc:state>
+    
+</sc:scxml>
