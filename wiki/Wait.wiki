@@ -1,7 +1,7 @@
 #summary How to use the wait action.
 
-= say =
-Say a sentence using a TTS voice. 
+= wait =
+Create a short pause. 
 
 == Attributes ==
 || *Name*      || *Default* || *Type*      || *Description*                                  ||
