@@ -122,7 +122,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
     }
 
     private void runApplication(Runnable appRunner) {
-        LOG.info("launch applicationLauncher in new thread");
+        LOG.info("launch application in new thread");
         Lookup.getDefault().lookup(ThreadPoolManager.class).getWorkerPool().execute(appRunner);
     }
 
