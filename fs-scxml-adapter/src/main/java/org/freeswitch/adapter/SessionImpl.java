@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class SessionImpl implements Session, Callable<Event> { //NOPMD
+
     public static final String BEEP_TONE = "tone_stream://%(500, 0, 800)";
     public static final String REC_PATH = "REC_PATH";
     public static final String SILENCE_STREAM = "silence_stream://10";
@@ -111,18 +112,13 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
 
     @Override
     public EventList recordFile(int timeLimitInMillis, boolean beep, Set<DTMF> terms, String format) {
-        
         LOG.trace("Session#{}: Try to recordFile", sessionid);
         EventListBuilder builder = new EventListBuilder(eventQueue).termDigits(terms);
-
         if (beep) {
             beep();
         }
-
         excecute(Command.record(getRecPath(format), timeLimitInMillis, null, null, false));
-
         builder.consume();
-
         if (builder.endsWithDtmf(terms)) {
             builder.reset();
             breakAction(builder);
@@ -156,17 +152,13 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
         LOG.info("Session#{}: read ...  timeout -->{}", sessionid, timeout);
 
         excecute(Command.playback(prompt, false));
-        EventListBuilder builder = new EventListBuilder(eventQueue)
-                .maxDigits(maxDigits)
-                .termDigits(terms)
-                .consume();
+        EventListBuilder builder = new EventListBuilder(eventQueue).maxDigits(maxDigits).termDigits(terms).consume();
 
         if (builder.contains(Event.CHANNEL_EXECUTE_COMPLETE)) {
             LOG.trace("Session#{} the prompt playing was stopped, start timer", sessionid);
             ScheduledFuture<Event> future = scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
-            builder.reset()
-                   .consume();
-            
+            builder.reset().consume();
+
             if (!future.isDone()) {
                 future.cancel(false);
             }
@@ -248,6 +240,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
 
         while (it.hasNext()) {
             if (it.next().getEventName().equals(Event.DTMF)) {
+                removed = true;
                 it.remove();
             }
         }
