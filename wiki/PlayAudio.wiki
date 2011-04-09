@@ -18,7 +18,6 @@ Play an audio file.
 == Usage ==
 
 {{{ 
-
 <sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
            xmlns:sc="http://www.w3.org/2005/07/scxml"
            xmlns:fs="http://www.freeswitch.org"
