@@ -5,5 +5,5 @@
     * [Hangup Hangup]
     * [GenTone GenTone]
     * [GetDigits GetDigits]
-    * [Menu Menu]
     * [InputDigits InputDigits]
+    * [Menu Menu]
