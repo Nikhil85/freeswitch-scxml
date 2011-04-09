@@ -12,6 +12,7 @@ import java.awt.Menu;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 import org.freeswitch.scxml.test.actions.GetDigitsTest;
+import org.freeswitch.scxml.test.actions.InputDigitsTest;
 import org.freeswitch.scxml.test.actions.MenuTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +36,7 @@ public class TestSuiteIT {
     @Test
     public void runSuite() throws Exception {
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-        JUnitCore.runClasses(MenuTest.class, GetDigitsTest.class);
+        JUnitCore.runClasses(MenuTest.class, GetDigitsTest.class, InputDigitsTest.class);
     }
 
     @Configuration

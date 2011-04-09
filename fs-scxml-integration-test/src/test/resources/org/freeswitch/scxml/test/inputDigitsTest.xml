@@ -1,0 +1,42 @@
+
+<sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+           xmlns:sc="http://www.w3.org/2005/07/scxml"
+           xmlns:fs="http://www.freeswitch.org"
+           xsi:schemaLocation="http://www.w3.org/2005/07/scxml 
+           scxml.xsd
+           http://www.freeswitch.org 
+           fs-core.xsd"
+           initialstate="intro-main">
+               
+    <sc:state id="intro-main">
+        <sc:onentry>
+            <fs:answer/>
+            <fs:inputdigits var="digits" maxdigits="5" termdigits="#" maxtime="10s" mindigits="2" say="'Enter some digits'" />
+        </sc:onentry>
+       
+        <sc:transition event="maxdigits" target="exit">
+            <fs:say>'maxdigits ' + digits</fs:say>
+        </sc:transition>
+       
+        <sc:transition event="maxtime" target="exit">
+            <fs:say>'maxtime'</fs:say>
+        </sc:transition>
+
+        <sc:transition event="mindigits" target="exit">
+            <fs:say>'mindigits ' + digits</fs:say>
+        </sc:transition>
+        
+        <sc:transition event="termdigit" target="exit">
+            <fs:say>'termdigit collected ' + digits</fs:say>
+        </sc:transition>
+        <sc:transition event="hangup" />
+       
+    </sc:state>
+   
+    <sc:state id="exit" final="true">
+        <sc:onentry>
+            <fs:say>Bye</fs:say>
+            <fs:hangup />
+        </sc:onentry>                
+    </sc:state>
+</sc:scxml>
