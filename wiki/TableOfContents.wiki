@@ -1,5 +1,5 @@
   * [QuickStart Quick start]
-  * [Elements]
+  * [Actions]
     * [Answer Answer]
     * [Exit Exit]
     * [Hangup Hangup]
@@ -7,3 +7,4 @@
     * [GetDigits GetDigits]
     * [InputDigits InputDigits]
     * [Menu Menu]
+    * [Phrase Phrase]
