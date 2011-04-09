@@ -9,3 +9,6 @@
     * [Menu Menu]
     * [Phrase Phrase]
     * [PlayAudio PlayAudio]
+    * [RecordAudio RecordAudio]
+    * [Say Say]
+    * [Wait Wait]
