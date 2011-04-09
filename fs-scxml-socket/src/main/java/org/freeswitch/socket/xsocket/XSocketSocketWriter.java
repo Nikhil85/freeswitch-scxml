@@ -26,7 +26,7 @@ public final class XSocketSocketWriter implements CommandExecutor, EventMatcher 
     private String executedAppName;
 
     private static final Pattern APP_PATTERN =
-            Pattern.compile("^(execute-app-name:)(\\s)(\\w*)$",
+            Pattern.compile("^(execute-app-name:)(\\s+)(\\w*)$",
             Pattern.MULTILINE);
 
     /**
@@ -84,12 +84,13 @@ public final class XSocketSocketWriter implements CommandExecutor, EventMatcher 
     }
 
     private String findApplication(final String data) {
-        String result = null;
         Matcher matcher = APP_PATTERN.matcher(data);
         if (matcher.find()) {
-            result = matcher.group(3);
+            return matcher.group(3);
+            
+        } else {
+            throw new IllegalStateException("Could not find application in \n" + data);
         }
-        return result;
     }
 
     @Override
