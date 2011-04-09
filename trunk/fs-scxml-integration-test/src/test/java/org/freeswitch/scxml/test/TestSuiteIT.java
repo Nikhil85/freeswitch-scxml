@@ -14,6 +14,7 @@ import junit.framework.TestSuite;
 import org.freeswitch.scxml.test.actions.GetDigitsTest;
 import org.freeswitch.scxml.test.actions.InputDigitsTest;
 import org.freeswitch.scxml.test.actions.MenuTest;
+import org.freeswitch.scxml.test.actions.PhraseTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -36,7 +37,11 @@ public class TestSuiteIT {
     @Test
     public void runSuite() throws Exception {
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-        JUnitCore.runClasses(MenuTest.class, GetDigitsTest.class, InputDigitsTest.class);
+        JUnitCore.runClasses(
+                MenuTest.class,
+                GetDigitsTest.class,
+                InputDigitsTest.class,
+                PhraseTest.class);
     }
 
     @Configuration

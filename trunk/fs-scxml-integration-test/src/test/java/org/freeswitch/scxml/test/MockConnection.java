@@ -24,6 +24,7 @@ public class MockConnection {
     public static final String ANSWER = "answer";
     public static final String PLAYBACK = "playback";
     public static final String SPEAK = "speak";
+    public static final String SAY = "say";
     
     private static final String DLM = "\n\n";
     private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s)(\\w*)$", Pattern.MULTILINE);

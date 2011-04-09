@@ -11,7 +11,7 @@
     <sc:state id="intro-main">
         <sc:onentry>
             <fs:answer/>
-            <fs:phrase type="NUMBER" module="en" method="ITERATED" value="1234" />
+            <fs:phrase type="number" module="en" method="ITERATED" value="1234" />
             <fs:hangup />
         </sc:onentry>
     </sc:state>    
