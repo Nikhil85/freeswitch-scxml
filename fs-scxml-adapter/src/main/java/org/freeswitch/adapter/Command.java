@@ -7,12 +7,13 @@ package org.freeswitch.adapter;
  */
 public final class Command {
 
+    private static final String BASE_COMMAND = "sendmsg\n" + "call-command: execute\n" + "execute-app-name: ";
+    
     /**
      * Utility class should have no public constructor.
      */
     private Command() {
     }
-    private static final String BASE_COMMAND = "sendmsg\n" + "call-command: execute\n" + "execute-app-name: ";
 
     public static String answer() {
         return "sendmsg\ncall-command: execute\nexecute-app-name: answer\n\n";
