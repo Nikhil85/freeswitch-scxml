@@ -8,3 +8,4 @@
     * [InputDigits InputDigits]
     * [Menu Menu]
     * [Phrase Phrase]
+    * [PlayAudio PlayAudio]
