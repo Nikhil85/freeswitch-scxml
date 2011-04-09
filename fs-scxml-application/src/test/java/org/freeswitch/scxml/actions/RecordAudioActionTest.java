@@ -45,19 +45,17 @@ public final class RecordAudioActionTest {
     @Test
     public void testHandleActionMaxtime() {
         HashMap<String, String> vars = new HashMap<String, String>();
-        String rec = "/home/test/test.wav";
-        final String time = "2000";
+        String data = "/home/test/test.wav 10";
         
-        vars.put(RecordAudioAction.RECORD_MS, time);
-        vars.put(RecordAudioAction.RECORD_PATH, rec);
+        vars.put(RecordAudioAction.RECORD_DATA, data);
         
         expect(session.clearDigits()).andReturn(Boolean.TRUE);
         expect(actionSupport.getMillisFromString("60s")).andReturn(60000);
         expect(session.recordFile(TIME_LIMIT, true, EnumSet.of(DTMF.POUND), "wav"))
                 .andReturn(EventList.single(new Event(Event.CHANNEL_EXECUTE_COMPLETE, vars)));
         expect(actionSupport.proceed(isA(EventList.class))).andReturn(Boolean.TRUE);
-        actionSupport.setContextVar(action.getVar(), rec);
-        actionSupport.setContextVar(action.getTimevar(), time);
+        actionSupport.setContextVar(action.getVar(), "/home/test/test.wav");
+        actionSupport.setContextVar(action.getTimevar(), "10" );
         actionSupport.fireEvent(CallXmlEvent.MAXTIME);
         
         replay(session, actionSupport);

@@ -17,12 +17,10 @@ import org.freeswitch.adapter.api.Session;
  *
  * @author jocke
  */
-public final class SayAction
-        extends AbstractAction
-        implements ExternalContent {
+public final class SayAction extends AbstractAction implements ExternalContent {
 
     private static final long serialVersionUID = -4993804632786018147L;
-    private String voice;
+    
     private List<Text> externalNodes;
 
     /**
@@ -50,21 +48,6 @@ public final class SayAction
         this.externalNodes = nodes;
     }
 
-    /**
-     *
-     * @return voice
-     */
-    public String getVoice() {
-        return voice;
-    }
-
-    /**
-     *
-     * @param toUse The voice to use.
-     */
-    public void setVoice(String toUse) {
-        this.voice = toUse;
-    }
 
     @Override
     public void handleAction(Session ivrSession) {
@@ -86,8 +69,7 @@ public final class SayAction
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("{");
-        builder.append(", voice=" + voice);
-        builder.append(", test=" + getTest());
+        builder.append(", test=").append(getTest());
         builder.append("}");
         return builder.toString();
     }

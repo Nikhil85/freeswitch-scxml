@@ -1,8 +1,5 @@
 package org.freeswitch.scxml.actions;
 
-
-import java.util.Map;
-
 import java.util.Set;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.adapter.api.Event;
@@ -22,10 +19,10 @@ import org.freeswitch.scxml.engine.CallXmlEvent;
  * @author jocke
  */
 public final class RecordAudioAction extends AbstractAction {
-    public static final String RECORD_MS = "record_ms";
-    public static final String RECORD_PATH = "record_path";
 
     private static final long serialVersionUID = 4365016762809054332L;
+    public static final String RECORD_MS = "record_ms";
+    public static final String RECORD_DATA = "Application-Data";
     private boolean beep = true;
     private boolean cleardigits = true;
     private String maxtime = "30s";
@@ -171,10 +168,11 @@ public final class RecordAudioAction extends AbstractAction {
         }
 
         EventList eventList = fsSession.recordFile(getMaxtimeAsMillis(), beep, dtmfTerminationDigits, format);
-        Event event = eventList.get(Event.CHANNEL_EXECUTE_COMPLETE);
-        
-        setContextVar(var, event.getVar(RECORD_PATH));
-        setContextVar(getTimevar(), event.getVar(RECORD_MS));
+
+        String[] data = getData(eventList);
+
+        setContextVar(var, data[0]);
+        setContextVar(getTimevar(), data[1]);
 
         if (proceed(eventList)) {
 
@@ -185,6 +183,15 @@ public final class RecordAudioAction extends AbstractAction {
                 fireEvent(CallXmlEvent.MAXTIME);
             }
         }
+    }
+
+    private String[] getData(EventList eventList) {
+        Event event = eventList.get(Event.CHANNEL_EXECUTE_COMPLETE);
+        String[] data = event.getVar(RECORD_DATA).split("\\s");
+        if (data.length < 2) {
+            throw new IllegalStateException("failed to get recording data");
+        }
+        return data;
     }
 
     @Override
