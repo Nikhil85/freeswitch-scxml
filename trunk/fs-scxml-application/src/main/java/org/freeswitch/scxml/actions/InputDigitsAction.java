@@ -209,9 +209,7 @@ public final class InputDigitsAction extends AbstractAction {
             ivrSession.clearDigits();
         }
 
-        EventList evt = ivrSession.read(
-                maxdigits, file, getMaxTimeAsInt(), terms);
-
+        EventList evt = ivrSession.read(maxdigits, file, getMaxTimeAsInt(), terms);
 
         if (evt != null) {
 

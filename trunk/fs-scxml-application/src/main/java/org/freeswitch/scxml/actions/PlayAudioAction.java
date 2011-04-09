@@ -1,10 +1,7 @@
 package org.freeswitch.scxml.actions;
 
-
-
 import java.util.Set;
 import org.freeswitch.adapter.api.DTMF;
-import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
@@ -99,7 +96,7 @@ public final class PlayAudioAction extends AbstractAction {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("{");
-        builder.append(", value=" + value);
+        builder.append(", value=").append(value);
         builder.append("}");
         return builder.toString();
     }
