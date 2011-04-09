@@ -11,10 +11,12 @@ import org.ops4j.pax.exam.Inject;
 import java.awt.Menu;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
+import org.freeswitch.scxml.actions.PlayAudioAction;
 import org.freeswitch.scxml.test.actions.GetDigitsTest;
 import org.freeswitch.scxml.test.actions.InputDigitsTest;
 import org.freeswitch.scxml.test.actions.MenuTest;
 import org.freeswitch.scxml.test.actions.PhraseTest;
+import org.freeswitch.scxml.test.actions.PlayAudioTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -41,7 +43,8 @@ public class TestSuiteIT {
                 MenuTest.class,
                 GetDigitsTest.class,
                 InputDigitsTest.class,
-                PhraseTest.class);
+                PhraseTest.class,
+                PlayAudioTest.class);
     }
 
     @Configuration
