@@ -1,6 +1,7 @@
 package org.freeswitch.scxml.actions;
 
 import org.freeswitch.adapter.api.Session;
+import org.freeswitch.scxml.engine.CallXmlEvent;
 
 
 
@@ -12,66 +13,58 @@ public final class PhraseAction extends AbstractAction {
 
     private static final long serialVersionUID = -2177874537238327910L;
     private String value;
-    private String format;
+    private String type;
     private String method;
+    private String module = "en";
 
-    /**
-     * Get the value of method.
-     *
-     * @return the value of method
-     */
     public String getMethod() {
         return method;
     }
 
-    /**
-     * Set the value of method.
-     *
-     * @param methodToUse new value of method.
-     */
     public void setMethod(String methodToUse) {
         this.method = methodToUse;
     }
-    
-    /**
-     * Get the value of format.
-     *
-     * @return the value of format.
-     */
-    public String getFormat() {
-        return format;
+
+    public String getType() {
+        return type;
     }
 
-    /**
-     * Set the value of format.
-     *
-     * @param formatToUse new value of format
-     */
-    public void setFormat(String formatToUse) {
-        this.format = formatToUse;
+    public void setType(String type) {
+        this.type = type;
     }
-
-
-    /**
-     * Get the value of value.
-     *
-     * @return the value of value
-     */
+   
     public String getValue() {
         return value;
     }
 
-    /**
-     * Set the value of value.
-     *
-     * @param toPhrase new value of value
-     */
     public void setValue(String toPhrase) {
         this.value = toPhrase;
     }
 
+    public String getModule() {
+        return module;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
+    }
+    
     @Override
     public void handleAction(Session fsSession) {
-        proceed(fsSession.say("sv", format, method, eval(value)));
+        
+        if(type == null || method == null || value == null) {
+            fireErrorEvent(CallXmlEvent.ERROR);
+            log.error("Not a valid phrase command {} " , this);
+            return;
+        }
+        
+        proceed(fsSession.say(module, type.toUpperCase(), method.toUpperCase(), eval(value)));
     }
+
+    @Override
+    public String toString() {
+        return "PhraseAction{" + "value=" + value + ", type=" + type + ", method=" + method + ", module=" + module + '}';
+    }
+    
+    
 }
