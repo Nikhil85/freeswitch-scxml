@@ -43,12 +43,15 @@ Play an audio file.
         <sc:transition event="termdigit" target="exit"  >
             <fs:say>You said</fs:say>
             <fs:playaudio value="rec" />
+            <fs:say>'Duration of the recording is ' + dur + ' seconds'</fs:say>
         </sc:transition>
         
         <sc:transition event="maxtime"  target="exit"  >
             <fs:say>You said</fs:say>
             <fs:playaudio value="rec" />
+            <fs:say>'Duration of the recording is ' + dur + ' seconds'</fs:say>
         </sc:transition>
+            
             
      </sc:state>    
         
