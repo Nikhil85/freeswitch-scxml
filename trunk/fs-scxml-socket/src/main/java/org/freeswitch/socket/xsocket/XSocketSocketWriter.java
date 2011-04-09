@@ -17,20 +17,12 @@ import org.xsocket.connection.INonBlockingConnection;
 public final class XSocketSocketWriter implements CommandExecutor, EventMatcher {
 
     private static final String BREAK = "break";
-
-    private static final Logger LOG =
-            LoggerFactory.getLogger(XSocketSocketWriter.class);
-
+    private static final Logger LOG = LoggerFactory.getLogger(XSocketSocketWriter.class);
     private final INonBlockingConnection connection;
-
     private String executedAppName;
+    private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s+)(\\w*)$", Pattern.MULTILINE);
 
-    private static final Pattern APP_PATTERN =
-            Pattern.compile("^(execute-app-name:)(\\s+)(\\w*)$",
-            Pattern.MULTILINE);
-
-    /**
-     * Create a new XSocketWriter the a channel.
+    /*
      *
      * @param con The connection to use when writing to the socket.
      */
