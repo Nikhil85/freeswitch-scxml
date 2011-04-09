@@ -159,7 +159,7 @@ public class ActionSupport {
     public int getMillisFromString(String time) throws NumberFormatException {
 
         if (time == null) {
-            throw new IllegalArgumentException("Time value string can not be null");
+            throw new NumberFormatException("Time value string can not be null");
         }
 
         int timeInt = 0;
