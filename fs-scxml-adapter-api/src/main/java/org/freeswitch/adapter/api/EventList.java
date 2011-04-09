@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author jocke
  */
-public final class EventList {
+public final class EventList implements Iterable<Event> {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventList.class);
     private final List<Event> events = new ArrayList<Event>();
@@ -157,6 +157,11 @@ public final class EventList {
         }
 
         return null;
+    }
+
+    @Override
+    public Iterator<Event> iterator() {
+        return events.iterator();
     }
 
     /**

@@ -51,6 +51,10 @@ public class Event {
         return eventName;
     }
 
+    public String getBody() {
+        return body;
+    }
+    
     public String getVar(String name) {
 
         if (vars.containsKey(name)) {
@@ -75,8 +79,6 @@ public class Event {
                 LOG.trace(body);
                 return null;
             }
-
-
         }
 
     }
