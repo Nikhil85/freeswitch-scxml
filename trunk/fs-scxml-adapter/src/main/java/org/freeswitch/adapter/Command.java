@@ -51,7 +51,7 @@ public final class Command {
 
     static String say(String moduleName, String type, String method, String value) {
         return String.format(
-                BASE_COMMAND + " say\nexecute-app-arg: %s %s %s '%s'\n\n",
+                BASE_COMMAND + "say\nexecute-app-arg: %s %s %s '%s'\n\n",
                 moduleName,
                 type,
                 method,
