@@ -22,10 +22,10 @@ public final class XSocketSocketWriter implements CommandExecutor, EventMatcher 
     private String executedAppName;
     private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s+)(\\w*)$", Pattern.MULTILINE);
 
-    /*
+    /**
      *
      * @param con The connection to use when writing to the socket.
-     */
+     **/
     XSocketSocketWriter(INonBlockingConnection con) {
         this.connection = con;
     }
