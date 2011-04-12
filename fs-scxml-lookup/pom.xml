@@ -61,8 +61,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>org.freeswitch.lookup.Activator</Bundle-Activator>
-                        <Export-Package>org.freeswitch.lookup</Export-Package>
+                        <Bundle-Activator>org.freeswitch.scxml.lookup.Activator</Bundle-Activator>
+                        <Export-Package>org.freeswitch.scxml.lookup</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
