@@ -18,14 +18,14 @@ import static org.junit.Assert.*;
 public final class EventListTest {
 
     private static final int QUEUE_SIZE = 50;
-    private BlockingQueue<Event> queue;
+    private EventQueue queue;
 
     /**
      * Set up the test.
      */
     @Before
     public void setUp() {
-        queue = new ArrayBlockingQueue<Event>(QUEUE_SIZE);
+        queue = new EventQueue();
     }
 
     /**
@@ -35,12 +35,12 @@ public final class EventListTest {
     @Test
     public void testBuildComplete() throws InterruptedException {
 
-        queue.put(getInstance(DTMF.ONE));
-        queue.put(getInstance(DTMF.ONE));
-        queue.put(getInstance(DTMF.FIVE));
-        queue.put(getInstance(DTMF.SIX));
+        queue.add(getInstance(DTMF.ONE));
+        queue.add(getInstance(DTMF.ONE));
+        queue.add(getInstance(DTMF.FIVE));
+        queue.add(getInstance(DTMF.SIX));
 
-        queue.put(new Event(Event.CHANNEL_EXECUTE_COMPLETE));
+        queue.add(new Event(Event.CHANNEL_EXECUTE_COMPLETE));
 
         final EventList.EventListBuilder builder = new EventList.EventListBuilder(queue);
 
@@ -56,17 +56,17 @@ public final class EventListTest {
     @Test
     public void testBuildMaxDigits() throws InterruptedException {
 
-        queue.put(getInstance(DTMF.ONE));
-        queue.put(getInstance(DTMF.ONE));
-        queue.put(getInstance(DTMF.FIVE));
-        queue.put(getInstance(DTMF.SEVEN));
-        queue.put(getInstance(DTMF.FIVE));
-        queue.put(getInstance(DTMF.SIX));
-        queue.put(getInstance(DTMF.SIX));
-        queue.put(getInstance(DTMF.SIX));
-        queue.put(getInstance(DTMF.SIX));
+        queue.add(getInstance(DTMF.ONE));
+        queue.add(getInstance(DTMF.ONE));
+        queue.add(getInstance(DTMF.FIVE));
+        queue.add(getInstance(DTMF.SEVEN));
+        queue.add(getInstance(DTMF.FIVE));
+        queue.add(getInstance(DTMF.SIX));
+        queue.add(getInstance(DTMF.SIX));
+        queue.add(getInstance(DTMF.SIX));
+        queue.add(getInstance(DTMF.SIX));
 
-        queue.put(new Event(Event.CHANNEL_EXECUTE_COMPLETE));
+        queue.add(new Event(Event.CHANNEL_EXECUTE_COMPLETE));
         final EventList evtl = new EventList.EventListBuilder(queue).maxDigits(5).consume().build();
         assertTrue("Size of dtmf should be 5 is " + evtl.sizeOfDtmfs(), evtl.sizeOfDtmfs() == 5);
     }
@@ -74,17 +74,17 @@ public final class EventListTest {
     @Test
     public void testBuildTermDigits() throws InterruptedException {
 
-        queue.put(getInstance(DTMF.ONE));
-        queue.put(getInstance(DTMF.ONE));
-        queue.put(getInstance(DTMF.FIVE));
-        queue.put(getInstance(DTMF.SEVEN));
-        queue.put(getInstance(DTMF.FIVE));
-        queue.put(getInstance(DTMF.SIX));
-        queue.put(getInstance(DTMF.SIX));
-        queue.put(getInstance(DTMF.POUND));
+        queue.add(getInstance(DTMF.ONE));
+        queue.add(getInstance(DTMF.ONE));
+        queue.add(getInstance(DTMF.FIVE));
+        queue.add(getInstance(DTMF.SEVEN));
+        queue.add(getInstance(DTMF.FIVE));
+        queue.add(getInstance(DTMF.SIX));
+        queue.add(getInstance(DTMF.SIX));
+        queue.add(getInstance(DTMF.POUND));
 
-        queue.put(getInstance(DTMF.FIVE));
-        queue.put(getInstance(DTMF.SIX));
+        queue.add(getInstance(DTMF.FIVE));
+        queue.add(getInstance(DTMF.SIX));
 
         Set<DTMF> terms = EnumSet.of(DTMF.POUND, DTMF.STAR);
 

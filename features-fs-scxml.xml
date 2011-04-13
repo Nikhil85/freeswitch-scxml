@@ -21,4 +21,5 @@
         <bundle start-level="70">mvn:org.freeswitch.scxml/org.freeswitch.scxml.socket/1.0-SNAPSHOT</bundle> 
         <bundle start-level="70">mvn:org.freeswitch.scxml/org.freeswitch.scxml.socket.api/1.0-SNAPSHOT</bundle> 
     </feature>
+    
 </features>

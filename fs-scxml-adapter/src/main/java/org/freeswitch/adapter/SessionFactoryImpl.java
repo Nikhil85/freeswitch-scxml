@@ -6,6 +6,8 @@ import java.util.Set;
 import org.freeswitch.adapter.api.SessionFactory;
 import org.freeswitch.adapter.api.Session;
 import java.util.Map;
+import org.freeswitch.adapter.api.CommandExecutor;
+import org.freeswitch.adapter.api.EventQueue;
 import org.freeswitch.config.spi.ConfigChangeListener;
 
 /**
@@ -23,8 +25,8 @@ public class SessionFactoryImpl implements SessionFactory, ConfigChangeListener 
     }
 
     @Override
-    public Session create(Map<String, Object> map) {
-        return new SessionImpl(map);
+    public Session create(Map<String, Object> map, CommandExecutor executor) {
+        return new SessionImpl(map, new EventQueue(), executor);
     }
 
     @Override

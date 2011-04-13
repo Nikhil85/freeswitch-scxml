@@ -255,4 +255,18 @@ public interface Session {
      * @return
      */
     boolean isAlive();
+    
+    /**
+     * Get the event queue from this session.
+     * 
+     * @return the queue.
+     */
+    EventQueue getEventQueue();
+
+    /**
+     * Get the command executor from this class
+     * 
+     * @return the executor
+     */
+    CommandExecutor getCommandExecutor();
 }

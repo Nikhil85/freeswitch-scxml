@@ -16,6 +16,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.EventList.EventListBuilder;
+import org.freeswitch.adapter.api.EventQueue;
+import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,42 +29,33 @@ import org.slf4j.LoggerFactory;
 public final class SessionImpl implements Session, Callable<Event> { //NOPMD
 
     public static final String BEEP_TONE = "tone_stream://%(500, 0, 800)";
-    public static final String REC_PATH = "REC_PATH";
     public static final String SILENCE_STREAM = "silence_stream://10";
     private static final Logger LOG = LoggerFactory.getLogger(SessionImpl.class);
     private static final String EVENT_MAP_EQUALS = "sip_bye_h_X-EventMap=";
     private final Map<String, Object> sessionData;
-    private final BlockingQueue<Event> eventQueue;
+    private final EventQueue eventQueue;
     private final ScheduledExecutorService scheduler;
     private final String sessionid;
     private boolean notAnswered = true;
     private volatile boolean alive = true;
     private final CommandExecutor executor;
 
-    SessionImpl(
-            final Map<String, Object> data,
-            final CommandExecutor executor,
-            final ScheduledExecutorService eventScheduler,
-            final String recordingPath,
-            final BlockingQueue<Event> blockingQueue) {
-
-        this.sessionData = data;
-        this.scheduler = eventScheduler;
-        this.eventQueue = blockingQueue;
+    public SessionImpl(Map<String, Object> map, EventQueue eq, CommandExecutor executor) {
+        this.sessionData = map;
+        this.eventQueue = eq;
+        this.scheduler = Lookup.getDefault().lookup(ScheduledExecutorService.class);
         this.executor = executor;
         this.sessionid = getUuid();
     }
 
-    public SessionImpl(Map<String, Object> map) {
-        this.sessionData = map;
-        this.scheduler = (ScheduledExecutorService) map.get(ScheduledExecutorService.class.getName());
-        this.eventQueue = (BlockingQueue<Event>) map.get(BlockingQueue.class.getName());
-        this.executor = (CommandExecutor) map.get(CommandExecutor.class.getName());
-        this.sessionid = getUuid();
+    @Override
+    public EventQueue getEventQueue() {
+        return eventQueue;
     }
 
-    public BlockingQueue<Event> getEventQueue() {
-        return eventQueue;
+    @Override
+    public CommandExecutor getCommandExecutor() {
+        return executor;
     }
 
     @Override
@@ -154,7 +147,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
         excecute(Command.playback(prompt, false));
         EventListBuilder builder = new EventListBuilder(eventQueue).maxDigits(maxDigits).termDigits(terms).consume();
 
-        if (builder.contains(Event.CHANNEL_EXECUTE_COMPLETE)) {
+        if (builder.containsAnyEvent(Event.CHANNEL_EXECUTE_COMPLETE)) {
             LOG.trace("Session#{} the prompt playing was stopped, start timer", sessionid);
             ScheduledFuture<Event> future = scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
             builder.reset().consume();
@@ -163,7 +156,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
                 future.cancel(false);
             }
 
-        } else if (!builder.contains(Event.CHANNEL_HANGUP)) {
+        } else if (!builder.containsAnyEvent(Event.CHANNEL_HANGUP)) {
             LOG.trace("Session#{} the prompt is still playing, cancel it", sessionid);
             breakAction(builder.reset());
         }
@@ -234,18 +227,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
 
     @Override
     public boolean clearDigits() {
-
-        boolean removed = false;
-        Iterator<Event> it = eventQueue.iterator();
-
-        while (it.hasNext()) {
-            if (it.next().getEventName().equals(Event.DTMF)) {
-                removed = true;
-                it.remove();
-            }
-        }
-
-        return removed;
+        return eventQueue.clearDigits();
     }
 
     private EventListBuilder breakAction(EventListBuilder builder) {
