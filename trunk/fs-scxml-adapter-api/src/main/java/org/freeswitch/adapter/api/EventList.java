@@ -39,27 +39,21 @@ public final class EventList implements Iterable<Event> {
     }
 
     private void remove(String evtName) {
-
         Iterator<Event> iter = events.iterator();
-
         while (iter.hasNext()) {
             if (iter.next().getEventName().equals(evtName)) {
                 iter.remove();
             }
         }
-
     }
 
     public boolean contains(String eventName) {
-
         for (Event event : events) {
             if (eventName.equals(event.getEventName())) {
                 return true;
             }
         }
-
         return false;
-
     }
 
     public boolean containsAny(final Set<DTMF> subSet) {
@@ -72,9 +66,7 @@ public final class EventList implements Iterable<Event> {
     }
 
     public String dtmfsAsString() {
-
         StringBuilder sb = new StringBuilder();
-
         for (DTMF dtmf : dtmfs) {
             sb.append(dtmf.toString());
         }
@@ -164,19 +156,14 @@ public final class EventList implements Iterable<Event> {
         return events.iterator();
     }
 
-    /**
-     * A class for building IvrEvents.
-     *
-     * @author jocke.
-     */
     public static final class EventListBuilder {
 
         private EventList eventList;
-        private final BlockingQueue<Event> eventQueue;
+        private final EventQueue eventQueue;
         private int maxNumOfDTMFChars = Integer.MAX_VALUE;
         private Set<DTMF> termDtmfs = Collections.emptySet();
 
-        public EventListBuilder(BlockingQueue<Event> queue) {
+        public EventListBuilder(EventQueue queue) {
             this.eventList = new EventList();
             this.eventQueue = queue;
         }
@@ -193,59 +180,57 @@ public final class EventList implements Iterable<Event> {
 
         public EventListBuilder consume() {
             do {
-
-                Event event = null;
-
                 try {
-                    event = this.eventQueue.poll(5, TimeUnit.MINUTES);
-
-                    if (event == null) {
-                        eventList.add(new Event(Event.CHANNEL_HANGUP));
-
-                    } else {
-                        eventList.add(event);
-                    }
-
+                    poll();
                 } catch (InterruptedException ex) {
                     LOG.error("Oops! event poll timout", ex);
                 }
-
-            } while (!buildIsFinal()
-                    && !endsWithDtmf(termDtmfs)
-                    && !(maxNumOfDTMFChars <= eventList.sizeOfDtmfs()));
+            } while (noFinalEvent());
 
             return this;
         }
-
+        
         public EventListBuilder reset() {
             eventList.remove(Event.CHANNEL_EXECUTE_COMPLETE);
             return this;
         }
 
-        /**
-         * Test if this builder has collected a final event.
-         *
-         * @return true if it has false otherwise.
-         */
-        private boolean buildIsFinal() {
-            return (contains(Event.CHANNEL_EXECUTE_COMPLETE)
-                    || contains(Event.TIMEOUT)
-                    || contains(Event.CHANNEL_HANGUP));
-        }
-
         public boolean endsWithDtmf(Set<DTMF> terms) {
-
             if (eventList.dtmfs.isEmpty()) {
                 return false;
-
             } else {
                 return terms.contains(eventList.dtmfs.get(eventList.dtmfs.size() - 1));
             }
-
         }
 
-        public boolean contains(String eventName) {
-            return eventList.contains(eventName);
+        private boolean noFinalEvent() {
+            return !buildIsFinal() && !endsWithDtmf(termDtmfs) && !(maxNumberOfDtmfs());
+        }
+
+        private void poll() throws InterruptedException {
+            Event event = this.eventQueue.poll(5, TimeUnit.MINUTES);
+            if (event == null) {
+                eventList.add(Event.named(Event.CHANNEL_HANGUP));
+            } else {
+                eventList.add(event);
+            }
+        }
+
+        private boolean maxNumberOfDtmfs() {
+            return maxNumOfDTMFChars <= eventList.sizeOfDtmfs();
+        }
+
+        private boolean buildIsFinal() {
+            return containsAnyEvent(Event.CHANNEL_EXECUTE_COMPLETE, Event.TIMEOUT, Event.CHANNEL_HANGUP);
+        }
+
+        public boolean containsAnyEvent(String... evts) {
+            for (String name : evts) {
+                if (eventList.contains(name)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public EventList build() {

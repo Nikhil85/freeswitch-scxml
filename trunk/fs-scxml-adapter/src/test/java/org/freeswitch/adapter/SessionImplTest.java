@@ -8,13 +8,14 @@ import java.io.FileNotFoundException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.EventQueue;
+import org.freeswitch.test.utils.MockLookup;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +30,7 @@ public final class SessionImplTest {
 
     private static final int TEST_TIME_OUT = 2000;
     private CommandExecutor connection;
-    private ArrayBlockingQueue<Event> evtQueue;
+    private EventQueue evtQueue;
     private ScheduledExecutorService scheduler;
     private ScheduledFuture<Event> future;
     private SessionImpl session;
@@ -45,8 +46,9 @@ public final class SessionImplTest {
         connection = createMock(CommandExecutor.class);
         scheduler = createMock(ScheduledExecutorService.class);
         future = createMock(ScheduledFuture.class);
-        evtQueue = new ArrayBlockingQueue<Event>(50);
-        session = new SessionImpl(new HashMap<String, Object>(), connection, scheduler, "/tmp", evtQueue);
+        evtQueue = new EventQueue();
+        MockLookup.setInstances(scheduler);
+        session = new SessionImpl(new HashMap<String, Object>(), evtQueue, connection);
 
     }
 
@@ -150,9 +152,7 @@ public final class SessionImplTest {
         expect(connection.isReady()).andReturn(Boolean.TRUE).anyTimes();
         connection.execute(capture(commandCapture));
         connection.execute(capture(commandCapture));
-
-
-
+        
         replay(connection);
         EventList beep = session.beep();
         verify(connection);

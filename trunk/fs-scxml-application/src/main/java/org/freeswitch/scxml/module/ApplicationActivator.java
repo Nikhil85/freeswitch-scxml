@@ -4,6 +4,7 @@
  */
 package org.freeswitch.scxml.module;
 
+import java.util.concurrent.ScheduledExecutorService;
 import org.apache.commons.scxml.model.CustomAction;
 import org.apache.commons.scxml.model.Var;
 import org.freeswitch.scxml.ApplicationLauncher;
@@ -43,9 +44,12 @@ public class ApplicationActivator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
+        final ThreadPoolManagerImpl threadPoolManager = new ThreadPoolManagerImpl();
+        
         context.registerService(ApplicationLauncher.class.getName(), new ScxmlApplicationLauncher(), null);
         context.registerService(ScxmlApplication.class.getName(), new ScxmlApplicationImp(), null);
-        context.registerService(ThreadPoolManager.class.getName(), new ThreadPoolManagerImpl(), null);
+        context.registerService(ThreadPoolManager.class.getName(), threadPoolManager, null);
+        context.registerService(ScheduledExecutorService.class.getName(), threadPoolManager.getScheduler(), null);
         context.registerService(SenderFactory.class.getName(), new SenderFactoryImpl(), null);
         context.registerService(Sender.class.getName(), new BasicHttpSender(), null);
         context.registerService(Sender.class.getName(), new SipReferSender(), null);

@@ -15,12 +15,8 @@ import org.xsocket.connection.IConnectHandler;
 import org.xsocket.connection.IDataHandler;
 import org.xsocket.connection.IDisconnectHandler;
 import org.xsocket.connection.INonBlockingConnection;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.freeswitch.adapter.api.CommandExecutor;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.adapter.api.SessionFactory;
@@ -65,27 +61,17 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
     @Override
     public boolean onData(final INonBlockingConnection connection) throws IOException {
 
-        if (noDataAvailable(connection)) {
-            return true;
-        }
-
+        if (noDataAvailable(connection)) return true;
+        
         String header = connection.readStringByDelimiter(LINE_BREAKS);
-
-        if (isCommandReply(header) || isDisconnectNotice(header)) {
-            return true;
-        }
-
+        if (isCommandReply(header) || isDisconnectNotice(header)) return true;
+        
         String evt = readEvent(header, connection);
-
-        if (evt == null) {
-            return true;
-        }
-
+        if(evt == null) return true;
+        
         ServerSessionListener session = (ServerSessionListener) connection.getAttachment();
-
         if (session != null) {
             session.onDataEvent(evt);
-
         } else {
             initSession(evt, ConnectionUtils.synchronizedConnection(connection));
         }
@@ -95,29 +81,22 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
 
     private void initSession(String evt, final INonBlockingConnection connection) throws UnsupportedEncodingException {
         LOG.debug("New Connection so prepare the call to launch");
-
-        XSocketSocketWriter socketWriter = new XSocketSocketWriter(connection);
-
-        BlockingQueue<Event> eventQueue = new ArrayBlockingQueue<Event>(50);
-        final XsocketServerSession serverSession = new XsocketServerSession(eventQueue, socketWriter);
-        connection.setAttachment(serverSession);
-
+        
         SessionFactory factory = Lookup.getDefault().lookup(SessionFactory.class);
 
         if (factory == null) {
             LOG.warn("No factory found in lookup ");
             return;
         }
-
-        final Session fss = factory.create(createVars(evt, eventQueue, socketWriter));
+        
+        XSocketSocketWriter socketWriter = new XSocketSocketWriter(connection);
+        Session fss = factory.create(createVars(evt), socketWriter);
+        connection.setAttachment(new XsocketServerSession(fss.getEventQueue(), socketWriter));
         runApplication(new ApplicationRunner(fss));
     }
 
-    private Map<String, Object> createVars(String evt, BlockingQueue<Event> eventQueue, XSocketSocketWriter socketWriter) throws UnsupportedEncodingException {
+    private Map<String, Object> createVars(String evt) throws UnsupportedEncodingException {
         Map<String, Object> channelVars = extractDataToMap(evt);
-        channelVars.put(BlockingQueue.class.getName(), eventQueue);
-        channelVars.put(CommandExecutor.class.getName(), socketWriter);
-        channelVars.put(ScheduledExecutorService.class.getName(), Lookup.getDefault().lookup(ThreadPoolManager.class).getScheduler());
         return channelVars;
     }
 

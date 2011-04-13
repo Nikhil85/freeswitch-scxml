@@ -7,5 +7,5 @@ import java.util.Map;
  * @author joe
  */
 public interface SessionFactory {
-   Session create(Map<String, Object> vars);
+   Session create(Map<String, Object> vars, CommandExecutor ce);
 }

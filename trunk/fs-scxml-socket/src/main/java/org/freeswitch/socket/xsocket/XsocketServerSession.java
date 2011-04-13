@@ -4,6 +4,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.EventQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,7 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
     private static final Logger LOG = LoggerFactory.getLogger(XsocketServerSession.class);
     private static final Pattern EVENT_PATTERN = Pattern.compile("(Event-Name:)(\\s)(\\w*)", Pattern.MULTILINE);
     private static final Pattern APP_PATTERN = Pattern.compile("^(Application:)(\\s)(\\w*)$", Pattern.MULTILINE);
-    private final BlockingQueue<Event> queue;
+    private final EventQueue queue;
     private final EventMatcher eventMatcher;
 
     /**
@@ -28,7 +29,7 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
      * @param eventMatcher
      *        The matcher to ask if the event should be published to the queue.
      */
-    public XsocketServerSession(BlockingQueue<Event> eventQueue, EventMatcher eventMatcher) {
+    public XsocketServerSession(EventQueue eventQueue, EventMatcher eventMatcher) {
         this.queue = eventQueue;
         this.eventMatcher = eventMatcher;
     }
@@ -78,16 +79,12 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
         return eventMatcher.matches(findApplication(data));
     }
 
-    public BlockingQueue<Event> getQueue() {
+    public EventQueue getQueue() {
         return queue;
     }
 
     @Override
     public void onClose() {
-        try {
-            queue.put(Event.named(Event.CHANNEL_HANGUP));
-        } catch (InterruptedException ex) {
-            LOG.info(ex.getMessage());
-        }
+        queue.add(Event.named(Event.CHANNEL_HANGUP));
     }
 }
