@@ -45,33 +45,37 @@ public class OsgiConfigManager implements ManagedService, LookupListener {
                 String key = (String) keys.nextElement();
                 String value = (String) dict.get(key);
                 PROPS.put(key, value);
-                LOG.info("will use Config entry --> Key={}, value={}", key, value);
+                LOG.debug("will use Config entry --> Key={}, value={}", key, value);
             }
         }
 
-        update();
+        updateListeners();
     }
 
     @Override
     public void resultChanged(LookupEvent le) {
-        update();
+        updateListeners();
     }
 
-    private void update() {
-
+    private void updateListeners() {
         Collection<? extends ConfigChangeListener> listeners = getListeners();
+        for (ConfigChangeListener listener : listeners) {
+            updateListener(listener);
+        }
+    }
 
-        for (ConfigChangeListener ls : listeners) {
-            Set<String> keys = ls.getKeys();
-            for (String key : keys) {
-                if (PROPS.containsKey(key) && !PROPS.get(key).equals(ls.getValue(key))) {
-                    
-                    synchronized (ls) {
-                        ls.setValue(key, PROPS.get(key));
-                    }
+    private void updateListener(ConfigChangeListener listener) {
+        for (String key : listener.getKeys()) {
+            if (PROPS.containsKey(key) && valueChanged(key, listener)) {                    
+                synchronized (listener) {
+                    listener.setValue(key, PROPS.get(key));
                 }
             }
         }
+    }
+
+    private boolean valueChanged(String key, ConfigChangeListener ls) {
+        return !PROPS.get(key).equals(ls.getValue(key));
     }
 
     protected Collection<? extends ConfigChangeListener> getListeners() {
