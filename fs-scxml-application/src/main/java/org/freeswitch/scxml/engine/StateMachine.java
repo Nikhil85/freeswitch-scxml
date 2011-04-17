@@ -1,4 +1,5 @@
 package org.freeswitch.scxml.engine;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import org.apache.commons.scxml.io.SCXMLParser;
 import org.apache.commons.scxml.model.CustomAction;
 import org.apache.commons.scxml.model.ModelException;
 import org.apache.commons.scxml.model.SCXML;
+import org.apache.commons.scxml.semantics.SCXMLSemanticsImpl;
 import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +41,11 @@ public final class StateMachine {
     public StateMachine(final URL document) {
         this.scxmlDocument = document;
         ErrorHandler errHandler = new SimpleErrorHandler();
-        Collection<? extends CustomAction> actions = Lookup.getDefault().lookupAll(CustomAction.class); 
+        Collection<? extends CustomAction> actions = lookupActions();
         Digester digester = SCXMLParser.newInstance(null, new URLResolver(document), new ArrayList<CustomAction>(actions));
-        digester.setClassLoader(getClass().getClassLoader());
+        digester.setClassLoader(new ScxmlClassLoader(getClass().getClassLoader(), actions));
         digester.setErrorHandler(errHandler);
+        
         try {
             machine = (SCXML) digester.parse(document);
             SCXMLParser.updateSCXML(machine);
@@ -53,6 +56,10 @@ public final class StateMachine {
         } catch (ModelException me) {
             logError(me);
         }
+    }
+
+    private Collection<CustomAction> lookupActions() {
+        return (Collection<CustomAction>) Lookup.getDefault().lookupAll(CustomAction.class);
     }
 
     /**
@@ -75,12 +82,14 @@ public final class StateMachine {
         engine.setRootContext(rootCtx);
         rootCtx.set("count", counter);
         engine.addListener(machine, new ScxmlListenerImpl(counter));
-        
         try {
             engine.go();
         } catch (ModelException me) {
             logError(me);
         }
+        
+      
+        
     }
 
     /**

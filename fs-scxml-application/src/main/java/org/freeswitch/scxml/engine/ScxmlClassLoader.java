@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.scxml.model.CustomAction;
-import org.openide.util.Lookup;
 
 /**
  *
@@ -12,20 +11,17 @@ import org.openide.util.Lookup;
  */
 public final class ScxmlClassLoader extends ClassLoader {
 
-    private final Map<String, Class> managedClasses;
+    private Map<String, Class> managedClasses;
    
-    public ScxmlClassLoader() {
+
+    public ScxmlClassLoader(ClassLoader parent, Collection<? extends CustomAction> actions) {
+        super(parent);
         managedClasses = new HashMap<String, Class>();
-        Collection<? extends CustomAction> actions = getActions();
         for (CustomAction action : actions) {
             managedClasses.put(action.getActionClass().getName(), action.getActionClass());
         }
     }
-
-    private Collection<? extends CustomAction> getActions() {
-        return Lookup.getDefault().lookupAll(CustomAction.class);
-    }
-
+    
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
 
