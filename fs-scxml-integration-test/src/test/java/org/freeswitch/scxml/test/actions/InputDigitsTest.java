@@ -59,9 +59,8 @@ public class InputDigitsTest {
     @Test
     public void testMinDigits() throws IOException {
         con.fireEvent(DTMF.ONE);
-        con.fireEvent(DTMF.TWO);
-        con.fireEvent(DTMF.THREE);
-        con.expectApp(SPEAK, "mindigits 12345").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.fireEvent(DTMF.POUND);
+        con.expectApp(SPEAK, "mindigits 1").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
         onExit();
     }
     

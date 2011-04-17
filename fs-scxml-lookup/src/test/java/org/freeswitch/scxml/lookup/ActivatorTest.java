@@ -52,7 +52,8 @@ public class ActivatorTest {
      * Test of start method, of class Activator.
      */
     @Test
-    public void testStart() throws Exception {      
+    public void testStart() throws Exception {
+        assertNotSame(Lookup.getDefault().getClass(), OsgiLookup.class);
         bctx.addServiceListener(isA(OsgiLookup.class));
         expect(bctx.getBundles()).andReturn(bundles);
         expect(bundleNoServices.getRegisteredServices()).andReturn(null);

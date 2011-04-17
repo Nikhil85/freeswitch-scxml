@@ -67,11 +67,11 @@ public final class StateMachine {
      */
     public void newMachine(final Context rootCtx) {
         ScxmlEventDispatcher dispatcher = new ScxmlEventDispatcher(rootCtx);
-        SCXMLExecutor engine = new SCXMLExecutor(new JexlEvaluator(),dispatcher, new ErrorReporter());
+        SCXMLExecutor engine = new SCXMLExecutor(new JexlEvaluator(),dispatcher, new ErrorReporter(), new ScxmlSemanticsImpl());
         dispatcher.setExecutor(engine);
         engine.setStateMachine(machine);
         engine.setSuperStep(true);
-        Count counter = new Count();
+        Count counter = new Count(rootCtx);
         engine.setRootContext(rootCtx);
         rootCtx.set("count", counter);
         engine.addListener(machine, new ScxmlListenerImpl(counter));

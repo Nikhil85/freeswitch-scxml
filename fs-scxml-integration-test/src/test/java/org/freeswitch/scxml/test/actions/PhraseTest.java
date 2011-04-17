@@ -1,5 +1,6 @@
 package org.freeswitch.scxml.test.actions;
 
+import org.junit.Test;
 import org.freeswitch.adapter.api.Event;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,11 +28,12 @@ public class PhraseTest {
     public void tearDown() throws IOException {
      con.close();
     }
-
+    
+    @Test
     public void testPhrase() throws IOException {
         con.fireEvent(Event.CHANNEL_DATA, createDataEvent());
         con.expectApp(ANSWER).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
-        con.expectApp(SAY, "en number iterated '1234'").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.expectApp(SAY, "en NUMBER ITERATED '1234'").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
         con.expectApp(HANGUP).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
     }
 
