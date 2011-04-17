@@ -6,6 +6,7 @@ package org.freeswitch.scxml.lookup;
 
 import org.freeswitch.scxml.lookup.OsgiLookup;
 import java.sql.Ref;
+import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -71,9 +72,7 @@ public class OsgiLookupTest {
     @org.junit.Test
     public void testServiceUnRegistered() {
         System.out.println("serviceChanged");
-        
         content.add(this);
-
         expect(evt.getServiceReference()).andReturn(ref).times(2);
         expect(ref.getBundle()).andReturn(bundle);
         expect(bundle.getBundleContext()).andReturn(bctx);
@@ -86,4 +85,5 @@ public class OsgiLookupTest {
 
         assertNull("Test class removed from lookup should not be found", lookup.lookup(OsgiLookupTest.class));
     }
+    
 }

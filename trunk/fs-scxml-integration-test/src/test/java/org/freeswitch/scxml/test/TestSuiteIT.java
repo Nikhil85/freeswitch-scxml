@@ -4,14 +4,19 @@
  */
 package org.freeswitch.scxml.test;
 
+import java.util.List;
+import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import junit.framework.Assert;
 import java.net.URL;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 import org.ops4j.pax.exam.Inject;
 import java.awt.Menu;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 import org.freeswitch.scxml.actions.PlayAudioAction;
+import org.freeswitch.scxml.test.actions.CountTest;
 import org.freeswitch.scxml.test.actions.GetDigitsTest;
 import org.freeswitch.scxml.test.actions.InputDigitsTest;
 import org.freeswitch.scxml.test.actions.MenuTest;
@@ -19,6 +24,7 @@ import org.freeswitch.scxml.test.actions.PhraseTest;
 import org.freeswitch.scxml.test.actions.PlayAudioTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runner.notification.RunListener;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
@@ -39,12 +45,16 @@ public class TestSuiteIT {
     @Test
     public void runSuite() throws Exception {
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-        JUnitCore.runClasses(
-                MenuTest.class,
-                GetDigitsTest.class,
-                InputDigitsTest.class,
-                PhraseTest.class,
-                PlayAudioTest.class);
+        JUnitCore junit = new JUnitCore();
+        junit.addListener(new TextListener(System.out));
+        Result run = junit.run(
+                             MenuTest.class,
+                             GetDigitsTest.class,
+                             InputDigitsTest.class,
+                             PhraseTest.class,
+                             PlayAudioTest.class,
+                             CountTest.class);
+        Assert.assertTrue(run.wasSuccessful());              
     }
 
     @Configuration

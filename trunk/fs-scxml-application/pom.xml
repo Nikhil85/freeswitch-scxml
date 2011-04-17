@@ -13,6 +13,16 @@
     <packaging>bundle</packaging>
 
     <name>fs-scxml-application</name>
+    
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.4</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

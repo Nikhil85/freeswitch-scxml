@@ -56,9 +56,6 @@ public class MockConnection {
         ibc.flush();
     }
 
-    public void fireEvent(String event) {
-    }
-
     public void fireEvent(DTMF dtmf) throws IOException {
         Map<String, String> data = new HashMap<String, String>();
         data.put("DTMF-Digit", dtmf.toString());

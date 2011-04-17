@@ -1,10 +1,11 @@
 package org.freeswitch.scxml.engine;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.Date;
-
+import org.apache.commons.scxml.Context;
+import org.apache.commons.scxml.SCXMLExpressionException;
+import org.apache.commons.scxml.env.jexl.JexlEvaluator;
+import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -12,37 +13,39 @@ import org.junit.Test;
  */
 public final class CountTest {
 
+    public static final String MOCK_EVENT = "mockevent";
+    private Context ctx;
+    private JexlEvaluator evaluator;
+    private Count count;
+
+    @Before
+    public void setUp() {
+        ctx = new org.apache.commons.scxml.env.jexl.JexlContext();
+        count = new Count(ctx);
+        ctx.set("count", count);
+        evaluator = new JexlEvaluator();
+    }
+
     /**
      * Test of countUp method, of class Count.
      */
     @Test
-    public void testCountUp() {
-        Count count = new Count();
-
-        assertTrue("Count does not start from one ",
-                count.getAny() == 1);
-
-        count.countUp("maxtime");
-
-        assertTrue("Count any is wrong ",
-                count.getAny() == 2);
-
-        assertTrue("max time has wrong count ",
-                count.getMaxtime() == 2);
-
-        count.reset();
-
-        assertTrue("Failed to reset counter ",
-                count.getMaxtime() == 1);
-
-        assertTrue("Failed to reset counter ",
-                count.getAny() == 1);
-
-        Date date = new Date();
-
-        System.out.println(System.currentTimeMillis() / 1000);
-
-
+    public void testCount() throws SCXMLExpressionException {
+        assertTrue(evaluator.evalCond(ctx, "count eq 1"));
+        ctx.setLocal(ScxmlSemanticsImpl.CURRENT_EVENT_EVALUATED, MOCK_EVENT);
+        assertTrue(evaluator.evalCond(ctx, "count eq 1"));
+        assertTrue(evaluator.evalCond(ctx, "count == 1"));
+        count.countUp(MOCK_EVENT);
+        assertTrue(evaluator.evalCond(ctx, "count eq 2"));
+        assertTrue(evaluator.evalCond(ctx, "2 eq count"));
+        assertFalse(evaluator.evalCond(ctx, "count eq 1"));
+        assertTrue(evaluator.evalCond(ctx, "count == 2"));
+        count.countUp(MOCK_EVENT);
+        assertTrue(evaluator.evalCond(ctx, "count eq 3"));
+        assertTrue(evaluator.evalCond(ctx, "count le 3"));
+        assertTrue(evaluator.evalCond(ctx, "count gt 2"));
+        ctx.setLocal(ScxmlSemanticsImpl.CURRENT_EVENT_EVALUATED, "event");
+        assertTrue(evaluator.evalCond(ctx, "count eq 1"));
+        assertEquals(1 , evaluator.eval(ctx, "count.value"));
     }
 }
-

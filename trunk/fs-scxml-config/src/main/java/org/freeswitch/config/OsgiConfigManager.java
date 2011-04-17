@@ -52,12 +52,6 @@ public class OsgiConfigManager implements ManagedService, LookupListener {
         update();
     }
 
-    Dictionary<String, Object> getDict() {
-        Hashtable<String, Object> dict = new Hashtable<String, Object>();
-        dict.put(Constants.SERVICE_PID, "org.freeswitch.scxml");
-        return dict;
-    }
-
     @Override
     public void resultChanged(LookupEvent le) {
         update();

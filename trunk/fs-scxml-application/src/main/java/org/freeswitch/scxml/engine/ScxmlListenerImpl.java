@@ -8,60 +8,42 @@ import org.apache.commons.scxml.model.TransitionTarget;
  *
  * @author jocke
  */
- class ScxmlListenerImpl implements SCXMLListener {
+class ScxmlListenerImpl implements SCXMLListener {
 
-   private final Count count;
+    private final Count count;
 
-    /**
-     * Create a new instance new a new counter.
-     *
-     * @param counter Counts transitions between states.
-     */
+    
     ScxmlListenerImpl(Count counter) {
-      this.count = counter;
+        this.count = counter;
     }
-
-    /**
-     * We do not need to do anything.
-     *
-     * @param state The state that is associated with this transition.
-     */
+    
     @Override
     public void onEntry(TransitionTarget state) {
-    //Do nothing.
+        //Do nothing.
     }
-
-    /**
-     * We do not need to do anything.
-     *
-     * @param state The state that is associated with this transition.
-     */
+    
     @Override
     public void onExit(TransitionTarget state) {
-     //Do nothing.
+        //Do nothing.
     }
 
     @Override
-    public void onTransition(
-            TransitionTarget from,
-            TransitionTarget target,
-            Transition transition) {
-
-        String event = transition.getEvent();
-
-        if (count.isSupported(event)) {
-
-            //Count up the count.event var. same state
-            if (from.getId().equals(target.getId())) {
-               count.countUp(event);
-
-             //Reset counter new state
-            } else {
-               count.reset();
-
-            }
+    public void onTransition(TransitionTarget from, TransitionTarget to, Transition transition) {
+        //Count up the count.event var. same state
+        if (isSameState(from, to)) {
+            incrementEventCount(transition.getEvent());
+        } else {
+            count.reset();
         }
     }
+
+    private void incrementEventCount(String event) {
+        if (event != null && !event.isEmpty()) {
+            count.countUp(event);
+        }
+    }
+
+    private boolean isSameState(TransitionTarget from, TransitionTarget target) {
+        return from.getId().equals(target.getId());
+    }
 }
-
-
