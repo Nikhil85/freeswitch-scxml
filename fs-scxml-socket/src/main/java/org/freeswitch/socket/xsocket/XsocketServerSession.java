@@ -1,6 +1,5 @@
 package org.freeswitch.socket.xsocket;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.freeswitch.adapter.api.Event;
