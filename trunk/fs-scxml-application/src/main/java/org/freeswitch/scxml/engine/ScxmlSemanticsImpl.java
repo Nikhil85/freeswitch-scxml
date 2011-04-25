@@ -97,7 +97,7 @@ public class ScxmlSemanticsImpl extends SCXMLSemanticsImpl {
                     rslt = scInstance.getEvaluator().evalCond(ctx, t.getCond());
                    
                     ctx.setLocal(NAMESPACES_KEY, null);
-                    resetCustomzieContext(rctx);
+                    resetCustomziedContext(rctx);
                 } catch (SCXMLExpressionException e) {
                     rslt = Boolean.FALSE;
                     errRep.onError(ErrorConstants.EXPRESSION_ERROR, e.getMessage(), t);
@@ -167,7 +167,7 @@ public class ScxmlSemanticsImpl extends SCXMLSemanticsImpl {
         ctx.set(CURRENT_EVENT_EVALUATED, event);
     }
 
-    private void resetCustomzieContext(Context ctx) {
+    private void resetCustomziedContext(Context ctx) {
         ctx.set(CURRENT_EVENT_EVALUATED, null);
     }
 }
