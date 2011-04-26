@@ -112,6 +112,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
         }
         excecute(Command.record(getRecPath(format), timeLimitInMillis, null, null, false));
         builder.consume();
+        
         if (builder.endsWithDtmf(terms)) {
             builder.reset();
             breakAction(builder);
@@ -234,7 +235,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
         LOG.debug("Session#{}: breakAction ...", sessionid);
         excecute(Command.breakcommand());
         sleep(1000L);
-        return builder.consume().reset().consume().reset();
+        return builder.consume().reset().consume();
     }
 
     @Override
