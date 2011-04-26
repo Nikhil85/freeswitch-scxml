@@ -23,7 +23,6 @@ Record the user.
 == Usage ==
 
 {{{ 
-
 <sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
            xmlns:sc="http://www.w3.org/2005/07/scxml"
            xmlns:fs="http://www.freeswitch.org"
@@ -41,17 +40,16 @@ Record the user.
         </sc:onentry>
         
         <sc:transition event="termdigit" target="exit"  >
-            <fs:say>You said</fs:say>
+            <fs:say>'You said'</fs:say>
             <fs:playaudio value="rec" />
             <fs:say>'Duration of the recording is ' + dur + ' seconds'</fs:say>
         </sc:transition>
         
         <sc:transition event="maxtime"  target="exit"  >
-            <fs:say>You said</fs:say>
+            <fs:say>'You said'</fs:say>
             <fs:playaudio value="rec" />
             <fs:say>'Duration of the recording is ' + dur + ' seconds'</fs:say>
         </sc:transition>
-            
             
      </sc:state>    
         
@@ -63,4 +61,5 @@ Record the user.
     </sc:state>
     
 </sc:scxml>
+
 }}}
