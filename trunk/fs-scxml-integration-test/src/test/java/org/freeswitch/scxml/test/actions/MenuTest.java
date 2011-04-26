@@ -6,18 +6,19 @@ import java.io.IOException;
 import java.util.HashMap;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
+import org.freeswitch.scxml.test.Fixture;
 import org.freeswitch.scxml.test.MockConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.freeswitch.scxml.test.MockConnection.*;
-import org.osgi.framework.BundleContext;
 
 /**
  *
  * @author jocke
  */
 public class MenuTest {
+    public static final String PATH = "org/freeswitch/scxml/test/menuTest.xml";
        
     private MockConnection con;
     
@@ -29,7 +30,7 @@ public class MenuTest {
     }
 
     private void onEntry() throws IOException {
-        con.fireEvent(Event.CHANNEL_DATA, createDataEvent());
+        con.fireEvent(Event.CHANNEL_DATA, Fixture.createDataEventMap(PATH));
         con.expectApp(ANSWER).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
         con.expectApp(PLAYBACK, "say:enter one or two").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
     }
@@ -54,7 +55,6 @@ public class MenuTest {
         con.expectApp(SPEAK, "Bye").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
         con.expectApp(HANGUP).andReply(Event.CHANNEL_EXECUTE_COMPLETE);  
     }
-  
     @Test
     public void testTermdigit() throws IOException {
         con.fireEvent(DTMF.POUND);
@@ -78,10 +78,4 @@ public class MenuTest {
         testMatchChoiceOne();
     }
     
-    private Map<String, String> createDataEvent() {
-        Map<String, String> data =  new HashMap<String, String>();
-        data.put("variable_scxml", this.getClass().getClassLoader().getResource("org/freeswitch/scxml/test/menuTest.xml").toString());
-        return data;
-    }
-
 }
