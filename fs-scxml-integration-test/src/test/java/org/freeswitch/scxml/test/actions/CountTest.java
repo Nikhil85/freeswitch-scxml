@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.io.IOException;
 import org.freeswitch.adapter.api.Event;
+import org.freeswitch.scxml.test.Fixture;
 import org.freeswitch.scxml.test.MockConnection;
 import org.junit.After;
 import org.junit.Before;
@@ -16,6 +17,7 @@ import static org.freeswitch.scxml.test.MockConnection.*;
  * @author jocke
  */
 public class CountTest {
+    public static final String PATH = "org/freeswitch/scxml/test/countTest.xml";
 
     private MockConnection con;
 
@@ -27,7 +29,7 @@ public class CountTest {
     }
 
     private void onEntry() throws IOException {
-        con.fireEvent(Event.CHANNEL_DATA, createDataEvent());
+        con.fireEvent(Event.CHANNEL_DATA, Fixture.createDataEventMap(PATH));
     }
 
     @After
@@ -54,9 +56,4 @@ public class CountTest {
         
     }
 
-    private Map<String, String> createDataEvent() {
-        Map<String, String> data = new HashMap<String, String>();
-        data.put("variable_scxml", this.getClass().getClassLoader().getResource("org/freeswitch/scxml/test/countTest.xml").toString());
-        return data;
-    }
 }

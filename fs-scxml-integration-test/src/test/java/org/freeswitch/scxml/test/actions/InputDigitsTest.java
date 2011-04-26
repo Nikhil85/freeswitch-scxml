@@ -6,6 +6,7 @@ import java.util.Map;
 import org.freeswitch.adapter.api.Event;
 import java.io.IOException;
 import org.freeswitch.adapter.api.DTMF;
+import org.freeswitch.scxml.test.Fixture;
 import org.freeswitch.scxml.test.MockConnection;
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import static org.junit.Assert.*;
  * @author jocke
  */
 public class InputDigitsTest {
+    public static final String PATH = "org/freeswitch/scxml/test/inputDigitsTest.xml";
 
     private MockConnection con;
 
@@ -33,7 +35,7 @@ public class InputDigitsTest {
     }
 
     private void onEntry() throws IOException {
-        con.fireEvent(Event.CHANNEL_DATA, createDataEvent());
+        con.fireEvent(Event.CHANNEL_DATA, Fixture.createDataEventMap(PATH));
         con.expectApp(ANSWER).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
         con.expectApp(PLAYBACK, "say:Enter some digits").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
     }
@@ -85,9 +87,4 @@ public class InputDigitsTest {
         onExit();
     }
 
-    private Map<String, String> createDataEvent() {
-        Map<String, String> data = new HashMap<String, String>();
-        data.put("variable_scxml",this.getClass().getClassLoader().getResource("org/freeswitch/scxml/test/inputDigitsTest.xml").toString());
-        return data;
-    }
 }
