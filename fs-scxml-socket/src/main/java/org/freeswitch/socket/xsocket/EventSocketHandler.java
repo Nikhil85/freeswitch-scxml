@@ -3,6 +3,7 @@ package org.freeswitch.socket.xsocket;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.util.HashMap;
 import java.util.Map;
@@ -144,7 +145,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
 
     private Map<String, Object> extractDataToMap(final String data) throws UnsupportedEncodingException {
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         Scanner scanner = new Scanner(data.replaceAll(":", ""));
 
         while (scanner.hasNext()) {            
@@ -196,7 +197,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
             connection.write("myevents\n\n");
             connection.write("filter Event-Name " + Event.CHANNEL_EXECUTE_COMPLETE + "\n\n");
             connection.write("filter Event-Name " + Event.DTMF + "\n\n");
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             LOG.error("Oops! onConnect error.", ex);
             return false;
         }

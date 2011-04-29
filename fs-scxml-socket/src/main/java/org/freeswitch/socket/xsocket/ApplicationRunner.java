@@ -21,7 +21,7 @@ class ApplicationRunner implements Runnable {
         try {
             Lookup.getDefault().lookup(ApplicationLauncher.class).launch(fss);
         } catch (Exception ex) {
-            LOG.error("Application Runnder Thread died \n", ex);
+            LOG.error("Application Thread died \n", ex);
         }
         fss.hangup();
     }
