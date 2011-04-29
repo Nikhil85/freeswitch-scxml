@@ -32,7 +32,7 @@ public final class SessionImplTest {
     private CommandExecutor connection;
     private EventQueue evtQueue;
     private ScheduledExecutorService scheduler;
-    private ScheduledFuture<Event> future;
+    private ScheduledFuture<Boolean> future;
     private SessionImpl session;
 
     /**
@@ -127,7 +127,7 @@ public final class SessionImplTest {
         evtQueue.add(Event.named(Event.CHANNEL_EXECUTE_COMPLETE));
         final String toSpeak = "hello world";
 
-        Capture<String> cap = new Capture<String>();
+        Capture<String> cap = new Capture<>();
         connection.execute(capture(cap));
         expect(connection.isReady()).andReturn(Boolean.TRUE);
 
@@ -145,7 +145,7 @@ public final class SessionImplTest {
     @Test(timeout = 2000)
     public void testBeep() throws IOException {
 
-        Capture<String> commandCapture = new Capture<String>(CaptureType.ALL);
+        Capture<String> commandCapture = new Capture<>(CaptureType.ALL);
 
         evtQueue.add(Event.named(Event.CHANNEL_EXECUTE_COMPLETE));
         evtQueue.add(Event.named(Event.CHANNEL_EXECUTE_COMPLETE));
@@ -177,7 +177,7 @@ public final class SessionImplTest {
     }
 
     private Event getInstance(DTMF dtmf) {
-        Map<String, String> vars = new HashMap<String, String>();
+        Map<String, String> vars = new HashMap<>();
         vars.put("DTMF-Digit", dtmf.toString());
         return new Event(Event.DTMF, vars);
     }

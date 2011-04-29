@@ -1,6 +1,6 @@
 package org.freeswitch.adapter;
 
-import java.util.Iterator;
+import java.util.Collections;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.CommandExecutor;
@@ -9,7 +9,6 @@ import java.io.IOException;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -26,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author jocke
  *
  */
-public final class SessionImpl implements Session, Callable<Event> { //NOPMD
+public final class SessionImpl implements Session, Callable<Boolean> { //NOPMD
 
     public static final String BEEP_TONE = "tone_stream://%(500, 0, 800)";
     public static final String SILENCE_STREAM = "silence_stream://10";
@@ -49,16 +48,6 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
     }
 
     @Override
-    public EventQueue getEventQueue() {
-        return eventQueue;
-    }
-
-    @Override
-    public CommandExecutor getCommandExecutor() {
-        return executor;
-    }
-
-    @Override
     public boolean isAlive() {
         return alive;
     }
@@ -73,12 +62,16 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
         return (String) sessionData.get("Channel-Unique-ID");
     }
 
+    public EventQueue getEventQueue() {
+        return eventQueue;
+    }
+
     @Override
     public EventList answer() {
         LOG.trace("Session#{}: answer ...", sessionid);
 
         if (notAnswered) {
-            excecute(Command.answer());
+            execute(Command.answer());
             this.notAnswered = false;
             return new EventListBuilder(eventQueue).consume().build();
         } else {
@@ -89,16 +82,16 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
     @Override
     public EventList say(String moduleName, String sayType, String sayMethod, String value) {
         LOG.trace("Session#{}: say ...", sessionid);
-        excecute(Command.say(moduleName, sayType, sayMethod, value));
+        execute(Command.say(moduleName, sayType, sayMethod, value));
         return new EventListBuilder(eventQueue).consume().build();
     }
 
     @Override
     public EventList beep() {
         EventList.EventListBuilder evtBuilder = new EventList.EventListBuilder(eventQueue);
-        excecute(Command.playback(BEEP_TONE, true));
+        execute(Command.playback(BEEP_TONE, true));
         evtBuilder.consume().reset();
-        excecute(Command.playback(SILENCE_STREAM, true));
+        execute(Command.playback(SILENCE_STREAM, true));
         evtBuilder.consume().reset();
         return evtBuilder.build();
     }
@@ -110,9 +103,9 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
         if (beep) {
             beep();
         }
-        excecute(Command.record(getRecPath(format), timeLimitInMillis, null, null, false));
+        execute(Command.record(getRecPath(format), timeLimitInMillis, null, null, false));
         builder.consume();
-        
+
         if (builder.endsWithDtmf(terms)) {
             builder.reset();
             breakAction(builder);
@@ -124,14 +117,14 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
     @Override
     public EventList speak(String text) {
         LOG.debug("Session#{}: speak ...", sessionid);
-        excecute(Command.speak(text, false));
+        execute(Command.speak(text, false));
         return new EventList.EventListBuilder(eventQueue).consume().build();
     }
 
     @Override
     public EventList getDigits(int maxdigits, Set<DTMF> terms, long timeout) {
         LOG.debug("Session#{}: getDigits ...", sessionid);
-        ScheduledFuture<Event> future = scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
+        ScheduledFuture<Boolean> future = scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
         EventList evt = new EventList.EventListBuilder(eventQueue).maxDigits(maxdigits).termDigits(terms).consume().build();
 
         if (!future.isDone()) {
@@ -145,12 +138,12 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
     public EventList read(int maxDigits, String prompt, long timeout, Set<DTMF> terms) {
         LOG.info("Session#{}: read ...  timeout -->{}", sessionid, timeout);
 
-        excecute(Command.playback(prompt, false));
+        execute(Command.playback(prompt, false));
         EventListBuilder builder = new EventListBuilder(eventQueue).maxDigits(maxDigits).termDigits(terms).consume();
 
         if (builder.containsAnyEvent(Event.CHANNEL_EXECUTE_COMPLETE)) {
             LOG.trace("Session#{} the prompt playing was stopped, start timer", sessionid);
-            ScheduledFuture<Event> future = scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
+            ScheduledFuture<Boolean> future = scheduler.schedule(this, timeout, TimeUnit.MILLISECONDS);
             builder.reset().consume();
 
             if (!future.isDone()) {
@@ -168,14 +161,14 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
     @Override
     public EventList streamFile(String file) {
         LOG.debug("Session#{}: StreamFile: {}", sessionid, file);
-        excecute(Command.playback(file, false));
+        execute(Command.playback(file, false));
         return new EventList.EventListBuilder(eventQueue).consume().build();
     }
 
     @Override
     public EventList streamFile(String file, Set<DTMF> terms) {
         LOG.debug("Session#{}: StreamFile: {}, with termination options", sessionid, file);
-        excecute(Command.playback(file, false));
+        execute(Command.playback(file, false));
         EventList.EventListBuilder builder = new EventList.EventListBuilder(eventQueue).termDigits(terms).consume();
 
         if (builder.endsWithDtmf(terms)) {
@@ -198,10 +191,10 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
     @Override
     public EventList hangup(Map<String, Object> nameList) {
         LOG.debug("Session#{}: hang up ...", sessionid);
-        excecute(Command.set(EVENT_MAP_EQUALS + nameList.toString()));
+        execute(Command.set(EVENT_MAP_EQUALS + nameList.toString()));
         EventListBuilder builder = new EventListBuilder(eventQueue).consume();
         builder.reset();
-        excecute(Command.hangup(null));
+        execute(Command.hangup(null));
         return builder.consume().build();
     }
 
@@ -211,7 +204,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
 
         if (alive) {
             alive = false;
-            excecute(Command.hangup(null));
+            execute(Command.hangup(null));
             return new EventListBuilder(eventQueue).consume().build();
 
         } else {
@@ -222,7 +215,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
     @Override
     public EventList deflect(String target) {
         LOG.trace("Session#{}: deflect ...", sessionid);
-        excecute(Command.refer(target));
+        execute(Command.refer(target));
         return new EventListBuilder(eventQueue).consume().build();
     }
 
@@ -233,17 +226,15 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
 
     private EventListBuilder breakAction(EventListBuilder builder) {
         LOG.debug("Session#{}: breakAction ...", sessionid);
-        excecute(Command.breakcommand());
+        execute(Command.breakcommand());
         sleep(1000L);
         return builder.consume().reset().consume();
     }
 
     @Override
-    public Event call() {
-        LOG.debug("Session#{}: Call Action timed out ???", sessionid);
-        final Event event = new Event(Event.TIMEOUT);
-        eventQueue.add(event);
-        return event;
+    public Boolean call() {
+        LOG.debug("Session#{}: Call Action timed out ???", sessionid);        
+        return  eventQueue.add(Event.named(Event.TIMEOUT));
     }
 
     public String getRecPath(String format) {
@@ -258,7 +249,8 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
 
     }
 
-    private void excecute(String data) {
+    @Override
+    public EventQueue execute(String data) {
 
         if (executor.isReady()) {
 
@@ -272,5 +264,7 @@ public final class SessionImpl implements Session, Callable<Event> { //NOPMD
         } else {
             eventQueue.add(new Event(Event.CHANNEL_HANGUP));
         }
+
+        return eventQueue;
     }
 }
