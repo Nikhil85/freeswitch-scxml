@@ -25,6 +25,8 @@ public class MockConnection {
     public static final String PLAYBACK = "playback";
     public static final String SPEAK = "speak";
     public static final String SAY = "say";
+    public static final String RECORD = "record";
+    public static final String BREAK = "break";
     
     private static final String DLM = "\n\n";
     private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s)(\\w*)$", Pattern.MULTILINE);
@@ -43,7 +45,6 @@ public class MockConnection {
         assertTrue(ibc.readStringByDelimiter(delimiter).equals("myevents"));
         assertTrue(ibc.readStringByDelimiter(delimiter).contains("filter Event-Name"));
         assertTrue(ibc.readStringByDelimiter(delimiter).contains("filter Event-Name"));
-        System.out.println("Connected");
         return this;
     }
 
@@ -57,7 +58,7 @@ public class MockConnection {
     }
 
     public void fireEvent(DTMF dtmf) throws IOException {
-        Map<String, String> data = new HashMap<String, String>();
+        Map<String, String> data = new HashMap<>();
         data.put("DTMF-Digit", dtmf.toString());
         fireEvent(Event.DTMF, data);
     }
@@ -109,6 +110,10 @@ public class MockConnection {
         return builder.toString();
     }
 
+    public String getUid() {
+        return uid;
+    }
+
     public final class Reply {
 
         private String app;
@@ -118,7 +123,11 @@ public class MockConnection {
         }
 
         public void andReply(String event) throws IOException {
-            Map<String, String> data = new HashMap<String, String>();
+            Map<String, String> data = new HashMap<>();
+            data.put("Application", app);
+            ibc.write(createEvent(event, data));
+        }
+        public void andReply(String event , Map<String, String> data) throws IOException {
             data.put("Application", app);
             ibc.write(createEvent(event, data));
         }
