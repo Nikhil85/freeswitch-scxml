@@ -4,27 +4,20 @@
  */
 package org.freeswitch.scxml.test;
 
-import java.util.List;
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import junit.framework.Assert;
-import java.net.URL;
 import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
 import org.ops4j.pax.exam.Inject;
-import java.awt.Menu;
-import junit.framework.TestResult;
-import junit.framework.TestSuite;
-import org.freeswitch.scxml.actions.PlayAudioAction;
 import org.freeswitch.scxml.test.actions.CountTest;
 import org.freeswitch.scxml.test.actions.GetDigitsTest;
 import org.freeswitch.scxml.test.actions.InputDigitsTest;
 import org.freeswitch.scxml.test.actions.MenuTest;
 import org.freeswitch.scxml.test.actions.PhraseTest;
 import org.freeswitch.scxml.test.actions.PlayAudioTest;
+import org.freeswitch.scxml.test.actions.RecordAudioTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runner.notification.RunListener;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
@@ -40,7 +33,7 @@ import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.*;
 public class TestSuiteIT {
 
     @Inject
-    BundleContext context;
+    private BundleContext context;
 
     @Test
     public void runSuite() throws Exception {
@@ -48,13 +41,14 @@ public class TestSuiteIT {
         JUnitCore junit = new JUnitCore();
         junit.addListener(new TextListener(System.out));
         Result run = junit.run(
-                             MenuTest.class,
-                             GetDigitsTest.class,
-                             InputDigitsTest.class,
-                             PhraseTest.class,
-                             PlayAudioTest.class,
-                             CountTest.class);
-        Assert.assertTrue(run.wasSuccessful());              
+                MenuTest.class,
+                GetDigitsTest.class,
+                InputDigitsTest.class,
+                PhraseTest.class,
+                PlayAudioTest.class,
+                CountTest.class,
+                RecordAudioTest.class);
+        Assert.assertTrue(run.wasSuccessful());
     }
 
     @Configuration
@@ -85,5 +79,19 @@ public class TestSuiteIT {
                 mavenBundle("org.freeswitch.scxml", "org.freeswitch.scxml.lookup").versionAsInProject(),
                 mavenBundle("org.freeswitch.scxml", "org.freeswitch.scxml.config").versionAsInProject(),
                 felix());
+    }
+
+    /**
+     * @return the context
+     */
+    public BundleContext getContext() {
+        return context;
+    }
+
+    /**
+     * @param context the context to set
+     */
+    public void setContext(BundleContext context) {
+        this.context = context;
     }
 }

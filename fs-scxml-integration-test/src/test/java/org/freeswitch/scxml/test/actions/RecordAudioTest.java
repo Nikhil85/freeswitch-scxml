@@ -1,8 +1,11 @@
 package org.freeswitch.scxml.test.actions;
 
+import java.util.Map;
 import org.junit.Test;
 import org.freeswitch.adapter.api.Event;
 import java.io.IOException;
+import java.util.HashMap;
+import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.scxml.test.Fixture;
 import org.freeswitch.scxml.test.MockConnection;
 import org.junit.After;
@@ -14,8 +17,8 @@ import static org.freeswitch.scxml.test.MockConnection.*;
  * @author jocke
  */
 public class RecordAudioTest {
-    public static final String PATH = "org/freeswitch/scxml/test/recordAudioTest.xml";
 
+    private static final String PATH = "org/freeswitch/scxml/test/recordAudioTest.xml";
     private MockConnection con;
 
     @Before
@@ -26,15 +29,41 @@ public class RecordAudioTest {
 
     @After
     public void tearDown() throws IOException {
-     con.close();
+        con.close();
+    }
+
+    @Test
+    public void testRecordAudioTimeout() throws IOException {
+        Map<String, String> vars = new HashMap<>();
+        vars.put("Application-Data", "/tmp/test.wav 20");
+        con.fireEvent(Event.CHANNEL_DATA, Fixture.createDataEventMap(PATH));
+        con.expectApp(ANSWER).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.expectApp(SPEAK, "Start your recording after the beep").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.expectApp(RECORD).andReply(Event.CHANNEL_EXECUTE_COMPLETE, vars);
+        con.expectApp(SPEAK, "You said" ).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.expectApp(PLAYBACK, "/tmp/test.wav").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.expectApp(SPEAK, "Duration of the recording is 20 seconds").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.expectApp(SPEAK, "bye").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.expectApp(HANGUP).andReply(Event.CHANNEL_EXECUTE_COMPLETE); 
     }
     
     @Test
-    public void testRecordAudioTermDigit() throws IOException {
+    public void testRecordAudioTerm() throws IOException {
+        Map<String, String> vars = new HashMap<>();
+        vars.put("Application-Data", "/tmp/test.wav 20");
+        vars.put("Application", RECORD);
         con.fireEvent(Event.CHANNEL_DATA, Fixture.createDataEventMap(PATH));
         con.expectApp(ANSWER).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
-        con.expectApp(SAY, "Start your recording after the beep");
-        //TODO add expections
+        con.expectApp(SPEAK, "Start your recording after the beep").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.expectApp(RECORD);
+        con.fireEvent(DTMF.POUND);
+        con.expectApp(BREAK).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.fireEvent(Event.CHANNEL_EXECUTE_COMPLETE, vars);
+        con.expectApp(SPEAK, "You said" ).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.expectApp(PLAYBACK, "/tmp/test.wav").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.expectApp(SPEAK, "Duration of the recording is 20 seconds").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.expectApp(SPEAK, "bye").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+        con.expectApp(HANGUP).andReply(Event.CHANNEL_EXECUTE_COMPLETE); 
     }
-
+    
 }
