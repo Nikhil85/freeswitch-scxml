@@ -8,6 +8,7 @@ import org.apache.commons.scxml.model.ModelException;
 import org.easymock.EasyMock;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,20 +37,7 @@ public final class ExitActionTest {
     }
 
     @Test
-    public void testHandleActionNamelist()throws ModelException, SCXMLExpressionException {
-
-        vars.put("test1", "value1");
-        expect(actionSupport.getNameListAsMap(varNames)).andReturn(vars);
-        expect(session.hangup(vars)).andReturn(EventList.single(Event.CHANNEL_HANGUP));
-       
-        replay(session, actionSupport);
-        action.handleAction(session);
-        verify(session, actionSupport);
-
-    }
-
-    @Test
-    public void testHandleActionNoNamelist() throws ModelException, SCXMLExpressionException {
+    public void testHandleActionNoNamelist() throws ModelException, SCXMLExpressionException, HangupException {
 
         vars.clear();
         expect(actionSupport.getNameListAsMap(varNames)).andReturn(vars);

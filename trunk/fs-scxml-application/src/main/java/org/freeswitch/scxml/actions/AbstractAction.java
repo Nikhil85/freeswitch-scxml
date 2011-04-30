@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.scxml.model.Action;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
@@ -117,7 +118,7 @@ public abstract class AbstractAction extends Action {
      * @param sSession A session to use for executing IVR commands.
      *
      */
-    public abstract void handleAction(Session sSession);
+    public abstract void handleAction(Session sSession) throws HangupException;
 
     /**
      * Validate fields.
@@ -193,7 +194,7 @@ public abstract class AbstractAction extends Action {
 
     @Override
     @SuppressWarnings("unchecked")
-    public final void execute(
+    public void execute(
             EventDispatcher evtDispatcher,
             ErrorReporter errRep,
             SCInstance scInstance,
@@ -207,7 +208,11 @@ public abstract class AbstractAction extends Action {
             Session fss = (Session) scInstance.getRootContext().get(Session.class.getName());
 
             if (fss.isAlive()) {
-                handleAction(fss);
+                try {
+                    handleAction(fss);
+                } catch (HangupException ex) {
+                   fireErrorEvent(CallXmlEvent.HANGUP);    
+                }
 
             } else {
                 fireErrorEvent(CallXmlEvent.HANGUP);

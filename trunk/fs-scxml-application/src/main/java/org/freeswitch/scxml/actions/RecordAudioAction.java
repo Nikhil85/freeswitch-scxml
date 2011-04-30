@@ -1,6 +1,7 @@
 package org.freeswitch.scxml.actions;
 
 import java.util.Set;
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.DTMF;
@@ -159,7 +160,7 @@ public final class RecordAudioAction extends AbstractAction {
     }
 
     @Override
-    public void handleAction(Session fsSession) {
+    public void handleAction(Session fsSession) throws HangupException {
 
         Set<DTMF> dtmfTerminationDigits = DTMF.createCollectionFromString(termdigits);
 

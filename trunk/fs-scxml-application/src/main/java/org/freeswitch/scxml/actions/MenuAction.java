@@ -4,6 +4,7 @@ import java.util.Set;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
@@ -149,7 +150,7 @@ public final class MenuAction extends AbstractAction {
     }
 
     @Override
-    public void handleAction(Session ivrSession) {
+    public void handleAction(Session ivrSession) throws HangupException {
 
         String file;
 

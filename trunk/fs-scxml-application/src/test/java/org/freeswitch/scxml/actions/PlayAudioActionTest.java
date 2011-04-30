@@ -1,6 +1,7 @@
 package org.freeswitch.scxml.actions;
 
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.adapter.api.DTMF;
 import java.net.MalformedURLException;
@@ -37,7 +38,7 @@ public final class PlayAudioActionTest {
     }
 
     @Test
-    public void testHandleActionTermdigit() throws SCXMLExpressionException, MalformedURLException {
+    public void testHandleActionTermdigit() throws SCXMLExpressionException, MalformedURLException, HangupException {
         EventList evtl = EventList.single(DTMF.POUND);
         action.setTermdigits("#*");
         expect(actionSupport.getPath(VALUE)).andReturn(PROMPT);

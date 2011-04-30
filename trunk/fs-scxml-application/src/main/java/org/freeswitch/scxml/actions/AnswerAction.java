@@ -2,6 +2,7 @@ package org.freeswitch.scxml.actions;
 
 
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
@@ -20,7 +21,7 @@ public final class AnswerAction extends AbstractAction  {
 
 
     @Override
-    public void handleAction(Session ivrSession) {
+    public void handleAction(Session ivrSession) throws HangupException {
 
         EventList event = ivrSession.answer();
 

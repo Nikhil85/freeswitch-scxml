@@ -1,5 +1,6 @@
 package org.freeswitch.scxml.actions;
 
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
@@ -50,7 +51,7 @@ public final class PhraseAction extends AbstractAction {
     }
     
     @Override
-    public void handleAction(Session fsSession) {
+    public void handleAction(Session fsSession) throws HangupException {
         
         if(type == null || method == null || value == null) {
             fireErrorEvent(CallXmlEvent.ERROR);
