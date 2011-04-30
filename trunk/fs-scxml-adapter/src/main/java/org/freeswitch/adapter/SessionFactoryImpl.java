@@ -1,6 +1,7 @@
 package org.freeswitch.adapter;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.freeswitch.adapter.api.SessionFactory;
@@ -18,7 +19,7 @@ public class SessionFactoryImpl implements SessionFactory, ConfigChangeListener 
 
     private String path;
     private static final String RECORDING_PATH = "recording.path";
-    private static final Set<String> KEYS = new HashSet<String>();
+    private static final Set<String> KEYS = new HashSet<>();
 
     static {
         KEYS.add(RECORDING_PATH);
@@ -31,7 +32,7 @@ public class SessionFactoryImpl implements SessionFactory, ConfigChangeListener 
 
     @Override
     public Set<String> getKeys() {
-        return KEYS;
+        return Collections.unmodifiableSet(KEYS);
     }
 
     @Override
