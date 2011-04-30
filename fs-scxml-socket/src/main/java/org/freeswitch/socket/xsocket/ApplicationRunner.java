@@ -12,7 +12,7 @@ class ApplicationRunner implements Runnable {
 
     private final Session fss;
 
-    public ApplicationRunner(Session fss) {
+    ApplicationRunner(Session fss) {
         this.fss = fss;
     }
 
