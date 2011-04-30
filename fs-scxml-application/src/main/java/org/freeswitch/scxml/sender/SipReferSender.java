@@ -6,6 +6,7 @@ import org.apache.commons.scxml.Context;
 import org.apache.commons.scxml.SCXMLExecutor;
 import org.apache.commons.scxml.TriggerEvent;
 import org.apache.commons.scxml.model.ModelException;
+import org.freeswitch.adapter.api.HangupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +21,9 @@ import org.freeswitch.scxml.engine.CallXmlEvent;
  */
 public final class SipReferSender implements Sender {
 
-    private static final Logger LOG
-            = LoggerFactory.getLogger(SipReferSender.class);
-
+    private static final Logger LOG = LoggerFactory.getLogger(SipReferSender.class);
     private static final String SUPPORT = "sip-refer";
-
     private SCXMLExecutor executor;
-
     private Context context;
 
     @Override
@@ -39,26 +36,19 @@ public final class SipReferSender implements Sender {
         return new SipReferSender();
     }
 
-
     @Override
     public void send(String sendId, String target, Map<String, Object> params) {
-
-        Session session =
-            (Session) context.get(Session.class.getName());
-
-        EventList evt = session.deflect(target);
-
-        if (evt.contains(Event.CHANNEL_HANGUP)) {
-
+        try {
+            Session session = (Session) context.get(Session.class.getName());
+            EventList evt = session.deflect(target);
+        } catch (HangupException ex) {
             try {
-                executor.triggerEvent(
-                          new TriggerEvent(CallXmlEvent.HANGUP.toString()
-                        , TriggerEvent.SIGNAL_EVENT));
-
-            } catch (ModelException ex) {
-                LOG.error(ex.getMessage());
+                executor.triggerEvent(new TriggerEvent(CallXmlEvent.HANGUP.toString(), TriggerEvent.SIGNAL_EVENT));
+            } catch (ModelException ex1) {
             }
         }
+
+
 
     }
 
@@ -71,5 +61,4 @@ public final class SipReferSender implements Sender {
     public void setContext(Context ctx) {
         this.context = ctx;
     }
-
 }

@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.junit.Before;
@@ -43,8 +44,8 @@ public final class RecordAudioActionTest {
      * Test of handleAction method, of class RecordAudioAction.
      */
     @Test
-    public void testHandleActionMaxtime() {
-        HashMap<String, String> vars = new HashMap<String, String>();
+    public void testHandleActionMaxtime() throws HangupException {
+        HashMap<String, String> vars = new HashMap<>();
         String data = "/home/test/test.wav 10";
         
         vars.put(RecordAudioAction.RECORD_DATA, data);

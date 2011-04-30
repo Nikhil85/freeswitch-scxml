@@ -1,6 +1,7 @@
 package org.freeswitch.scxml.actions;
 
 import java.util.Map;
+import org.freeswitch.adapter.api.HangupException;
 
 import org.freeswitch.adapter.api.Session;
 
@@ -60,17 +61,15 @@ public final class ExitAction extends AbstractAction {
 
 
     @Override
-    public void handleAction(Session ivrSession) {
+    public void handleAction(Session ivrSession) throws HangupException{
 
         Map<String, Object> vars = getNameListAsMap(namelist);
 
         if (vars.isEmpty()) {
             ivrSession.hangup();
-
-
-        } else {
-            ivrSession.hangup(vars);
         }
+        //TODO how to transport vars back
+        //ivrSession.hangup(vars);
     }
 
     @Override

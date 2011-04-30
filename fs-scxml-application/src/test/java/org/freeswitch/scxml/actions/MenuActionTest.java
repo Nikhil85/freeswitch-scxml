@@ -4,6 +4,7 @@ import org.freeswitch.adapter.api.Event;
 import java.util.EnumSet;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.junit.After;
@@ -42,7 +43,7 @@ public class MenuActionTest {
      * Test of handleAction method, of class MenuAction.
      */
     @Test
-    public void testHandleActionMatch() {
+    public void testHandleActionMatch() throws HangupException {
         EventList evtl = EventList.single(DTMF.ONE);
         readAndReturn(evtl);
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);
@@ -55,7 +56,7 @@ public class MenuActionTest {
      * Test of handleAction method, of class MenuAction.
      */
     @Test
-    public void testHandleActionNoMatch() {
+    public void testHandleActionNoMatch() throws HangupException {
         EventList evtl = EventList.single(DTMF.FOUR);
         readAndReturn(evtl);
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);
@@ -67,7 +68,7 @@ public class MenuActionTest {
      * Test of handleAction method, of class MenuAction.
      */
     @Test
-    public void testHandleActionTimeout() {
+    public void testHandleActionTimeout() throws HangupException {
         EventList evtl = EventList.single(Event.TIMEOUT);
         readAndReturn(evtl);
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);
@@ -79,7 +80,7 @@ public class MenuActionTest {
      * Test of handleAction method, of class MenuAction.
      */
     @Test
-    public void testHandleActionTermdigit() {
+    public void testHandleActionTermdigit() throws HangupException {
         EventList evtl = EventList.single(DTMF.POUND);
         readAndReturn(evtl);
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);
@@ -91,21 +92,21 @@ public class MenuActionTest {
      * Test of handleAction method, of class MenuAction.
      */
     @Test
-    public void testHandleActionHangup() {
+    public void testHandleActionHangup() throws NumberFormatException, HangupException {
         EventList evtl = EventList.single(Event.CHANNEL_HANGUP);
         readAndReturn(evtl);
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.FALSE);
         handleAction();
     }
  
-    private void readAndReturn(EventList evtl) throws NumberFormatException {
+    private void readAndReturn(EventList evtl) throws NumberFormatException, HangupException {
         expect(actionSupport.getPath(PROMPT)).andReturn(PROMPT);
         expect(actionSupport.getMillisFromString("30s")).andReturn(30000);
         expect(ivrSession.clearDigits()).andReturn(Boolean.TRUE);
         expect(ivrSession.read(1, PROMPT, 30000 , EnumSet.of(DTMF.POUND))).andReturn(evtl);
     }
     
-    private void handleAction() {
+    private void handleAction() throws HangupException {
         replay(ivrSession, actionSupport);
         action.handleAction(ivrSession);
         verify(ivrSession, actionSupport);

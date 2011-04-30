@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.scxml.model.ExternalContent;
+import org.freeswitch.adapter.api.HangupException;
 import org.w3c.dom.Text;
 
 import org.freeswitch.adapter.api.Session;
@@ -50,7 +51,7 @@ public final class SayAction extends AbstractAction implements ExternalContent {
 
 
     @Override
-    public void handleAction(Session ivrSession) {
+    public void handleAction(Session ivrSession) throws HangupException {
 
         if (externalNodes.isEmpty()) {
 

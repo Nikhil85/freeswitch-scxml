@@ -4,6 +4,7 @@ package org.freeswitch.scxml.actions;
  *
  * @author jocke
  */
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 
 /**
@@ -20,7 +21,7 @@ public final class HangupAction extends AbstractAction {
     private static final long serialVersionUID = -6083018410619271886L;
 
     @Override
-    public void handleAction(Session ivrSession) {
+    public void handleAction(Session ivrSession) throws HangupException {
         ivrSession.hangup();
     }
 

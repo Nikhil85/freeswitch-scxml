@@ -2,6 +2,7 @@ package org.freeswitch.scxml.actions;
 
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.junit.Before;
@@ -30,7 +31,7 @@ public final class AnswerActionTest {
      * Test of handleAction method, of class AnswerAction.
      */
     @Test
-    public void testHandleActionAnswer() {
+    public void testHandleActionAnswer() throws HangupException {
         
         EventList complete = EventList.single(Event.CHANNEL_EXECUTE_COMPLETE);
         expect(session.answer()).andReturn(complete);
@@ -47,7 +48,7 @@ public final class AnswerActionTest {
      * Test so that answer triggers a hangup event when such IvrEvent returns.
      */
     @Test
-    public void testHandleActionHangup() {
+    public void testHandleActionHangup() throws HangupException {
         EventList hangup = EventList.single(Event.CHANNEL_HANGUP);
         expect(session.answer()).andReturn(hangup);
         expect(actionSupport.proceed(hangup)).andReturn(Boolean.FALSE);

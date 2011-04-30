@@ -43,7 +43,6 @@ public final class ScxmlApplicationLauncher implements ApplicationLauncher {
             String targetUrl = (String) (vars.containsKey(SIP_TO_PARAMS) ? vars.get(SIP_TO_PARAMS) : vars.get(SCXML_VAR));
 
             if (targetUrl == null) {
-                session.hangup();
                 LOG.info("No SCXML param in request! No way to" + " launch application");
                 return;
             }
@@ -66,12 +65,8 @@ public final class ScxmlApplicationLauncher implements ApplicationLauncher {
                 LOG.warn("New scxml application was found unable to launch application");
             }
 
-        } catch (IllegalStateException iex) {
+        } catch (IllegalStateException | MalformedURLException | UnsupportedEncodingException iex) {
             LOG.error(iex.getMessage());
-        } catch (MalformedURLException mex) {
-            LOG.error(mex.getMessage());
-        } catch (UnsupportedEncodingException uex) {
-            LOG.error(uex.getMessage());
         }
 
     }

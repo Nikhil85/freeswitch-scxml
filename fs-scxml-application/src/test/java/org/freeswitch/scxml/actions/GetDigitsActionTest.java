@@ -4,6 +4,7 @@ import org.freeswitch.adapter.api.Event;
 import java.util.Set;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public final class GetDigitsActionTest {
     }
 
     @Test
-    public void testHandleActionMaxtime() {
+    public void testHandleActionMaxtime() throws HangupException {
         String dtmfs = "123467";
         EventList list = EventList.list(dtmfs, Event.TIMEOUT);
         expect(actionSupport.getMillisFromString(MAX_TIME_STRING)).andReturn(MAX_TIME);
@@ -51,7 +52,7 @@ public final class GetDigitsActionTest {
     }
 
     @Test
-    public void testHandleActionTermdigit() {
+    public void testHandleActionTermdigit() throws HangupException {
         expect(actionSupport.getMillisFromString(MAX_TIME_STRING)).andReturn(MAX_TIME);
         expect(session.getDigits(MAX_DIGITS, getTermDigits(), MAX_TIME)).andReturn(EventList.list("123467#"));
         actionSupport.fireEvent(CallXmlEvent.TERMDIGIT);
@@ -62,7 +63,7 @@ public final class GetDigitsActionTest {
     }
   
     @Test
-    public void testHandleActionMaxDigits() {
+    public void testHandleActionMaxDigits() throws HangupException {
         expect(actionSupport.getMillisFromString(MAX_TIME_STRING)).andReturn(MAX_TIME);
         String digits = "12345678";
         expect(session.getDigits(MAX_DIGITS, getTermDigits(), MAX_TIME)).andReturn(EventList.list(digits));

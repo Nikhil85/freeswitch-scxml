@@ -1,5 +1,6 @@
 package org.freeswitch.scxml.actions;
 
+import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 
 /**
@@ -44,7 +45,7 @@ public final class WaitAction extends AbstractAction {
     }
 
     @Override
-    public void handleAction(Session ivrSession) {
+    public void handleAction(Session ivrSession) throws HangupException {
         ivrSession.sleep(getIntValue());
     }
 

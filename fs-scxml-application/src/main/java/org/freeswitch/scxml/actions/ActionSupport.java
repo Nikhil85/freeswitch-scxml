@@ -97,7 +97,6 @@ public class ActionSupport {
         } catch (MalformedURLException ex) {
             LOG.error(ex.getMessage());
             Session ivrSession = (Session) ctx.get(Session.class.getName());
-            ivrSession.hangup();
             throw new IllegalStateException("Failed to get prompt");
         }
 
