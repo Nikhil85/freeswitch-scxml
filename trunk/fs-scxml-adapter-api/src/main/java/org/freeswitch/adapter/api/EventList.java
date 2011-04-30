@@ -1,16 +1,11 @@
 package org.freeswitch.adapter.api;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -18,14 +13,13 @@ import org.slf4j.LoggerFactory;
  */
 public final class EventList implements Iterable<Event> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EventList.class);
-    private final List<Event> events = new ArrayList<Event>();
-    private final List<DTMF> dtmfs = new ArrayList<DTMF>();
+    private final List<Event> events = new ArrayList<>();
+    private final List<DTMF> dtmfs = new ArrayList<>();
 
-    private EventList() {
+    EventList() {
     }
 
-    private EventList add(Event e) {
+    EventList add(Event e) {
 
         if (e.getEventName().endsWith(Event.DTMF)) {
             dtmfs.add(e.getDtmf());
@@ -38,7 +32,7 @@ public final class EventList implements Iterable<Event> {
         return dtmfs.size();
     }
 
-    private void remove(String evtName) {
+    void remove(String evtName) {
         Iterator<Event> iter = events.iterator();
         while (iter.hasNext()) {
             if (iter.next().getEventName().equals(evtName)) {
@@ -129,7 +123,7 @@ public final class EventList implements Iterable<Event> {
     }
 
     private static void createDtmfEvent(DTMF dtmf, EventList el) {
-        Map<String, String> vars = new HashMap<String, String>();
+        Map<String, String> vars = new HashMap<>();
         vars.put("DTMF-Digit", dtmf.toString());
         Event event = new Event(Event.DTMF, vars);
         el.add(event);
@@ -156,85 +150,11 @@ public final class EventList implements Iterable<Event> {
         return events.iterator();
     }
 
-    public static final class EventListBuilder {
+    List<DTMF> getDtmfs() {
+        return dtmfs;
+    }
 
-        private EventList eventList;
-        private final EventQueue eventQueue;
-        private int maxNumOfDTMFChars = Integer.MAX_VALUE;
-        private Set<DTMF> termDtmfs = Collections.emptySet();
-
-        public EventListBuilder(EventQueue queue) {
-            this.eventList = new EventList();
-            this.eventQueue = queue;
-        }
-
-        public EventListBuilder maxDigits(final int maxDigits) {
-            this.maxNumOfDTMFChars = maxDigits > 0 ? maxDigits : Integer.MAX_VALUE;
-            return this;
-        }
-
-        public EventListBuilder termDigits(Set<DTMF> terms) {
-            this.termDtmfs = terms;
-            return this;
-        }
-
-        public EventListBuilder consume() {
-            do {
-                try {
-                    poll();
-                } catch (InterruptedException ex) {
-                    LOG.error("Oops! event poll timout", ex);
-                }
-            } while (noFinalEvent());
-
-            return this;
-        }
-        
-        public EventListBuilder reset() {
-            eventList.remove(Event.CHANNEL_EXECUTE_COMPLETE);
-            return this;
-        }
-
-        public boolean endsWithDtmf(Set<DTMF> terms) {
-            if (eventList.dtmfs.isEmpty()) {
-                return false;
-            } else {
-                return terms.contains(eventList.dtmfs.get(eventList.dtmfs.size() - 1));
-            }
-        }
-
-        private boolean noFinalEvent() {
-            return !buildIsFinal() && !endsWithDtmf(termDtmfs) && !(maxNumberOfDtmfs());
-        }
-
-        private void poll() throws InterruptedException {
-            Event event = this.eventQueue.poll(5, TimeUnit.MINUTES);
-            if (event == null) {
-                eventList.add(Event.named(Event.CHANNEL_HANGUP));
-            } else {
-                eventList.add(event);
-            }
-        }
-
-        private boolean maxNumberOfDtmfs() {
-            return maxNumOfDTMFChars <= eventList.sizeOfDtmfs();
-        }
-
-        private boolean buildIsFinal() {
-            return containsAnyEvent(Event.CHANNEL_EXECUTE_COMPLETE, Event.TIMEOUT, Event.CHANNEL_HANGUP);
-        }
-
-        public boolean containsAnyEvent(String... evts) {
-            for (String name : evts) {
-                if (eventList.contains(name)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public EventList build() {
-            return eventList;
-        }
+    public DTMF peakDtmf() {
+        return dtmfs.get(dtmfs.size() - 1);
     }
 }

@@ -56,7 +56,7 @@ public enum DTMF {
     /**
      * A cache for faster lookup.
      */
-    private static final Map<Character, DTMF> CACHE = new HashMap<Character, DTMF>();
+    private static final Map<Character, DTMF> CACHE = new HashMap<>();
 
     static {
         EnumSet<DTMF> dtmfs = EnumSet.allOf(DTMF.class);
