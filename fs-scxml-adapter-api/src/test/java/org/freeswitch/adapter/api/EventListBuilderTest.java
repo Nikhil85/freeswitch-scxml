@@ -15,9 +15,8 @@ import static org.junit.Assert.*;
  *
  * @author joe
  */
-public final class EventListTest {
+public final class EventListBuilderTest {
 
-    private static final int QUEUE_SIZE = 50;
     private EventQueue queue;
 
     /**
@@ -33,7 +32,7 @@ public final class EventListTest {
      * @throws InterruptedException If we fail to put events to queue.
      */
     @Test
-    public void testBuildComplete() throws InterruptedException {
+    public void testBuildComplete() throws InterruptedException, HangupException {
 
         queue.add(getInstance(DTMF.ONE));
         queue.add(getInstance(DTMF.ONE));
@@ -42,7 +41,7 @@ public final class EventListTest {
 
         queue.add(new Event(Event.CHANNEL_EXECUTE_COMPLETE));
 
-        final EventList.EventListBuilder builder = new EventList.EventListBuilder(queue);
+        final EventListBuilder builder = new EventListBuilder(queue);
 
         EventList evtl = builder.consume().build();
 
@@ -54,7 +53,7 @@ public final class EventListTest {
     }
 
     @Test
-    public void testBuildMaxDigits() throws InterruptedException {
+    public void testBuildMaxDigits() throws InterruptedException, HangupException {
 
         queue.add(getInstance(DTMF.ONE));
         queue.add(getInstance(DTMF.ONE));
@@ -67,12 +66,12 @@ public final class EventListTest {
         queue.add(getInstance(DTMF.SIX));
 
         queue.add(new Event(Event.CHANNEL_EXECUTE_COMPLETE));
-        final EventList evtl = new EventList.EventListBuilder(queue).maxDigits(5).consume().build();
+        final EventList evtl = new EventListBuilder(queue).maxDigits(5).consume().build();
         assertTrue("Size of dtmf should be 5 is " + evtl.sizeOfDtmfs(), evtl.sizeOfDtmfs() == 5);
     }
 
     @Test
-    public void testBuildTermDigits() throws InterruptedException {
+    public void testBuildTermDigits() throws InterruptedException, HangupException {
 
         queue.add(getInstance(DTMF.ONE));
         queue.add(getInstance(DTMF.ONE));
@@ -85,19 +84,14 @@ public final class EventListTest {
 
         queue.add(getInstance(DTMF.FIVE));
         queue.add(getInstance(DTMF.SIX));
-
         Set<DTMF> terms = EnumSet.of(DTMF.POUND, DTMF.STAR);
-
-        EventList evt = new EventList.EventListBuilder(queue)
-                .maxDigits(10).termDigits(terms).consume().build();
-
-
-        assertTrue(evt.sizeOfDtmfs() == 8);
+        EventList evt = new EventListBuilder(queue).maxDigits(10).termDigits(terms).consume().build();
+        assertSame(8, evt.sizeOfDtmfs());
     }
 
 
     private Event getInstance(DTMF dtmf) {
-        Map<String, String> vars = new HashMap<String, String>();
+        Map<String, String> vars = new HashMap<>();
         vars.put("DTMF-Digit", dtmf.toString());
         return new Event(Event.DTMF, vars);
     }

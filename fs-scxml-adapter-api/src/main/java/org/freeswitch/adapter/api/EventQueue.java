@@ -18,14 +18,14 @@ public class EventQueue {
     private BlockingQueue<Event> eventQueue;
 
     public EventQueue() {
-        eventQueue = new ArrayBlockingQueue<Event>(50);
+        eventQueue = new ArrayBlockingQueue<>(50);
     }
 
     public EventQueue(BlockingQueue<Event> eventQueue) {
         this.eventQueue = eventQueue;
     }
 
-    Event poll(int i, TimeUnit timeUnit) throws InterruptedException {
+    public Event poll(int i, TimeUnit timeUnit) throws InterruptedException {
         return eventQueue.poll(i, timeUnit);
     }
 

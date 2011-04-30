@@ -5,6 +5,7 @@ import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class Event {
     public Event(String eventName, String body) {
         this.eventName = eventName;
         this.body = body;
-        this.vars = new HashMap<String, String>();
+        this.vars = new HashMap<>();
     }
 
     public Event(String eventName, Map<String, String> vars) {
@@ -54,7 +55,7 @@ public class Event {
     public String getBody() {
         return body;
     }
-    
+
     public String getVar(String name) {
 
         if (vars.containsKey(name)) {
@@ -62,25 +63,33 @@ public class Event {
 
         } else if (body == null) {
             return null;
-
-        } else {
-            Matcher matcher = getVariableMatcher(name);
-
-            if (matcher.find()) {
-                try {
-                    String var = URLDecoder.decode(matcher.group(3), "UTF-8");
-                    vars.put(name, var);
-                    return var;
-                } catch (UnsupportedEncodingException ex) {
-                    throw new IllegalStateException("No decoder for UTF-8", ex);
-                }
-            } else {
-                LOG.warn("Failed to get var {} ", name);
-                LOG.trace(body);
-                return null;
-            }
         }
 
+        Matcher matcher = getVariableMatcher(name);
+
+        if (matcher.find()) {
+            return addVar(name, matcher.group(3));
+        } else {
+            return varNotFound(name);
+        }
+
+
+    }
+
+    private String varNotFound(String name) {
+        LOG.warn("Failed to get var {} ", name);
+        LOG.trace(body);
+        return null;
+    }
+
+    private String addVar(String name, String value) throws IllegalStateException {
+        try {
+            String var = URLDecoder.decode(value, "UTF-8");
+            vars.put(name, var);
+            return var;
+        } catch (UnsupportedEncodingException ex) {
+            throw new IllegalStateException("No decoder for UTF-8", ex);
+        }
     }
 
     public DTMF getDtmf() {
@@ -100,6 +109,30 @@ public class Event {
     //TODO cache patterns 
     private Matcher getVariableMatcher(String var) {
         return Pattern.compile("^(" + var + ":)(\\s)(.*)$", Pattern.MULTILINE).matcher(body);
+    }
+
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Event other = (Event) obj;
+        if (!Objects.equals(this.eventName, other.eventName)) {
+            return false;
+        }
+        if (!Objects.equals(this.body, other.body)) {
+            return false;
+        }
+        return true;
+    }
+
+    public int hashCode() {
+        int hash = 3;
+        hash = 11 * hash + Objects.hashCode(this.eventName);
+        hash = 11 * hash + Objects.hashCode(this.body);
+        return hash;
     }
 
     @Override

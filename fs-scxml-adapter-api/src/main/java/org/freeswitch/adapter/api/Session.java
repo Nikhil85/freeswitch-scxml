@@ -2,6 +2,7 @@ package org.freeswitch.adapter.api;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  *
@@ -38,7 +39,7 @@ public interface Session {
      *         the answer action.
      *
      */
-    EventList answer();
+    EventList answer() throws HangupException;
 
     /**
      * Will shutdown the call and close all media streams.
@@ -102,7 +103,7 @@ public interface Session {
      * @return An IvrEvent with events that was collected while executing
      *         the say action.
      */
-    EventList say(String moduleName, String sayType, String sayMethod, String value);
+    EventList say(String moduleName, String sayType, String sayMethod, String value) throws HangupException;
 
     /**
      * Record a file.
@@ -125,7 +126,7 @@ public interface Session {
      * @return              An IvrEvent with events that was collected
      *                      while executing the record file action.
      */
-    EventList recordFile(int timeLimitInMs, boolean beep, Set<DTMF> terms, String format);
+    EventList recordFile(int timeLimitInMs, boolean beep, Set<DTMF> terms, String format) throws HangupException;
 
     /**
      * Speak a text using the default TTS Engine.
@@ -135,7 +136,7 @@ public interface Session {
      * @return     An IvrEvent with events that was collected while executing
      *             the speak action.
      */
-    EventList speak(String text);
+    EventList speak(String text) throws HangupException;
 
     /**
      *
@@ -153,7 +154,7 @@ public interface Session {
      * @return          An IvrEvent with events that was collected
      *                  while executing the get digits action.
      */
-    EventList getDigits(int maxdigits, Set<DTMF> terms, long timeout);
+    EventList getDigits(int maxdigits, Set<DTMF> terms, long timeout) throws HangupException;
 
     /**
      * Collect a bunch of {@link com.telmi.msc.fsadapter.fs.DTMFMessage} representing
@@ -173,7 +174,7 @@ public interface Session {
      * @return          An IvrEvent with events that was collected while
      *                  executing the read action.
      */
-    EventList read(int maxDigits, String prompt, long timeout, Set<DTMF> terms);
+    EventList read(int maxDigits, String prompt, long timeout, Set<DTMF> terms) throws HangupException;
 
     /**
      * Play a sound file to the caller.
@@ -189,7 +190,7 @@ public interface Session {
      * @return An IvrEvent with events that was collected while executing
      *         the stream file action.
      */
-    EventList streamFile(String file);
+    EventList streamFile(String file) throws HangupException;
 
     /**
      * Play a sound file to the caller. Halt if the caller
@@ -208,7 +209,7 @@ public interface Session {
      * @return An IvrEvent with events that was collected while executing
      *         the stream file action.
      */
-    EventList streamFile(String value, Set<DTMF> terms);
+    EventList streamFile(String value, Set<DTMF> terms) throws HangupException;
 
     /**
      * Pause the application Thread.
@@ -217,7 +218,7 @@ public interface Session {
      * </p>
      * @param milliseconds  Milliseconds to halt execution.
      */
-    void sleep(long milliseconds);
+    void sleep(long milliseconds) throws HangupException;
 
     /**
      * Transfer the call.
@@ -227,20 +228,9 @@ public interface Session {
      * @return An IvrEvent with events that was collected while executing
      *         the deflect action.
      */
-    EventList deflect(String target);
+    EventList deflect(String target) throws HangupException;
 
-    /**
-     * Hangup the call and pass variables to the calling script.
-     *
-     * @param  nameList name and value of variables to pass.
-     *
-     * @return An IvrEvent with events that was collected while executing
-     *         the hangup action.
-     *
-     */
-    EventList hangup(Map<String, Object> nameList);
-
-    EventList beep();
+    EventList beep() throws HangupException;
 
     /**
      * Empty the digits queue before executing an action.
@@ -256,17 +246,12 @@ public interface Session {
      */
     boolean isAlive();
     
-    /**
-     * Get the event queue from this session.
-     * 
-     * @return the queue.
-     */
+    EventQueue execute(String data);
+    
     EventQueue getEventQueue();
 
-    /**
-     * Get the command executor from this class
-     * 
-     * @return the executor
-     */
-    CommandExecutor getCommandExecutor();
+    void breakAction() throws HangupException;
+    
+    public ScheduledFuture<Boolean> scheduleTimeout(long timeout);
+
 }
