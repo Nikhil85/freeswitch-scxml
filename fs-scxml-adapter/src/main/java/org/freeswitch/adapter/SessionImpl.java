@@ -140,7 +140,7 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
         try {
             return controlAdapter.hangup();
         } catch (HangupException ex) {
-            return EventList.single(Event.CHANNEL_HANGUP);
+            return EventListBuilder.single(Event.CHANNEL_HANGUP);
         }
     }
 
@@ -156,8 +156,8 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
         return eventQueue.clearDigits();
     }
 
-    public void breakAction() throws HangupException {
-        controlAdapter.breakAction();
+    public EventList breakAction() throws HangupException {
+        return controlAdapter.breakAction();
     }
 
     @Override

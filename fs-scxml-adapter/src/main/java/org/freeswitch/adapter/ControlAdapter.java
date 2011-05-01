@@ -33,7 +33,7 @@ class ControlAdapter {
             return new EventListBuilder(eventQueue).consume().build();
 
         } else {
-            return EventList.single(Event.CHANNEL_EXECUTE_COMPLETE);
+            return EventListBuilder.single(Event.CHANNEL_EXECUTE_COMPLETE);
         }
     }
 
@@ -54,14 +54,14 @@ class ControlAdapter {
             return new EventListBuilder(eventQueue).consume().build();
 
         } else {
-            return EventList.single(Event.CHANNEL_EXECUTE_COMPLETE);
+            return EventListBuilder.single(Event.CHANNEL_EXECUTE_COMPLETE);
         }
     }
 
-    public void breakAction() throws HangupException {
+    public EventList breakAction() throws HangupException {
         LOG.debug("Session#{}: breakAction ...", session.getUuid());
         EventQueue eventQueue = session.execute(Command.breakcommand());
         sleep(1000L);
-        new EventListBuilder(eventQueue).consume();
+        return new EventListBuilder(eventQueue).consume().build();
     }
 }
