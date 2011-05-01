@@ -2,7 +2,6 @@ package org.freeswitch.adapter;
 
 import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.EventListBuilder;
-import org.freeswitch.adapter.api.EventListBuilder;
 import org.freeswitch.adapter.api.EventQueue;
 import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
