@@ -2,13 +2,9 @@ package org.freeswitch.socket.xsocket;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xsocket.connection.ConnectionUtils;
@@ -91,14 +87,9 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         }
         
         XSocketSocketWriter socketWriter = new XSocketSocketWriter(connection);
-        Session fss = factory.create(createVars(evt), socketWriter);
+        Session fss = factory.create(new HashMap<String, Object>(new Event(Event.CHANNEL_DATA, evt).getBodyAsMap()), socketWriter);
         connection.setAttachment(new XsocketServerSession(fss.getEventQueue(), socketWriter));
         runApplication(new ApplicationRunner(fss));
-    }
-
-    private Map<String, Object> createVars(String evt) throws UnsupportedEncodingException {
-        Map<String, Object> channelVars = extractDataToMap(evt);
-        return channelVars;
     }
 
     private void runApplication(Runnable appRunner) {
@@ -142,23 +133,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
 
         return evt;
     }
-
-    private Map<String, Object> extractDataToMap(final String data) throws UnsupportedEncodingException {
-
-        Map<String, Object> map = new HashMap<>();
-        Scanner scanner = new Scanner(data.replaceAll(":", ""));
-
-        while (scanner.hasNext()) {            
-            try {
-                map.put(scanner.next(), URLDecoder.decode(scanner.next(), UTF8));
-            } catch(NoSuchElementException nsee) {
-                LOG.error(nsee.getMessage());
-            }
-        }
-
-        return map;
-    }
-
+    
     private boolean noDataAvailable(final INonBlockingConnection connection) throws IOException {
 
         if (connection.available() == -1) {
