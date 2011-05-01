@@ -32,7 +32,7 @@ final class ScxmlEventDispatcher implements EventDispatcher {
      * @param senderFactory Create senders.
      * @param ctx The context with variables.
      */
-    public ScxmlEventDispatcher(Context ctx) {
+    ScxmlEventDispatcher(Context ctx) {
         this.context = ctx;
     }
 

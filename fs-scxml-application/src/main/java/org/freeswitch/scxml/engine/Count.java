@@ -1,10 +1,6 @@
 package org.freeswitch.scxml.engine;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.commons.scxml.Context;
 
@@ -13,44 +9,36 @@ import org.apache.commons.scxml.Context;
  */
 public final class Count extends Number {
 
-    private final Map<String, Integer> counts = new HashMap<String, Integer>();
+    private static final long serialVersionUID = 1L;
+    private final Map<String, Integer> counts = new HashMap<>();
     private Context context;
 
     public Count(Context context) {
         this.context = context;
     }
 
-    public int getMax() {
-        final Collection<Integer> sortedColl = counts.values();
-        final List<Integer> sortedL = new ArrayList<Integer>(sortedColl);
-        Collections.sort(sortedL);
-        return sortedL.get(sortedL.size() - 1);
-    }
-
-    public int getSum() {
-        final Collection<Integer> values = counts.values();
-        int sum = -values.size() + 1;
-        for (Integer integer : values) {
-            sum = sum + integer;
-        }
-        return sum;
-    }
-
     void countUp(final String event) {
         validateEvent(event);
-        if(counts.containsKey(event)) {
-           counts.put(event, Integer.valueOf(counts.get(event) + 1));
-        
+        if (counts.containsKey(event)) {
+            increment(event);
         } else {
-           counts.put(event, Integer.valueOf(1));
+            add(event);
         }
+    }
+
+    private void add(final String event) {
+        counts.put(event, Integer.valueOf(1));
+    }
+
+    private void increment(final String event) {
+        counts.put(event, Integer.valueOf(counts.get(event) + 1));
     }
 
     private void validateEvent(final String event) throws IllegalStateException, IllegalArgumentException {
-  
+
         if (event == null || event.isEmpty()) {
             throw new IllegalArgumentException("Can't count null or empty event ->" + event + "<-");
-        } 
+        }
     }
 
     void reset() {
@@ -77,40 +65,39 @@ public final class Count extends Number {
         return getValue();
     }
 
-    
+    public int getValue() {
+        String evt = (String) context.get(ScxmlSemanticsImpl.CURRENT_EVENT_EVALUATED);
+
+        if (counts.containsKey(evt)) {
+            return counts.get(evt);
+
+        } else if (evt != null) {
+            counts.put(evt, 1);
+            return counts.get(evt);
+        }
+
+        return 1;
+    }
+
     @Override
     public boolean equals(Object obj) {
-            
+
         if (obj == null) {
             return false;
-        
-        } else if(obj instanceof Number) {
-            
-            return ((Number)obj).intValue() == getValue();
-        
+
+        } else if (obj instanceof Number) {
+
+            return ((Number) obj).intValue() == getValue();
+
         } else {
             return false;
         }
-        
+
     }
 
     @Override
     public int hashCode() {
         return getValue();
-    }
-   
-    public int getValue() {
-        String evt = (String) context.get(ScxmlSemanticsImpl.CURRENT_EVENT_EVALUATED);
-          
-        if (counts.containsKey(evt)) {
-            return counts.get(evt);
-        
-        } else if (evt != null) {
-            counts.put(evt, 1);
-            return counts.get(evt);
-        }
-        
-        return 1;
     }
 
     @Override

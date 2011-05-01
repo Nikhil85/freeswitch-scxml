@@ -14,7 +14,6 @@ import org.apache.commons.scxml.io.SCXMLParser;
 import org.apache.commons.scxml.model.CustomAction;
 import org.apache.commons.scxml.model.ModelException;
 import org.apache.commons.scxml.model.SCXML;
-import org.apache.commons.scxml.semantics.SCXMLSemanticsImpl;
 import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,22 +41,18 @@ public final class StateMachine {
         this.scxmlDocument = document;
         ErrorHandler errHandler = new SimpleErrorHandler();
         Collection<? extends CustomAction> actions = lookupActions();
-        Digester digester = SCXMLParser.newInstance(null, new URLResolver(document), new ArrayList<CustomAction>(actions));
+        Digester digester = SCXMLParser.newInstance(null, new URLResolver(document), new ArrayList<>(actions));
         digester.setClassLoader(new ScxmlClassLoader(getClass().getClassLoader(), actions));
         digester.setErrorHandler(errHandler);
-        
         try {
             machine = (SCXML) digester.parse(document);
             SCXMLParser.updateSCXML(machine);
-        } catch (IOException ioe) {
+        } catch (IOException | SAXException | ModelException ioe) {
             logError(ioe);
-        } catch (SAXException sae) {
-            logError(sae);
-        } catch (ModelException me) {
-            logError(me);
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Collection<CustomAction> lookupActions() {
         return (Collection<CustomAction>) Lookup.getDefault().lookupAll(CustomAction.class);
     }
@@ -86,10 +81,7 @@ public final class StateMachine {
             engine.go();
         } catch (ModelException me) {
             logError(me);
-        }
-        
-      
-        
+        }  
     }
 
     /**

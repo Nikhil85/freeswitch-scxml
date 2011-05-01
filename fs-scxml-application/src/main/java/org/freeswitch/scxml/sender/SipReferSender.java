@@ -9,8 +9,6 @@ import org.apache.commons.scxml.model.ModelException;
 import org.freeswitch.adapter.api.HangupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
@@ -47,9 +45,6 @@ public final class SipReferSender implements Sender {
             } catch (ModelException ex1) {
             }
         }
-
-
-
     }
 
     @Override
