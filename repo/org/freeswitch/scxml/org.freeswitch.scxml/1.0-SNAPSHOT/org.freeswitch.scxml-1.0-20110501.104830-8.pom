@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0          http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.freeswitch.scxml</groupId>
+    <artifactId>org.freeswitch.scxml</artifactId>
+
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <name>fs-scxml-parent</name>
+
+    <description>FreeSwitch SCXML</description>
+
+    <modules>
+        <module>fs-scxml-socket</module>
+        <module>fs-scxml-adapter</module>
+        <module>fs-scxml-application</module>
+        <module>fs-scxml-socket-api</module>
+        <module>fs-scxml-application-api</module>
+        <module>fs-scxml-adapter-api</module>
+        <module>fs-scxml-lookup</module>
+        <module>fs-scxml-config</module>
+        <module>fs-scxml-integration-test</module>
+        <module>fs-scxml-test-utils</module>
+    </modules>
+    
+    <repositories>
+        <repository>
+            <id>netbeans</id>
+            <url>http://bits.netbeans.org/maven2/</url>
+        </repository>
+    </repositories>
+    
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.4</version>
+            </plugin>
+        </plugins>
+    </reporting>
+    
+    <properties>
+        <osgi.autodeploy.dir>/usr/local/apache-karaf/deploy</osgi.autodeploy.dir>
+    </properties>
+  
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>0.9.27</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>googlecode</id>
+            <url>svn:https://freeswitch-scxml.googlecode.com/svn/repo</url>
+        </repository>
+    </distributionManagement>  
+    
+        
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.jvnet.wagon-svn</groupId>
+                <artifactId>wagon-svn</artifactId>
+                <version>1.9</version>
+            </extension>
+        </extensions>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
