@@ -70,7 +70,7 @@ public enum DTMF {
         this.charValue = charV;
     }
 
-    public static Set<DTMF> createCollectionFromString(String toDtmf) {
+    public static Set<DTMF> setFromString(String toDtmf) {
 
         if (toDtmf == null) {
             throw new IllegalArgumentException("Will not turn null String to DTMF Set");

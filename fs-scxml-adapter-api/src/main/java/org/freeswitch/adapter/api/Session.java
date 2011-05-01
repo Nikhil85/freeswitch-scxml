@@ -245,13 +245,12 @@ public interface Session {
      * @return
      */
     boolean isAlive();
-    
+
+    EventList breakAction() throws HangupException;
+
     EventQueue execute(String data);
-    
+
     EventQueue getEventQueue();
 
-    void breakAction() throws HangupException;
-    
     public ScheduledFuture<Boolean> scheduleTimeout(long timeout);
-
 }

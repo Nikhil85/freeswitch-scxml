@@ -5,6 +5,8 @@
 package org.freeswitch.adapter.api;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -13,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  * @author jocke
  */
 public final class EventListBuilder {
-    
+
     private EventList eventList;
     private final EventQueue eventQueue;
     private int maxNumOfDTMFChars = Integer.MAX_VALUE;
@@ -91,5 +93,48 @@ public final class EventListBuilder {
     public EventList build() {
         return eventList;
     }
-    
+
+    public static EventList single(String event) {
+        EventList el = new EventList();
+        el.add(new Event(event));
+        return el;
+    }
+
+    public static EventList single(Event event) {
+        EventList el = new EventList();
+        el.add(event);
+        return el;
+    }
+
+    public static EventList single(DTMF dtmf) {
+        EventList el = new EventList();
+        createDtmfEvent(dtmf, el);
+        return el;
+    }
+
+    public static EventList list(String dtmfChars) {
+        return createList(dtmfChars);
+    }
+
+    public static EventList list(String dtmfChars, String event) {
+        EventList list = createList(dtmfChars);
+        list.add(new Event(event));
+        return list;
+    }
+
+    private static EventList createList(String dtmfChars) {
+        Set<DTMF> dtmfs = DTMF.setFromString(dtmfChars);
+        EventList el = new EventList();
+        for (DTMF dtmf : dtmfs) {
+            createDtmfEvent(dtmf, el);
+        }
+        return el;
+    }
+
+    private static void createDtmfEvent(DTMF dtmf, EventList el) {
+        Map<String, String> vars = new HashMap<>();
+        vars.put("DTMF-Digit", dtmf.toString());
+        Event event = new Event(Event.DTMF, vars);
+        el.add(event);
+    }
 }

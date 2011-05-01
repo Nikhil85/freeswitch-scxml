@@ -29,12 +29,12 @@ public final class DTMFTest {
     public void testSetFromString() {
         String dtmtring = "0123456789#*";
 
-        Set<DTMF> actualDTMet = DTMF.createCollectionFromString(dtmtring);
+        Set<DTMF> actualDTMet = DTMF.setFromString(dtmtring);
         Set<DTMF> expectedDTMet = EnumSet.allOf(DTMF.class);
 
         assertEquals("Failed to convert string to Set<DTMF> ",expectedDTMet, actualDTMet);
 
-        actualDTMet = DTMF.createCollectionFromString(dtmtring + "#123414");
+        actualDTMet = DTMF.setFromString(dtmtring + "#123414");
         assertEquals("Faild to convert string to Set<DTMF> ",expectedDTMet, actualDTMet);
     }
 

@@ -1,17 +1,15 @@
 package org.freeswitch.adapter.api;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
  *
  * @author jocke
  */
-public final class EventList implements Iterable<Event> {
+public final class EventList {
 
     private final List<Event> events = new ArrayList<>();
     private final List<DTMF> dtmfs = new ArrayList<>();
@@ -19,17 +17,12 @@ public final class EventList implements Iterable<Event> {
     EventList() {
     }
 
-    EventList add(Event e) {
+    void add(Event e) {
 
-        if (e.getEventName().endsWith(Event.DTMF)) {
-            dtmfs.add(e.getDtmf());
+        if (e.getEventName().equals(Event.DTMF)) {
+            dtmfs.add(DTMF.valueOfString(e.getVar(VarName.DTMF_DIGIT)));
         }
         events.add(e);
-        return this;
-    }
-
-    public int sizeOfDtmfs() {
-        return dtmfs.size();
     }
 
     void remove(String evtName) {
@@ -59,6 +52,10 @@ public final class EventList implements Iterable<Event> {
         return false;
     }
 
+    public boolean contains(DTMF dtmf) {
+        return dtmfs.contains(dtmf);
+    }
+
     public String dtmfsAsString() {
         StringBuilder sb = new StringBuilder();
         for (DTMF dtmf : dtmfs) {
@@ -79,61 +76,6 @@ public final class EventList implements Iterable<Event> {
         return sb.toString();
     }
 
-    public DTMF getSingleResult() {
-        return dtmfs.get(0);
-    }
-
-    public boolean contains(DTMF dtmf) {
-        return dtmfs.contains(dtmf);
-    }
-
-    public static EventList single(String event) {
-        EventList el = new EventList();
-        el.add(new Event(event));
-        return el;
-    }
-
-    public static EventList single(Event event) {
-        EventList el = new EventList();
-        el.add(event);
-        return el;
-    }
-
-    public static EventList single(DTMF dtmf) {
-        EventList el = new EventList();
-        createDtmfEvent(dtmf, el);
-        return el;
-    }
-
-    public static EventList list(String dtmfChars) {
-        return createList(dtmfChars);
-    }
-
-    public static EventList list(String dtmfChars, String event) {
-        return createList(dtmfChars).add(new Event(event));
-    }
-
-    private static EventList createList(String dtmfChars) {
-        Set<DTMF> dtmfs = DTMF.createCollectionFromString(dtmfChars);
-        EventList el = new EventList();
-        for (DTMF dtmf : dtmfs) {
-            createDtmfEvent(dtmf, el);
-        }
-        return el;
-    }
-
-    private static void createDtmfEvent(DTMF dtmf, EventList el) {
-        Map<String, String> vars = new HashMap<>();
-        vars.put("DTMF-Digit", dtmf.toString());
-        Event event = new Event(Event.DTMF, vars);
-        el.add(event);
-    }
-
-    @Override
-    public String toString() {
-        return "EventList{" + "events=" + events + ", dtmfs=" + dtmfs + '}';
-    }
-
     public Event get(String event) {
 
         for (Event evt : events) {
@@ -145,16 +87,24 @@ public final class EventList implements Iterable<Event> {
         return null;
     }
 
-    @Override
-    public Iterator<Event> iterator() {
-        return events.iterator();
+    public DTMF getSingleResult() {
+        return dtmfs.get(0);
     }
 
     List<DTMF> getDtmfs() {
         return dtmfs;
     }
 
-    public DTMF peakDtmf() {
+    DTMF peakDtmf() {
         return dtmfs.get(dtmfs.size() - 1);
+    }
+
+    public int sizeOfDtmfs() {
+        return dtmfs.size();
+    }
+
+    @Override
+    public String toString() {
+        return "EventList{" + "events=" + events + ", dtmfs=" + dtmfs + '}';
     }
 }

@@ -5,7 +5,9 @@ import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
@@ -30,7 +32,7 @@ public class Event {
     public static final String CHANNEL_DATA = "CHANNEL_DATA";
     private final String eventName;
     private String body;
-    private final Map<String, String> vars;
+   final Map<String, String> vars;
 
     public Event(String eventName, String body) {
         this.eventName = eventName;
@@ -72,8 +74,6 @@ public class Event {
         } else {
             return varNotFound(name);
         }
-
-
     }
 
     private String varNotFound(String name) {
@@ -92,16 +92,6 @@ public class Event {
         }
     }
 
-    public DTMF getDtmf() {
-        if (!this.getEventName().equals(DTMF)) {
-            throw new IllegalStateException("This is not an DTMF event");
-
-        } else {
-            return org.freeswitch.adapter.api.DTMF.valueOfString(getVar("DTMF-Digit"));
-        }
-
-    }
-
     public static Event named(String name) {
         return new Event(name);
     }
@@ -109,6 +99,26 @@ public class Event {
     //TODO cache patterns 
     private Matcher getVariableMatcher(String var) {
         return Pattern.compile("^(" + var + ":)(\\s)(.*)$", Pattern.MULTILINE).matcher(body);
+    }
+
+    public Map<String, String> getBodyAsMap() {
+        
+        if (body == null) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, String> map = new HashMap<>();
+        Scanner scanner = new Scanner(body.replaceAll(":", ""));
+
+        while (scanner.hasNext()) {
+            try {
+                map.put(scanner.next(), URLDecoder.decode(scanner.next(), "UTF-8"));
+            } catch (NoSuchElementException | UnsupportedEncodingException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+
+        return map;
     }
 
     public boolean equals(Object obj) {
