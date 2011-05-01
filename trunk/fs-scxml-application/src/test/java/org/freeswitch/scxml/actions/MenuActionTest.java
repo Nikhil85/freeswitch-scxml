@@ -4,6 +4,7 @@ import org.freeswitch.adapter.api.Event;
 import java.util.EnumSet;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.EventListBuilder;
 import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
@@ -44,7 +45,7 @@ public class MenuActionTest {
      */
     @Test
     public void testHandleActionMatch() throws HangupException {
-        EventList evtl = EventList.single(DTMF.ONE);
+        EventList evtl = EventListBuilder.single(DTMF.ONE);
         readAndReturn(evtl);
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);
         actionSupport.fireChoiceEvent(DTMF.ONE);
@@ -57,7 +58,7 @@ public class MenuActionTest {
      */
     @Test
     public void testHandleActionNoMatch() throws HangupException {
-        EventList evtl = EventList.single(DTMF.FOUR);
+        EventList evtl = EventListBuilder.single(DTMF.FOUR);
         readAndReturn(evtl);
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);
         actionSupport.fireEvent(CallXmlEvent.NOMATCH);
@@ -69,7 +70,7 @@ public class MenuActionTest {
      */
     @Test
     public void testHandleActionTimeout() throws HangupException {
-        EventList evtl = EventList.single(Event.TIMEOUT);
+        EventList evtl = EventListBuilder.single(Event.TIMEOUT);
         readAndReturn(evtl);
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);
         actionSupport.fireEvent(CallXmlEvent.MAXTIME);
@@ -81,7 +82,7 @@ public class MenuActionTest {
      */
     @Test
     public void testHandleActionTermdigit() throws HangupException {
-        EventList evtl = EventList.single(DTMF.POUND);
+        EventList evtl = EventListBuilder.single(DTMF.POUND);
         readAndReturn(evtl);
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);
         actionSupport.fireEvent(CallXmlEvent.TERMDIGIT);
@@ -93,7 +94,7 @@ public class MenuActionTest {
      */
     @Test
     public void testHandleActionHangup() throws NumberFormatException, HangupException {
-        EventList evtl = EventList.single(Event.CHANNEL_HANGUP);
+        EventList evtl = EventListBuilder.single(Event.CHANNEL_HANGUP);
         readAndReturn(evtl);
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.FALSE);
         handleAction();

@@ -1,6 +1,7 @@
 package org.freeswitch.scxml.engine;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +31,7 @@ public final class ScxmlApplicationImp implements ScxmlApplication, ConfigChange
 
     @Override
     public Set<String> getKeys() {
-        return KEYS;
+        return Collections.unmodifiableSet(KEYS);
     }
 
     @Override

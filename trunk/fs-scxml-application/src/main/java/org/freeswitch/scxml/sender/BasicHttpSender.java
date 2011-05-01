@@ -31,13 +31,10 @@ import org.xml.sax.SAXException;
  */
 public final class BasicHttpSender implements Sender {
 
-    private static final Logger LOG =
-            LoggerFactory.getLogger(BasicHttpSender.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BasicHttpSender.class);
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String ENCODING = "UTF-8";
-    private static final String FORM_URL_ENCODED =
-            "application/x-www-form-urlencoded";
-
+    private static final String FORM_URL_ENCODED = "application/x-www-form-urlencoded";
     private SCXMLExecutor executor;
     private Context context;
 
@@ -138,12 +135,10 @@ public final class BasicHttpSender implements Sender {
             con.setRequestMethod("POST");
 
             con.setRequestProperty(CONTENT_TYPE, FORM_URL_ENCODED);
-            DataOutputStream printout =
-                    new DataOutputStream(con.getOutputStream());
-
-            printout.writeBytes(params);
-            printout.flush();
-            printout.close();
+            try (DataOutputStream printout = new DataOutputStream(con.getOutputStream())) {
+                printout.writeBytes(params);
+                printout.flush();
+            }
 
             String contentType = con.getContentType();
 
@@ -170,23 +165,15 @@ public final class BasicHttpSender implements Sender {
     }
 
     private Node parseXmlResponse(URLConnection connection) {
-
-        DocumentBuilderFactory dfactory =
-                javax.xml.parsers.DocumentBuilderFactory.newInstance();
-
+        DocumentBuilderFactory dfactory = javax.xml.parsers.DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder dBuilder = dfactory.newDocumentBuilder();
             return dBuilder.parse(connection.getInputStream());
-        } catch (SAXException ex) {
+
+        } catch (SAXException | IOException | ParserConfigurationException ex) {
             LOG.error(ex.getMessage());
-        } catch (IOException ex) {
-            LOG.error(ex.getMessage());
-        } catch (ParserConfigurationException ex) {
-            LOG.error(ex.getMessage());
+            return null;
         }
-
-        return null;
-
     }
 
     /**
@@ -200,15 +187,14 @@ public final class BasicHttpSender implements Sender {
     private void fireEvent(String event) {
 
         @SuppressWarnings("unchecked")
-        Collection<TriggerEvent> collection = (Collection<TriggerEvent>)
-                context.get(SendAction.DERIVED_EVENTS);
+        Collection<TriggerEvent> collection = (Collection<TriggerEvent>) context.get(SendAction.DERIVED_EVENTS);
 
         if (collection == null) {
             LOG.warn("You must use the Send in MS namespace to be "
                     + "able to fire events in send");
 
         } else {
-              collection.add(new TriggerEvent(event, TriggerEvent.SIGNAL_EVENT));
+            collection.add(new TriggerEvent(event, TriggerEvent.SIGNAL_EVENT));
         }
 
     }
@@ -225,18 +211,16 @@ public final class BasicHttpSender implements Sender {
      *         From URLConnection.
      */
     private String parseResponse(HttpURLConnection con) throws IOException {
+        StringBuffer buffer;
+        try (BufferedReader bufferedReader = new BufferedReader(
+                     new InputStreamReader(con.getInputStream()))) {
+            String str;
+            buffer = new StringBuffer();
+            while (null != ((str = bufferedReader.readLine()))) {
+                buffer.append(str);
 
-        BufferedReader bufferedReader = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-
-        String str;
-        StringBuffer buffer = new StringBuffer();
-        while (null != ((str = bufferedReader.readLine()))) {
-            buffer.append(str);
-
+            }
         }
-
-        bufferedReader.close();
 
         return buffer.toString();
 

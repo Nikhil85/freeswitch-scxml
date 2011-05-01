@@ -7,6 +7,7 @@ import org.freeswitch.adapter.api.DTMF;
 import java.net.MalformedURLException;
 import java.util.EnumSet;
 import org.apache.commons.scxml.SCXMLExpressionException;
+import org.freeswitch.adapter.api.EventListBuilder;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public final class PlayAudioActionTest {
 
     @Test
     public void testHandleActionTermdigit() throws SCXMLExpressionException, MalformedURLException, HangupException {
-        EventList evtl = EventList.single(DTMF.POUND);
+        EventList evtl = EventListBuilder.single(DTMF.POUND);
         action.setTermdigits("#*");
         expect(actionSupport.getPath(VALUE)).andReturn(PROMPT);
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);
@@ -53,7 +54,7 @@ public final class PlayAudioActionTest {
     @Test
     public void testHandleActionNoTermdigit() throws Exception {
 
-        EventList evtl = EventList.single(DTMF.POUND);
+        EventList evtl = EventListBuilder.single(DTMF.POUND);
         action.setTermdigits("");
         expect(actionSupport.getPath(VALUE)).andReturn(PROMPT);
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);

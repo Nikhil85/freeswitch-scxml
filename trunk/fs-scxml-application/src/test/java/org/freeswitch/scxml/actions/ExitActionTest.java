@@ -8,6 +8,7 @@ import org.apache.commons.scxml.model.ModelException;
 import org.easymock.EasyMock;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.EventListBuilder;
 import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.junit.Before;
@@ -41,7 +42,7 @@ public final class ExitActionTest {
 
         vars.clear();
         expect(actionSupport.getNameListAsMap(varNames)).andReturn(vars);
-        expect(session.hangup()).andReturn(EventList.single(Event.CHANNEL_EXECUTE_COMPLETE));
+        expect(session.hangup()).andReturn(EventListBuilder.single(Event.CHANNEL_EXECUTE_COMPLETE));
         
         replay(actionSupport, session);
         action.handleAction(session);

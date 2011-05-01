@@ -6,6 +6,7 @@ import org.freeswitch.adapter.api.Session;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.VarName;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
 /**
@@ -22,8 +23,6 @@ import org.freeswitch.scxml.engine.CallXmlEvent;
 public final class RecordAudioAction extends AbstractAction {
 
     private static final long serialVersionUID = 4365016762809054332L;
-    public static final String RECORD_MS = "record_ms";
-    public static final String RECORD_DATA = "Application-Data";
     private boolean beep = true;
     private boolean cleardigits = true;
     private String maxtime = "30s";
@@ -162,7 +161,7 @@ public final class RecordAudioAction extends AbstractAction {
     @Override
     public void handleAction(Session fsSession) throws HangupException {
 
-        Set<DTMF> dtmfTerminationDigits = DTMF.createCollectionFromString(termdigits);
+        Set<DTMF> dtmfTerminationDigits = DTMF.setFromString(termdigits);
 
         if (cleardigits) {
             fsSession.clearDigits();
@@ -188,7 +187,7 @@ public final class RecordAudioAction extends AbstractAction {
 
     private String[] getData(EventList eventList) {
         Event event = eventList.get(Event.CHANNEL_EXECUTE_COMPLETE);
-        String[] data = event.getVar(RECORD_DATA).split("\\s");
+        String[] data = event.getVar(VarName.APPLICATION_DATA).split("\\s");
         if (data.length < 2) {
             throw new IllegalStateException("failed to get recording data");
         }

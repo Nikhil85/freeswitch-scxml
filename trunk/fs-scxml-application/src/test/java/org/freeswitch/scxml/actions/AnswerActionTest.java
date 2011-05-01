@@ -2,6 +2,7 @@ package org.freeswitch.scxml.actions;
 
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.EventListBuilder;
 import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
@@ -33,7 +34,7 @@ public final class AnswerActionTest {
     @Test
     public void testHandleActionAnswer() throws HangupException {
         
-        EventList complete = EventList.single(Event.CHANNEL_EXECUTE_COMPLETE);
+        EventList complete = EventListBuilder.single(Event.CHANNEL_EXECUTE_COMPLETE);
         expect(session.answer()).andReturn(complete);
         expect(actionSupport.proceed(complete)).andReturn(Boolean.TRUE);
         actionSupport.fireEvent(CallXmlEvent.ANSWER);
@@ -49,7 +50,7 @@ public final class AnswerActionTest {
      */
     @Test
     public void testHandleActionHangup() throws HangupException {
-        EventList hangup = EventList.single(Event.CHANNEL_HANGUP);
+        EventList hangup = EventListBuilder.single(Event.CHANNEL_HANGUP);
         expect(session.answer()).andReturn(hangup);
         expect(actionSupport.proceed(hangup)).andReturn(Boolean.FALSE);
         actionSupport.setContextVar("isconnected", Boolean.FALSE);

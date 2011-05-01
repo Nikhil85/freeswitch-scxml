@@ -11,12 +11,11 @@ import org.apache.commons.scxml.model.CustomAction;
  */
 public final class ScxmlClassLoader extends ClassLoader {
 
-    private Map<String, Class> managedClasses;
+    private Map<String, Class<?>> managedClasses;
    
-
     public ScxmlClassLoader(ClassLoader parent, Collection<? extends CustomAction> actions) {
         super(parent);
-        managedClasses = new HashMap<String, Class>();
+        managedClasses = new HashMap<>();
         for (CustomAction action : actions) {
             managedClasses.put(action.getActionClass().getName(), action.getActionClass());
         }

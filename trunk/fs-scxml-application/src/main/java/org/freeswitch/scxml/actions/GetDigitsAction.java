@@ -88,7 +88,7 @@ public final class GetDigitsAction extends AbstractAction {
     @Override
     public void handleAction(Session ivrSession) throws HangupException {
 
-        Set<DTMF> terms = DTMF.createCollectionFromString(termdigits);
+        Set<DTMF> terms = DTMF.setFromString(termdigits);
 
         if (cleardigits) {
             ivrSession.clearDigits();

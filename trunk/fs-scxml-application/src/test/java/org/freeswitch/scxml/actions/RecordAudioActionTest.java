@@ -5,8 +5,10 @@ import java.util.EnumSet;
 import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.EventListBuilder;
 import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.VarName;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,12 +50,12 @@ public final class RecordAudioActionTest {
         HashMap<String, String> vars = new HashMap<>();
         String data = "/home/test/test.wav 10";
         
-        vars.put(RecordAudioAction.RECORD_DATA, data);
+        vars.put(VarName.APPLICATION_DATA, data);
         
         expect(session.clearDigits()).andReturn(Boolean.TRUE);
         expect(actionSupport.getMillisFromString("60s")).andReturn(60000);
         expect(session.recordFile(TIME_LIMIT, true, EnumSet.of(DTMF.POUND), "wav"))
-                .andReturn(EventList.single(new Event(Event.CHANNEL_EXECUTE_COMPLETE, vars)));
+                .andReturn(EventListBuilder.single(new Event(Event.CHANNEL_EXECUTE_COMPLETE, vars)));
         expect(actionSupport.proceed(isA(EventList.class))).andReturn(Boolean.TRUE);
         actionSupport.setContextVar(action.getVar(), "/home/test/test.wav");
         actionSupport.setContextVar(action.getTimevar(), "10" );

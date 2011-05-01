@@ -167,7 +167,7 @@ public final class MenuAction extends AbstractAction {
 
         int maxTime = getMaxtimeAsInt();
 
-        Set<DTMF> terms = DTMF.createCollectionFromString(termdigits);
+        Set<DTMF> terms = DTMF.setFromString(termdigits);
 
         if (cleardigits) {
             ivrSession.clearDigits();
@@ -236,10 +236,10 @@ public final class MenuAction extends AbstractAction {
         Set<DTMF> dtmfChoices = null;
 
         if (choices != null) {
-            dtmfChoices = DTMF.createCollectionFromString(choices);
+            dtmfChoices = DTMF.setFromString(choices);
 
         } else if (choicesexpr != null) {
-            dtmfChoices = DTMF.createCollectionFromString(eval(choicesexpr));
+            dtmfChoices = DTMF.setFromString(eval(choicesexpr));
 
         } else {
             fireErrorEvent(CallXmlEvent.ERROR);

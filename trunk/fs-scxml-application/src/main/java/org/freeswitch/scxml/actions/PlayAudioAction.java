@@ -75,7 +75,7 @@ public final class PlayAudioAction extends AbstractAction {
 
         } else {
 
-            Set<DTMF> terms = DTMF.createCollectionFromString(termdigits);
+            Set<DTMF> terms = DTMF.setFromString(termdigits);
 
             event = ivrSession.streamFile(prompt, terms);
 
