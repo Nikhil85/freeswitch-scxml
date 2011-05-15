@@ -253,4 +253,6 @@ public interface Session {
     EventQueue getEventQueue();
 
     public ScheduledFuture<Boolean> scheduleTimeout(long timeout);
+
+    public <T> T lookup(Class<T> clazz);
 }
