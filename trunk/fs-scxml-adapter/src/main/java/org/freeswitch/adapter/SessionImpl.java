@@ -5,6 +5,7 @@ import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.CommandExecutor;
 import org.freeswitch.adapter.api.Session;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import java.util.Map;
 import java.util.Set;
@@ -15,8 +16,12 @@ import java.util.concurrent.TimeUnit;
 import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.EventListBuilder;
 import org.freeswitch.adapter.api.EventQueue;
+import org.freeswitch.adapter.api.Extension;
 import org.freeswitch.adapter.api.HangupException;
 import org.openide.util.Lookup;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
+import org.openide.util.lookup.ProxyLookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +44,8 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
     private AudioAdapter audioAdapter;
     private ControlAdapter controlAdapter;
     private DigitsAdapter digitsAdapter;
+    private Lookup lkp;
+    private InstanceContent content;
 
     public SessionImpl(Map<String, Object> map, EventQueue eq, CommandExecutor executor) {
         this.sessionData = map;
@@ -46,10 +53,17 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
         this.scheduler = Lookup.getDefault().lookup(ScheduledExecutorService.class);
         this.executor = executor;
         this.sessionid = getUuid();
+        this.content = new InstanceContent();
         this.speechAdapter = new SpeechAdapter(this);
         this.audioAdapter = new AudioAdapter(this);
         this.controlAdapter = new ControlAdapter(this, this);
         this.digitsAdapter = new DigitsAdapter(this);
+        content.add(speechAdapter);
+        content.add(audioAdapter);
+        content.add(controlAdapter);
+        content.add(digitsAdapter);
+        this.lkp = new ProxyLookup(Lookup.getDefault(), new AbstractLookup(content));
+
     }
 
     @Override
@@ -158,6 +172,32 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
 
     public EventList breakAction() throws HangupException {
         return controlAdapter.breakAction();
+    }
+
+    public <T> T lookup(Class<T> clazz) {
+        T lookup = lkp.lookup(clazz);
+
+        if (isMissingExtension(lookup, clazz)) {
+            try {
+                return createExtension(clazz);
+            } catch (NoSuchMethodException | SecurityException | InstantiationException |
+                    IllegalAccessException | InvocationTargetException ex) {
+                LOG.error(ex.getMessage());
+                return null;
+            }
+        } else {
+            return lookup;
+        }
+    }
+
+    private <T> boolean isMissingExtension(T lookup, Class<T> clazz) {
+        return lookup == null && Extension.class.isAssignableFrom(clazz);
+    }
+
+    private <T> T createExtension(Class<T> clazz) throws IllegalArgumentException, InstantiationException, IllegalAccessException, SecurityException, InvocationTargetException, NoSuchMethodException {
+        T obj = clazz.getConstructor(Session.class).newInstance(this);
+        content.add(obj);
+        return obj;
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.freeswitch.adapter;
 import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.EventListBuilder;
 import org.freeswitch.adapter.api.EventQueue;
+import org.freeswitch.adapter.api.Extension;
 import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author jocke
  */
-public class SpeechAdapter {
+public class SpeechAdapter implements Extension {
     
     private static final Logger LOG = LoggerFactory.getLogger(SpeechAdapter.class); 
     private Session session;

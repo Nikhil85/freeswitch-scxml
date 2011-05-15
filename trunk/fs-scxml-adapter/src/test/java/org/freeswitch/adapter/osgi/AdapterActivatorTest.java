@@ -2,7 +2,7 @@ package org.freeswitch.adapter.osgi;
 
 import java.util.Dictionary;
 import org.easymock.Capture;
-import org.freeswitch.adapter.api.SessionFactory;
+import org.freeswitch.adapter.api.OutboundSessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
@@ -34,7 +34,7 @@ public class AdapterActivatorTest {
     public void testStart() throws Exception {
 
         Capture<String> nameCapture = new Capture<String>();
-        Capture<SessionFactory> factoryCapture = new Capture<SessionFactory>();
+        Capture<OutboundSessionFactory> factoryCapture = new Capture<OutboundSessionFactory>();
         Capture<Dictionary> dictCapture = new Capture<Dictionary>();
 
         expect(context.registerService(
@@ -46,7 +46,7 @@ public class AdapterActivatorTest {
         activator.start(context);
         verify(context);
 
-        assertEquals(SessionFactory.class.getName(), nameCapture.getValue());
+        assertEquals(OutboundSessionFactory.class.getName(), nameCapture.getValue());
         
     }
 }

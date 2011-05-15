@@ -1,7 +1,7 @@
 package org.freeswitch.adapter.osgi;
 
 import org.freeswitch.adapter.SessionFactoryImpl;
-import org.freeswitch.adapter.api.SessionFactory;
+import org.freeswitch.adapter.api.OutboundSessionFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ public class AdapterActivator implements BundleActivator {
     @Override
     public void start(BundleContext context) throws Exception {
         LOG.info("Starting bundle " + AdapterActivator.class.getName());
-        context.registerService(SessionFactory.class.getName(), new SessionFactoryImpl(), null);
+        context.registerService(OutboundSessionFactory.class.getName(), new SessionFactoryImpl(), null);
     }
 
     @Override
