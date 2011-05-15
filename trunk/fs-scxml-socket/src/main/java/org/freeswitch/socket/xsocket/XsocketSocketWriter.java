@@ -14,10 +14,10 @@ import org.xsocket.connection.INonBlockingConnection;
  *
  * @author jocke
  */
-public final class XSocketSocketWriter implements CommandExecutor, EventMatcher {
+public final class XsocketSocketWriter implements CommandExecutor, EventMatcher {
 
     private static final String BREAK = "break";
-    private static final Logger LOG = LoggerFactory.getLogger(XSocketSocketWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(XsocketSocketWriter.class);
     private final INonBlockingConnection connection;
     private String executedAppName;
     private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s+)(\\w*)$", Pattern.MULTILINE);
@@ -26,7 +26,7 @@ public final class XSocketSocketWriter implements CommandExecutor, EventMatcher 
      *
      * @param con The connection to use when writing to the socket.
      **/
-    XSocketSocketWriter(INonBlockingConnection con) {
+    XsocketSocketWriter(INonBlockingConnection con) {
         this.connection = con;
     }
 

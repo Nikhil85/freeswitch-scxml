@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.BufferUnderflowException;
 import java.util.HashMap;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xsocket.connection.ConnectionUtils;
@@ -86,7 +85,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
             return;
         }
         
-        XSocketSocketWriter socketWriter = new XSocketSocketWriter(connection);
+        XsocketSocketWriter socketWriter = new XsocketSocketWriter(connection);
         Session fss = factory.create(new HashMap<String, Object>(new Event(Event.CHANNEL_DATA, evt).getBodyAsMap()), socketWriter);
         connection.setAttachment(new XsocketServerSession(fss.getEventQueue(), socketWriter));
         runApplication(new ApplicationRunner(fss));
