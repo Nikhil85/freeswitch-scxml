@@ -7,6 +7,7 @@ import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
 import org.freeswitch.adapter.api.EventListBuilder;
 import org.freeswitch.adapter.api.EventQueue;
+import org.freeswitch.adapter.api.Extension;
 import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author jocke
  */
-public class DigitsAdapter {
+public class DigitsAdapter implements Extension {
 
     private static final Logger LOG = LoggerFactory.getLogger(DigitsAdapter.class);
     private Session session;

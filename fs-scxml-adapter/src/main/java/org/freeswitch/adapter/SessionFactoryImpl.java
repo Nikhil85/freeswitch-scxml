@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.freeswitch.adapter.api.SessionFactory;
+import org.freeswitch.adapter.api.OutboundSessionFactory;
 import org.freeswitch.adapter.api.Session;
 import java.util.Map;
 import org.freeswitch.adapter.api.CommandExecutor;
@@ -15,7 +15,7 @@ import org.freeswitch.config.spi.ConfigChangeListener;
  *
  * @author joe
  */
-public class SessionFactoryImpl implements SessionFactory, ConfigChangeListener {
+public class SessionFactoryImpl implements OutboundSessionFactory, ConfigChangeListener {
 
     private String path;
     private static final String RECORDING_PATH = "recording.path";
