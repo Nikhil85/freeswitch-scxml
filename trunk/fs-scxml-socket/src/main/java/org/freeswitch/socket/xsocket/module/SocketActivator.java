@@ -1,8 +1,8 @@
 package org.freeswitch.socket.xsocket.module;
 
 import org.freeswitch.config.spi.ConfigChangeListener;
-import org.freeswitch.socket.xsocket.EventSocketHandler;
-import org.freeswitch.socket.xsocket.XsocketTcpServerImpl;
+import org.freeswitch.socket.xsocket.outbound.EventSocketHandler;
+import org.freeswitch.socket.xsocket.outbound.XsocketTcpServerImpl;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 

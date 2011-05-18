@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.freeswitch.adapter.api.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xsocket.connection.INonBlockingConnection;
@@ -24,39 +23,25 @@ public class EventReader {
     private static final Pattern EVENT_PATTERN = Pattern.compile("Event-Name:\\s(.*)", Pattern.MULTILINE);
     public static final String UTF8 = "UTF-8";
 
-    public String onData(final INonBlockingConnection connection) throws IOException {
+    public String readEvent(final INonBlockingConnection connection) throws IOException {
 
         if (noDataAvailable(connection)) {
             return null;
         }
 
         String header = connection.readStringByDelimiter(LINE_BREAKS);
+
         if (isCommandReply(header) || isDisconnectNotice(header)) {
             return null;
+        } else if (isError(header)) {
+            return "CHANNEL_ERROR";
         }
 
-        return readEvent(header, connection);
-               
+        return readEventByHeader(header, connection);
+
     }
 
-    private String readEventByLength(String header, final INonBlockingConnection connection)
-            throws IOException, NumberFormatException, BufferUnderflowException {
-
-        String content = null;
-
-        Matcher matcher = CONTENT_LENGTH_PATTERN.matcher(header);
-
-        if (matcher.find()) {
-            int length = Integer.parseInt(matcher.group(1));
-            // !! Do not catch BufferUnderflowException !!
-            content = connection.readStringByLength(length, UTF8);
-            LOG.trace("content ==========\n{}=========", content);
-        }
-
-        return content;
-    }
-
-    private String readEvent(String header, INonBlockingConnection connection) throws IOException {
+    private String readEventByHeader(String header, INonBlockingConnection connection) throws IOException {
 
         String evt = null;
 
@@ -74,6 +59,23 @@ public class EventReader {
         }
 
         return evt;
+    }
+
+    private String readEventByLength(String header, final INonBlockingConnection connection)
+            throws IOException, NumberFormatException, BufferUnderflowException {
+
+        String content = null;
+
+        Matcher matcher = CONTENT_LENGTH_PATTERN.matcher(header);
+
+        if (matcher.find()) {
+            int length = Integer.parseInt(matcher.group(1));
+            // !! Do not catch BufferUnderflowException !!
+            content = connection.readStringByLength(length, UTF8);
+            LOG.trace("content ==========\n{}=========", content);
+        }
+
+        return content;
     }
 
     private boolean noDataAvailable(final INonBlockingConnection connection) throws IOException {
@@ -104,5 +106,9 @@ public class EventReader {
 
     private boolean isCommandReply(String header) {
         return header.startsWith(COMMAND_REPLY);
+    }
+
+    private boolean isError(String header) {
+        return header.contains("-ERR");
     }
 }

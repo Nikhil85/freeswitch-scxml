@@ -1,4 +1,4 @@
-package org.freeswitch.socket.xsocket;
+package org.freeswitch.socket.xsocket.outbound;
 
 import java.io.IOException;
 import java.net.UnknownHostException;

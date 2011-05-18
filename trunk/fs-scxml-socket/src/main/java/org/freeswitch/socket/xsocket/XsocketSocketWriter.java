@@ -14,7 +14,7 @@ import org.xsocket.connection.INonBlockingConnection;
  *
  * @author jocke
  */
-public final class XsocketSocketWriter implements CommandExecutor, EventMatcher {
+public class XsocketSocketWriter implements CommandExecutor, EventMatcher {
 
     private static final String BREAK = "break";
     private static final Logger LOG = LoggerFactory.getLogger(XsocketSocketWriter.class);
@@ -26,12 +26,11 @@ public final class XsocketSocketWriter implements CommandExecutor, EventMatcher 
      *
      * @param con The connection to use when writing to the socket.
      **/
-    XsocketSocketWriter(INonBlockingConnection con) {
+    public XsocketSocketWriter(INonBlockingConnection con) {
         this.connection = con;
     }
 
     public void write(String data) throws IOException {
-
 
         String execute_app_name = findApplication(data);
 

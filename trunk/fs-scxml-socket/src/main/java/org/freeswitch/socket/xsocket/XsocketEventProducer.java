@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventQueue;
+import org.freeswitch.socket.xsocket.EventMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,9 +12,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author jocke
  */
-public final class XsocketServerSession implements org.freeswitch.socket.ServerSessionListener {
+public final class XsocketEventProducer implements org.freeswitch.socket.ServerSessionListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(XsocketServerSession.class);
+    private static final Logger LOG = LoggerFactory.getLogger(XsocketEventProducer.class);
     private static final Pattern EVENT_PATTERN = Pattern.compile("(Event-Name:)(\\s)(\\w*)", Pattern.MULTILINE);
     private static final Pattern APP_PATTERN = Pattern.compile("^(Application:)(\\s)(\\w*)$", Pattern.MULTILINE);
     private final EventQueue queue;
@@ -28,7 +29,7 @@ public final class XsocketServerSession implements org.freeswitch.socket.ServerS
      * @param eventMatcher
      *        The matcher to ask if the event should be published to the queue.
      */
-    public XsocketServerSession(EventQueue eventQueue, EventMatcher eventMatcher) {
+    public XsocketEventProducer(EventQueue eventQueue, EventMatcher eventMatcher) {
         this.queue = eventQueue;
         this.eventMatcher = eventMatcher;
     }
