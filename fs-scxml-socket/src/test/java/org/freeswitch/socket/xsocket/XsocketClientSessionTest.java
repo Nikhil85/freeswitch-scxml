@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
  *
  * @author jocke
  */
+@Ignore
 public class XsocketClientSessionTest {
 
     private XsocketClient session;
