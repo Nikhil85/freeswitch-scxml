@@ -24,7 +24,7 @@ public final class XsocketServerSessionTest {
     private static final String DTMF_1 = "DTMF";
     private static final String DTMF_B = "DTMFB";
     private static final String EXECUTE_COMPLETE = "CHANNEL_EXECUTE_COMPLETE";
-    private XsocketServerSession session;
+    private XsocketEventProducer session;
     private EventMatcher eventMatcher;
 
     /**
@@ -43,7 +43,7 @@ public final class XsocketServerSessionTest {
         testEvents.put(DTMF_B, scanner.next().replaceFirst("\n", ""));
         scanner.close();
         eventMatcher = EasyMock.createMock(EventMatcher.class);
-        session = new XsocketServerSession(new EventQueue(), eventMatcher);
+        session = new XsocketEventProducer(new EventQueue(), eventMatcher);
     }
 
     /**

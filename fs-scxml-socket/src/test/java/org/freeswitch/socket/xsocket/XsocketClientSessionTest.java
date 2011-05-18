@@ -4,8 +4,11 @@
  */
 package org.freeswitch.socket.xsocket;
 
-import org.freeswitch.socket.xsocket.client.XsocketClient;
+import org.junit.Ignore;
+import org.freeswitch.socket.xsocket.inbound.XsocketClient;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import org.freeswitch.adapter.api.EventQueue;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -23,9 +26,15 @@ public class XsocketClientSessionTest {
 
     @Before
     public void setUp() throws IOException, InterruptedException {
-        session = new XsocketClient();
+        session = new XsocketClient("sofia/external/jocke@192.168.0.1:5070");
+        final EventQueue eventQueue = new EventQueue();
+        XsocketEventProducer producer = new XsocketEventProducer(eventQueue, session);
+        session.setProducer(producer);
         session.connect();
-        Thread.sleep(5000);
+
+        while (!"CHANNEL_ANSWER".equals(eventQueue.poll(1, TimeUnit.MINUTES).getEventName())) {
+            
+        }
     }
 
     @After
@@ -38,12 +47,5 @@ public class XsocketClientSessionTest {
      */
     @Test
     public void testConnect() throws Exception {
-    }
-
-    /**
-     * Test of onData method, of class XsocketClientSession.
-     */
-    @Test
-    public void testOnData() throws Exception {
     }
 }

@@ -6,13 +6,13 @@ import org.openide.util.Lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ApplicationRunner implements Runnable {
+public class ApplicationRunner implements Runnable {
     
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationRunner.class);
 
     private final Session fss;
 
-    ApplicationRunner(Session fss) {
+    public ApplicationRunner(Session fss) {
         this.fss = fss;
     }
 

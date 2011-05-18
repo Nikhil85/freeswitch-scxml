@@ -1,5 +1,6 @@
-package org.freeswitch.socket.xsocket;
+package org.freeswitch.socket.xsocket.outbound;
 
+import org.freeswitch.socket.xsocket.XsocketEventProducer;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.BufferUnderflowException;
@@ -14,10 +15,12 @@ import org.xsocket.connection.INonBlockingConnection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.OutboundSessionFactory;
 import org.freeswitch.adapter.api.Session;
-import org.freeswitch.adapter.api.SessionFactory;
 import org.freeswitch.scxml.ThreadPoolManager;
 import org.freeswitch.socket.ServerSessionListener;
+import org.freeswitch.socket.xsocket.ApplicationRunner;
+import org.freeswitch.socket.xsocket.XsocketSocketWriter;
 import org.openide.util.Lookup;
 
 /**
@@ -78,7 +81,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
     private void initSession(String evt, final INonBlockingConnection connection) throws UnsupportedEncodingException {
         LOG.debug("New Connection so prepare the call to launch");
         
-        SessionFactory factory = Lookup.getDefault().lookup(SessionFactory.class);
+        OutboundSessionFactory factory = Lookup.getDefault().lookup(OutboundSessionFactory.class);
 
         if (factory == null) {
             LOG.warn("No factory found in lookup ");
@@ -87,7 +90,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         
         XsocketSocketWriter socketWriter = new XsocketSocketWriter(connection);
         Session fss = factory.create(new HashMap<String, Object>(new Event(Event.CHANNEL_DATA, evt).getBodyAsMap()), socketWriter);
-        connection.setAttachment(new XsocketServerSession(fss.getEventQueue(), socketWriter));
+        connection.setAttachment(new XsocketEventProducer(fss.getEventQueue(), socketWriter));
         runApplication(new ApplicationRunner(fss));
     }
 
