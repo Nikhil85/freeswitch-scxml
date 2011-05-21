@@ -20,10 +20,12 @@ class ControlAdapter implements Extension {
     private static final Logger LOG = LoggerFactory.getLogger(ControlAdapter.class);
     private Session session;
     private SessionState state;
+    private Command cmd;
 
-    ControlAdapter(Session session, SessionState state) {
+    ControlAdapter(Session session, SessionState state, Command cmd) {
         this.session = session;
         this.state = state;
+        this.cmd = cmd;
     }
 
     public EventList answer() throws HangupException {
@@ -51,7 +53,7 @@ class ControlAdapter implements Extension {
         LOG.trace("Session#{}: hangup ...", session.getUuid());
         if (session.isAlive()) {
             state.setAlive(false);
-            EventQueue eventQueue = session.execute(Command.hangup(null));
+            EventQueue eventQueue = session.execute(cmd.hangup(null));
             return new EventListBuilder(eventQueue).consume().build();
 
         } else {
@@ -61,7 +63,7 @@ class ControlAdapter implements Extension {
 
     public EventList breakAction() throws HangupException {
         LOG.debug("Session#{}: breakAction ...", session.getUuid());
-        EventQueue eventQueue = session.execute(Command.breakcommand());
+        EventQueue eventQueue = session.execute(cmd.breakcommand());
         sleep(1000L);
         return new EventListBuilder(eventQueue).consume().build();
     }

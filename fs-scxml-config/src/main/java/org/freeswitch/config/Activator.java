@@ -20,7 +20,7 @@ public class Activator implements BundleActivator {
     }
 
     private Dictionary<String, Object> getDict() {
-        Hashtable<String, Object> dict = new Hashtable<String, Object>();
+        Hashtable<String, Object> dict = new Hashtable<>();
         dict.put(Constants.SERVICE_PID, "org.freeswitch.scxml");
         return dict;
     }

@@ -2,7 +2,8 @@ package org.freeswitch.socket.xsocket.outbound;
 
 import java.io.IOException;
 import org.easymock.EasyMock;
-import org.freeswitch.socket.ServerSessionListener;
+import org.freeswitch.adapter.api.Event;
+import org.freeswitch.socket.xsocket.XsocketEventProducer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,13 +19,13 @@ public class EventSocketHandlerTest {
 
     private INonBlockingConnection connection;
     private EventSocketHandler handler;
-    private ServerSessionListener serverListener;
+    private XsocketEventProducer serverListener;
 
     @Before
     public void setUp() {
         connection = EasyMock.createMock(INonBlockingConnection.class);
         handler = new EventSocketHandler();
-        serverListener = EasyMock.createMock(ServerSessionListener.class);
+        serverListener = EasyMock.createMock(XsocketEventProducer.class);
     }
 
     @After
@@ -75,7 +76,7 @@ public class EventSocketHandlerTest {
         EasyMock.expect(connection.readStringByDelimiter(LINE_BREAKS)).andReturn(header);
         EasyMock.expect(connection.readStringByLength(body.length(), UTF8)).andReturn(body);
         EasyMock.expect(connection.getAttachment()).andReturn(serverListener);
-        serverListener.onDataEvent(body);
+        serverListener.onEvent(EasyMock.isA(Event.class));
 
         EasyMock.replay(connection, serverListener);
         assertTrue("disconnect notice should be succefully handled", handler.onData(connection));

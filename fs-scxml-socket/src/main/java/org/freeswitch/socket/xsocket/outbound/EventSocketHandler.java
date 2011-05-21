@@ -14,11 +14,11 @@ import org.xsocket.connection.IDisconnectHandler;
 import org.xsocket.connection.INonBlockingConnection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.freeswitch.adapter.api.DefaultEventQueue;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.OutboundSessionFactory;
 import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.ThreadPoolManager;
-import org.freeswitch.socket.ServerSessionListener;
 import org.freeswitch.socket.xsocket.ApplicationRunner;
 import org.freeswitch.socket.xsocket.XsocketSocketWriter;
 import org.openide.util.Lookup;
@@ -68,9 +68,9 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         String evt = readEvent(header, connection);
         if(evt == null) return true;
         
-        ServerSessionListener session = (ServerSessionListener) connection.getAttachment();
+        XsocketEventProducer session =  (XsocketEventProducer) connection.getAttachment();
         if (session != null) {
-            session.onDataEvent(evt);
+            session.onEvent(Event.fromData(evt));
         } else {
             initSession(evt, ConnectionUtils.synchronizedConnection(connection));
         }
@@ -89,7 +89,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         }
         
         XsocketSocketWriter socketWriter = new XsocketSocketWriter(connection);
-        Session fss = factory.create(new HashMap<String, Object>(new Event(Event.CHANNEL_DATA, evt).getBodyAsMap()), socketWriter);
+        Session fss = factory.create(new HashMap<String, Object>(new Event(Event.CHANNEL_DATA, evt).getBodyAsMap()), socketWriter, new DefaultEventQueue());
         connection.setAttachment(new XsocketEventProducer(fss.getEventQueue(), socketWriter));
         runApplication(new ApplicationRunner(fss));
     }
@@ -186,7 +186,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         try {
             LOG.debug("onDisconnect:  connection[{}] {} bytes available", connection, connection.available());
 
-            ServerSessionListener fss = (ServerSessionListener) connection.getAttachment();
+            XsocketEventProducer fss = (XsocketEventProducer) connection.getAttachment();
 
             if (fss == null) {
                 LOG.warn("A connection was set up, but no session was created.");

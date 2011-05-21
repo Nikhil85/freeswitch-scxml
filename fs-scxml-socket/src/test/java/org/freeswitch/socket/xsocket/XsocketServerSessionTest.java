@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import org.easymock.EasyMock;
-import org.freeswitch.adapter.api.EventQueue;
+import org.freeswitch.adapter.api.DefaultEventQueue;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,16 +34,16 @@ public final class XsocketServerSessionTest {
      */
     @Before
     public void setUp() throws FileNotFoundException {
-        testEvents = new HashMap<String, String>();
-        Scanner scanner = new Scanner(new File(getClass().getResource("fsEvents.txt").getPath()));
-        scanner.useDelimiter("\n\n");
-        testEvents.put(CHANNEL_CREATE, scanner.next());
-        testEvents.put(EXECUTE_COMPLETE, scanner.next().replaceFirst("\n", ""));
-        testEvents.put(DTMF_1, scanner.next().replaceFirst("\n", ""));
-        testEvents.put(DTMF_B, scanner.next().replaceFirst("\n", ""));
-        scanner.close();
+        testEvents = new HashMap<>();
+        try (Scanner scanner = new Scanner(new File(getClass().getResource("fsEvents.txt").getPath()))) {
+            scanner.useDelimiter("\n\n");
+            testEvents.put(CHANNEL_CREATE, scanner.next());
+            testEvents.put(EXECUTE_COMPLETE, scanner.next().replaceFirst("\n", ""));
+            testEvents.put(DTMF_1, scanner.next().replaceFirst("\n", ""));
+            testEvents.put(DTMF_B, scanner.next().replaceFirst("\n", ""));
+        }
         eventMatcher = EasyMock.createMock(EventMatcher.class);
-        session = new XsocketEventProducer(new EventQueue(), eventMatcher);
+        session = new XsocketEventProducer(new DefaultEventQueue(), eventMatcher);
     }
 
     /**
@@ -55,7 +55,7 @@ public final class XsocketServerSessionTest {
         String data = testEvents.get(EXECUTE_COMPLETE);
         EasyMock.expect(eventMatcher.matches("answer")).andReturn(true);
         EasyMock.replay(eventMatcher);
-        session.onDataEvent(data);
+        session.onEvent(Event.fromData(data));
         Event event = session.getQueue().poll();
         Assert.assertTrue("Create a channel event it should be in event queue", event.getEventName().equals(Event.CHANNEL_EXECUTE_COMPLETE));
 
@@ -67,12 +67,12 @@ public final class XsocketServerSessionTest {
     @Test
     public void testOnDataEventDTMF() {
         String data = testEvents.get(DTMF_1);
-        session.onDataEvent(data);
+        session.onEvent(Event.fromData(data));
         Event event = session.getQueue().poll();
         Assert.assertNotNull(event);
         Assert.assertTrue("Should have a DTMF event ", event.getEventName().equals(Event.DTMF));
         String data2 = testEvents.get(DTMF_B);
-        session.onDataEvent(data2);
+        session.onEvent(Event.fromData(data));
         Event event2 = session.getQueue().poll();
         Assert.assertTrue("Should have a DTMF event ", event2.getEventName().equals(Event.DTMF));
     }

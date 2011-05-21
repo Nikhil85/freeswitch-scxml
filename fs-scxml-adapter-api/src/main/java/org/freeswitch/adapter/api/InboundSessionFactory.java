@@ -1,11 +1,11 @@
 package org.freeswitch.adapter.api;
 
-import java.util.Map;
+import java.net.URL;
 
 /**
  *
  * @author joe
  */
 public interface InboundSessionFactory {
-   Session create(String dialUrl);
+   void create(String dialUrl, URL docUrl, EventQueueListener listener);
 }

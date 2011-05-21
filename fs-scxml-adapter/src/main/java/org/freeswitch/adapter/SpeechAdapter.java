@@ -17,20 +17,22 @@ public class SpeechAdapter implements Extension {
     
     private static final Logger LOG = LoggerFactory.getLogger(SpeechAdapter.class); 
     private Session session;
+    private final Command cmd;
 
-    public SpeechAdapter(Session session) {
+    public SpeechAdapter(Session session, Command cmd) {
         this.session = session;
+        this.cmd = cmd;
     }
    
     public EventList say(String moduleName, String sayType, String sayMethod, String value) throws HangupException {
         LOG.trace("Session#{}: say ...", session.getUuid());
-        EventQueue eventQueue = session.execute(Command.say(moduleName, sayType, sayMethod, value));
+        EventQueue eventQueue = session.execute(cmd.say(moduleName, sayType, sayMethod, value));
         return new EventListBuilder(eventQueue).consume().build();
     }
     
     public EventList speak(String text) throws HangupException {
         LOG.debug("Session#{}: speak ...", session.getUuid());
-        EventQueue eventQueue = session.execute(Command.speak(text, false));
+        EventQueue eventQueue = session.execute(cmd.speak(text, false));
         return new EventListBuilder(eventQueue).consume().build();
     }
 

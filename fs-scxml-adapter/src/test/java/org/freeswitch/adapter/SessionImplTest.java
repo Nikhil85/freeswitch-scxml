@@ -1,9 +1,9 @@
 package org.freeswitch.adapter;
 
+import org.freeswitch.adapter.api.DefaultEventQueue;
 import java.util.Map;
 import java.util.HashMap;
 import org.freeswitch.adapter.api.CommandExecutor;
-import org.freeswitch.adapter.api.EventQueue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,12 +17,12 @@ import static org.easymock.EasyMock.*;
 public class SessionImplTest {
 
     private SessionImpl sessionImpl;
-    private EventQueue eventQueue;
+    private DefaultEventQueue eventQueue;
     private CommandExecutor executor;
 
     @Before
     public void setUp() {
-        eventQueue = createMock(EventQueue.class);
+        eventQueue = createMock(DefaultEventQueue.class);
         executor = createMock(CommandExecutor.class);
         Map<String, Object> vars = new HashMap<>();
         sessionImpl = new SessionImpl(vars, eventQueue, executor);

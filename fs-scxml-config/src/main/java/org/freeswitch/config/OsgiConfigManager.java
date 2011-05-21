@@ -3,15 +3,12 @@ package org.freeswitch.config;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.freeswitch.config.spi.ConfigChangeListener;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
-import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
@@ -24,7 +21,7 @@ import org.slf4j.LoggerFactory;
 public class OsgiConfigManager implements ManagedService, LookupListener {
 
     private Lookup.Result<ConfigChangeListener> result;
-    private static final Map<String, String> PROPS = new ConcurrentHashMap<String, String>();
+    private static final Map<String, String> PROPS = new ConcurrentHashMap<>();
     private static final Logger LOG = LoggerFactory.getLogger(OsgiConfigManager.class);
 
     @Override

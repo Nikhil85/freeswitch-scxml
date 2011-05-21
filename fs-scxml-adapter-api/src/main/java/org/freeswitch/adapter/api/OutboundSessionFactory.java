@@ -7,5 +7,5 @@ import java.util.Map;
  * @author joe
  */
 public interface OutboundSessionFactory {
-   Session create(Map<String, Object> vars, CommandExecutor ce);
+   Session create(Map<String, Object> vars, CommandExecutor ce, EventQueue queue);
 }

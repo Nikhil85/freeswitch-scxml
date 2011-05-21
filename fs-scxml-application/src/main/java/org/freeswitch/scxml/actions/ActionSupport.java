@@ -13,7 +13,6 @@ import org.apache.commons.scxml.TriggerEvent;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
-import org.freeswitch.adapter.api.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +95,6 @@ public class ActionSupport {
 
         } catch (MalformedURLException ex) {
             LOG.error(ex.getMessage());
-            Session ivrSession = (Session) ctx.get(Session.class.getName());
             throw new IllegalStateException("Failed to get prompt");
         }
 
@@ -200,7 +198,7 @@ public class ActionSupport {
             String[] varNames = vars.split("\\s+");
 
             Map<?, ?> ctxVarMap = ctx.getVars();
-            Map<String, Object> copyToMap = new HashMap<String, Object>();
+            Map<String, Object> copyToMap = new HashMap<>();
 
             for (int i = 0; i < varNames.length; i++) {
 

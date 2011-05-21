@@ -1,5 +1,6 @@
 package org.freeswitch.adapter.api;
 
+import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -245,14 +246,57 @@ public interface Session {
      * @return
      */
     boolean isAlive();
-
+    
+    /**
+     * Break the action currently executing.
+     * 
+     * @return Events
+     * 
+     * @throws HangupException 
+     */
     EventList breakAction() throws HangupException;
-
+    
+    /**
+     * Execute a command.
+     * 
+     * @param data
+     * 
+     * @return The event queue where events will be added.
+     * 
+     */
     EventQueue execute(String data);
-
-    EventQueue getEventQueue();
-
+   
+    /**
+     * Get the event queue.
+     * 
+     * @return 
+     */
+     EventQueue getEventQueue();
+    
+    /**
+     * Schedule a timeout event 
+     * @param timeout
+     * 
+     * @return future 
+     * 
+     */
     public ScheduledFuture<Boolean> scheduleTimeout(long timeout);
-
+    
+    /**
+     * Lookup a instance.
+     * 
+     * @param <T>
+     * @param clazz
+     * @return instance found or null.
+     */
     public <T> T lookup(Class<T> clazz);
+    
+    /***
+     * Call a 
+     * 
+     * @param value The dial string 
+     * @param url   The SCXML document to execute if the call was successful.
+     */
+    public void call(String value, URL url, EventQueueListener listener);
+
 }

@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 public class Event {
 
     private static final Logger LOG = LoggerFactory.getLogger(Event.class);
+    private static final Pattern EVENT_PATTERN = Pattern.compile("(Event-Name:)(\\s)(\\w*)", Pattern.MULTILINE);
     public static final String CHANNEL_EXECUTE_COMPLETE = "CHANNEL_EXECUTE_COMPLETE";
     public static final String CHANNEL_CREATE = "CHANNEL_CREATE";
     public static final String CHANNEL_EXECUTE = "CHANNEL_EXECUTE";
@@ -32,7 +33,7 @@ public class Event {
     public static final String CHANNEL_DATA = "CHANNEL_DATA";
     private final String eventName;
     private String body;
-   final Map<String, String> vars;
+    final Map<String, String> vars;
 
     public Event(String eventName, String body) {
         this.eventName = eventName;
@@ -96,13 +97,25 @@ public class Event {
         return new Event(name);
     }
 
+    public static Event fromData(String data) {
+        return new Event(findEventName(data), data);
+    }
+
+    private static String findEventName(final String data) {
+        Matcher matcher = EVENT_PATTERN.matcher(data);
+        if (matcher.find()) {
+            return matcher.group(3);
+        }
+        return null;
+    }
+
     //TODO cache patterns 
     private Matcher getVariableMatcher(String var) {
         return Pattern.compile("^(" + var + ":)(\\s)(.*)$", Pattern.MULTILINE).matcher(body);
     }
 
     public Map<String, String> getBodyAsMap() {
-        
+
         if (body == null) {
             return Collections.emptyMap();
         }

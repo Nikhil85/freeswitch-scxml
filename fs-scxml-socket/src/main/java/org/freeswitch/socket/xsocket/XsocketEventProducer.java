@@ -4,7 +4,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventQueue;
-import org.freeswitch.socket.xsocket.EventMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,10 +11,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author jocke
  */
-public final class XsocketEventProducer implements org.freeswitch.socket.ServerSessionListener {
+public class XsocketEventProducer {
 
     private static final Logger LOG = LoggerFactory.getLogger(XsocketEventProducer.class);
-    private static final Pattern EVENT_PATTERN = Pattern.compile("(Event-Name:)(\\s)(\\w*)", Pattern.MULTILINE);
     private static final Pattern APP_PATTERN = Pattern.compile("^(Application:)(\\s)(\\w*)$", Pattern.MULTILINE);
     private final EventQueue queue;
     private final EventMatcher eventMatcher;
@@ -34,17 +32,6 @@ public final class XsocketEventProducer implements org.freeswitch.socket.ServerS
         this.eventMatcher = eventMatcher;
     }
 
-    private String findEventName(final String data) {
-
-        Matcher matcher = EVENT_PATTERN.matcher(data);
-
-        if (matcher.find()) {
-            return matcher.group(3);
-        }
-
-        return null;
-    }
-
     private String findApplication(final String data) {
         String result = null;
         Matcher matcher = APP_PATTERN.matcher(data);
@@ -54,24 +41,24 @@ public final class XsocketEventProducer implements org.freeswitch.socket.ServerS
         return result;
     }
 
-    @Override
-    public void onDataEvent(String data) {
+    public void onEvent(Event evt) {
 
-        String evtName = findEventName(data);
+ 
+        String evtName = evt.getEventName();
 
         if (evtName == null) {
-            LOG.warn("Data does not have an event '{}' ", data);
+            LOG.warn("Data does not have an event '{}' ", evt);
             return;
 
         } else {
             LOG.info("Process event " + evtName);
         }
 
-        if (evtName.equals(Event.CHANNEL_EXECUTE_COMPLETE) && isCurrentTransaktion(data)) {
-            queue.add(new Event(evtName, data));
+        if (evtName.equals(Event.CHANNEL_EXECUTE_COMPLETE) && isCurrentTransaktion(evt.getBody())) {
+            queue.add(evt);
 
         } else if (!evtName.equals(Event.CHANNEL_EXECUTE_COMPLETE)) {
-            queue.add(new Event(evtName, data));
+            queue.add(evt);
         }
     }
 
@@ -83,7 +70,6 @@ public final class XsocketEventProducer implements org.freeswitch.socket.ServerS
         return queue;
     }
 
-    @Override
     public void onClose() {
         queue.add(Event.named(Event.CHANNEL_HANGUP));
     }

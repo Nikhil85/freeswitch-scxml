@@ -1,9 +1,9 @@
 package org.freeswitch.adapter;
 
+import org.freeswitch.adapter.api.DefaultEventQueue;
 import java.util.concurrent.TimeUnit;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
-import org.freeswitch.adapter.api.EventQueue;
 import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.junit.Before;
@@ -16,16 +16,19 @@ import static org.easymock.EasyMock.*;
  * @author jocke
  */
 public class SpeechAdapterTest {
+    public static final String UID = "111";
+    private Command command;
 
     private Session session;
     private SpeechAdapter adapter;
-    private EventQueue queue;
+    private DefaultEventQueue queue;
 
     @Before
     public void setUp() {
         session = createMock(Session.class);
-        adapter = new SpeechAdapter(session);
-        queue = createMock(EventQueue.class);
+        command = new Command(UID);
+        adapter = new SpeechAdapter(session, command);
+        queue = createMock(DefaultEventQueue.class);
     }
 
     /**  
@@ -38,8 +41,8 @@ public class SpeechAdapterTest {
         String pronounced = "pronounced";
         String value = "1";
 
-        expect(session.getUuid()).andReturn("111");
-        expect(session.execute(Command.say(en, pronounced, iterated, value))).andReturn(queue);
+        expect(session.getUuid()).andReturn(UID);
+        expect(session.execute(command.say(en, pronounced, iterated, value))).andReturn(queue);
         expect(queue.poll(5, TimeUnit.MINUTES)).andReturn(Event.named(Event.CHANNEL_EXECUTE_COMPLETE));
 
         replay(session, queue);
@@ -56,8 +59,8 @@ public class SpeechAdapterTest {
     @Test
     public void testSpeak() throws InterruptedException, HangupException {
 
-        expect(session.getUuid()).andReturn("111");
-        expect(session.execute(Command.speak("test", false))).andReturn(queue);
+        expect(session.getUuid()).andReturn(UID);
+        expect(session.execute(command.speak("test", false))).andReturn(queue);
         expect(queue.poll(5, TimeUnit.MINUTES)).andReturn(Event.named(Event.CHANNEL_EXECUTE_COMPLETE));
 
         replay(session, queue);

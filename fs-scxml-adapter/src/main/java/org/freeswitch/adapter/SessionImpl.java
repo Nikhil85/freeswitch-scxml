@@ -1,5 +1,6 @@
 package org.freeswitch.adapter;
 
+import java.net.URL;
 import org.freeswitch.adapter.api.DTMF;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.CommandExecutor;
@@ -14,8 +15,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.freeswitch.adapter.api.EventList;
-import org.freeswitch.adapter.api.EventListBuilder;
 import org.freeswitch.adapter.api.EventQueue;
+import org.freeswitch.adapter.api.EventListBuilder;
+import org.freeswitch.adapter.api.EventQueueListener;
 import org.freeswitch.adapter.api.Extension;
 import org.freeswitch.adapter.api.HangupException;
 import org.openide.util.Lookup;
@@ -44,8 +46,10 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
     private AudioAdapter audioAdapter;
     private ControlAdapter controlAdapter;
     private DigitsAdapter digitsAdapter;
+    private CallAdapter callAdapter;
     private Lookup lkp;
     private InstanceContent content;
+    private Command cmd;
 
     public SessionImpl(Map<String, Object> map, EventQueue eq, CommandExecutor executor) {
         this.sessionData = map;
@@ -54,10 +58,12 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
         this.executor = executor;
         this.sessionid = getUuid();
         this.content = new InstanceContent();
-        this.speechAdapter = new SpeechAdapter(this);
-        this.audioAdapter = new AudioAdapter(this);
-        this.controlAdapter = new ControlAdapter(this, this);
-        this.digitsAdapter = new DigitsAdapter(this);
+        this.cmd = new Command(getUuid());
+        this.speechAdapter = new SpeechAdapter(this, cmd);
+        this.audioAdapter = new AudioAdapter(this, cmd);
+        this.controlAdapter = new ControlAdapter(this, this, cmd);
+        this.digitsAdapter = new DigitsAdapter(this, cmd);
+        this.callAdapter = new CallAdapter(this);
         content.add(speechAdapter);
         content.add(audioAdapter);
         content.add(controlAdapter);
@@ -78,7 +84,7 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
 
     @Override
     public String getUuid() {
-        return (String) sessionData.get("Channel-Unique-ID");
+        return (String) sessionData.get("Unique-ID");
     }
 
     public EventQueue getEventQueue() {
@@ -161,7 +167,7 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
     @Override
     public EventList deflect(String target) throws HangupException {
         LOG.trace("Session#{}: deflect ...", sessionid);
-        execute(Command.refer(target));
+        execute(cmd.refer(target));
         return new EventListBuilder(eventQueue).consume().build();
     }
 
@@ -202,8 +208,13 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
 
     @Override
     public Boolean call() {
-        LOG.debug("Session#{}: Call Action timed out ???", sessionid);
+        LOG.debug("Session#{}: Call Action timed out ", sessionid);
         return eventQueue.add(Event.named(Event.TIMEOUT));
+    }
+
+    @Override
+    public void call(String value, URL url, EventQueueListener listener) {
+        callAdapter.call(value, url, listener);
     }
 
     @Override

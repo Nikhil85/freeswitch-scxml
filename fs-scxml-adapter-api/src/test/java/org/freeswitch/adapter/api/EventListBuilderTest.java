@@ -5,8 +5,7 @@ import java.util.Map;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -24,7 +23,7 @@ public final class EventListBuilderTest {
      */
     @Before
     public void setUp() {
-        queue = new EventQueue();
+        queue = new DefaultEventQueue();
     }
 
     /**

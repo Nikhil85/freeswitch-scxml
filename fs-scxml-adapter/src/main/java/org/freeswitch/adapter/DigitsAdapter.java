@@ -21,9 +21,11 @@ public class DigitsAdapter implements Extension {
 
     private static final Logger LOG = LoggerFactory.getLogger(DigitsAdapter.class);
     private Session session;
+    private Command cmd;
 
-    public DigitsAdapter(Session session) {
+    public DigitsAdapter(Session session, Command cmd) {
         this.session = session;
+        this.cmd = cmd;
     }
 
     public EventList getDigits(int maxdigits, Set<DTMF> terms, long timeout) throws HangupException {
@@ -43,7 +45,7 @@ public class DigitsAdapter implements Extension {
 
     public EventList read(int maxDigits, String prompt, long timeout, Set<DTMF> terms) throws HangupException {
         LOG.info("Session#{}: read ...  timeout -->{}", session.getUuid(), timeout);
-        EventQueue eventQueue = session.execute(Command.playback(prompt, false));
+        EventQueue eventQueue = session.execute(cmd.playback(prompt, false));
         EventListBuilder builder = new EventListBuilder(eventQueue).maxDigits(maxDigits).termDigits(terms).consume();
         
         if (builder.containsAnyEvent(Event.CHANNEL_EXECUTE_COMPLETE)) {
