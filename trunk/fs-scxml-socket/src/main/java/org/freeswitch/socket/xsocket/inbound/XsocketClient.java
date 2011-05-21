@@ -5,10 +5,12 @@ import java.net.InetAddress;
 import java.nio.BufferUnderflowException;
 import java.nio.channels.ClosedChannelException;
 import org.freeswitch.adapter.api.CommandExecutor;
+import org.freeswitch.adapter.api.Event;
 import org.freeswitch.socket.xsocket.EventMatcher;
 import org.freeswitch.socket.xsocket.EventReader;
 import org.freeswitch.socket.xsocket.XsocketEventProducer;
 import org.freeswitch.socket.xsocket.XsocketSocketWriter;
+import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xsocket.MaxReadSizeExceededException;
@@ -20,6 +22,7 @@ import org.xsocket.connection.NonBlockingConnection;
  *
  * @author jocke
  */
+@Ignore
 public class XsocketClient implements CommandExecutor, EventMatcher, IDataHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(XsocketClient.class);
@@ -50,10 +53,13 @@ public class XsocketClient implements CommandExecutor, EventMatcher, IDataHandle
         this.producer = producer;
     }
 
-    public void connect() throws IOException {
+    public Event connect() throws IOException {
         connection.write("auth ClueCon\n\n");
         connection.write("event plain CHANNEL_ANSWER DTMF CHANNEL_EXECUTE_COMPLETE\n\n");
         connection.write("api originate " + dialString + " 100\n\n");
+        Event evt = Event.fromData(reader.readEvent(connection));
+        producer.onEvent(evt);
+        return evt;
     }
 
     public void close() throws IOException {
@@ -63,10 +69,10 @@ public class XsocketClient implements CommandExecutor, EventMatcher, IDataHandle
     @Override
     public boolean onData(INonBlockingConnection inbc) throws IOException, BufferUnderflowException, ClosedChannelException, MaxReadSizeExceededException {
 
-        String readEvent = reader.readEvent(connection);
+        String evt = reader.readEvent(connection);
 
-        if (readEvent != null) {
-            producer.onDataEvent(readEvent);
+        if (evt != null) {
+            producer.onEvent(Event.fromData(evt));
         }
 
         return true;
@@ -86,8 +92,9 @@ public class XsocketClient implements CommandExecutor, EventMatcher, IDataHandle
     public boolean matches(String event) {
         return writer.matches(event);
     }
-    
-    public static void main(String [] args) {
-        System.out.println("hello");
+   
+
+    public void myEvents(String uid) throws IOException {
+        connection.write("event " + uid + " \n\n");
     }
 }

@@ -1,55 +1,25 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.freeswitch.adapter.api;
 
-import java.util.Iterator;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
  *
  * @author jocke
  */
-public class EventQueue {
+public interface EventQueue {
 
-    private BlockingQueue<Event> eventQueue;
+    boolean add(Event e);
 
-    public EventQueue() {
-        eventQueue = new ArrayBlockingQueue<>(50);
-    }
+    boolean clearDigits();
 
-    public EventQueue(BlockingQueue<Event> eventQueue) {
-        this.eventQueue = eventQueue;
-    }
+    boolean isEmpty();
 
-    public Event poll(int i, TimeUnit timeUnit) throws InterruptedException {
-        return eventQueue.poll(i, timeUnit);
-    }
+    Event poll(int i, TimeUnit timeUnit) throws InterruptedException;
 
-    public boolean add(Event e) {
-        return eventQueue.add(e);
-    }
+    Event poll();
 
-    public boolean clearDigits() {
-        boolean removed = false;
-        Iterator<Event> it = eventQueue.iterator();
-        while (it.hasNext()) {
-            if (it.next().getEventName().equals(Event.DTMF)) {
-                removed = true;
-                it.remove();
-            }
-        }
-        return removed;
-    }
-
-    public boolean isEmpty() {
-        return eventQueue.isEmpty();
-    }
-
-    public Event poll() {
-        return eventQueue.poll();
-    }
+    void addListener(EventQueueListener listener);
+    
+    void removeListener(EventQueueListener listener);
+    
 }

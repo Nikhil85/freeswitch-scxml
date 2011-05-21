@@ -1,5 +1,6 @@
 package org.freeswitch.adapter;
 
+
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,8 +27,8 @@ public class SessionFactoryImpl implements OutboundSessionFactory, ConfigChangeL
     }
 
     @Override
-    public Session create(Map<String, Object> map, CommandExecutor executor) {
-        return new SessionImpl(map, new EventQueue(), executor);
+    public Session create(Map<String, Object> map, CommandExecutor executor, EventQueue eventQueue) {
+        return new SessionImpl(map, eventQueue, executor);
     }
 
     @Override

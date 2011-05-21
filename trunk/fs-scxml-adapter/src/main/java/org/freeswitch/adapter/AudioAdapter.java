@@ -21,29 +21,30 @@ public class AudioAdapter implements Extension {
     public static final String BEEP_TONE = "tone_stream://%(500, 0, 800)";
     public static final String SILENCE_STREAM = "silence_stream://10";
     private Session session;
+    private Command cmd;
 
-    public AudioAdapter(Session session) {
+    public AudioAdapter(Session session, Command cmd) {
         this.session = session;
     }
 
     public EventList beep() throws HangupException {
         EventListBuilder evtBuilder = new EventListBuilder(session.getEventQueue());
-        session.execute(Command.playback(BEEP_TONE, true));
+        session.execute(cmd.playback(BEEP_TONE, true));
         evtBuilder.consume().reset();
-        session.execute(Command.playback(SILENCE_STREAM, true));
+        session.execute(cmd.playback(SILENCE_STREAM, true));
         evtBuilder.consume().reset();
         return evtBuilder.build();
     }
 
     public EventList streamFile(String file) throws HangupException {
         LOG.debug("Session#{}: StreamFile: {}", session.getUuid(), file);
-        EventQueue eventQueue = session.execute(Command.playback(file, false));
+        EventQueue eventQueue = session.execute(cmd.playback(file, false));
         return new EventListBuilder(eventQueue).consume().build();
     }
 
     public EventList streamFile(String file, Set<DTMF> terms) throws HangupException {
         LOG.debug("Session#{}: StreamFile: {}, with termination options", session.getUuid(), file);
-        EventQueue eventQueue = session.execute(Command.playback(file, false));
+        EventQueue eventQueue = session.execute(cmd.playback(file, false));
         EventListBuilder builder = new EventListBuilder(eventQueue).termDigits(terms).consume();
         if (builder.endsWithDtmf(terms)) {
             session.breakAction();
@@ -57,7 +58,7 @@ public class AudioAdapter implements Extension {
             beep();
         }
         EventListBuilder builder = new EventListBuilder(session.getEventQueue()).termDigits(terms);
-        session.execute(Command.record(getRecPath(format), timeLimitInMillis, null, null, false));
+        session.execute(cmd.record(getRecPath(format), timeLimitInMillis, null, null, false));
         builder.consume();
 
         if (builder.endsWithDtmf(terms)) {

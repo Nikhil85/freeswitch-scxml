@@ -118,7 +118,7 @@ public abstract class AbstractAction extends Action {
      * @param sSession A session to use for executing IVR commands.
      *
      */
-    public abstract void handleAction(Session sSession) throws HangupException;
+    public abstract void handleAction(Session session) throws HangupException;
 
     /**
      * Validate fields.

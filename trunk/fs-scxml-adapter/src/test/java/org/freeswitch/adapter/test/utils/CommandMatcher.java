@@ -1,4 +1,4 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.test.utils;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;

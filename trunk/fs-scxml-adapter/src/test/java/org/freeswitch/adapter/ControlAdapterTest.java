@@ -1,9 +1,9 @@
 package org.freeswitch.adapter;
 
+import org.freeswitch.adapter.api.DefaultEventQueue;
 import java.util.concurrent.TimeUnit;
 import org.freeswitch.adapter.api.Event;
 import org.freeswitch.adapter.api.EventList;
-import org.freeswitch.adapter.api.EventQueue;
 import org.freeswitch.adapter.api.HangupException;
 import org.freeswitch.adapter.api.Session;
 import org.junit.Before;
@@ -21,14 +21,14 @@ public class ControlAdapterTest {
     private ControlAdapter adapter;
     private Session session;
     private SessionState state;
-    private EventQueue eventQueue;
+    private DefaultEventQueue eventQueue;
     
     @Before
     public void setUp() {
         session = createMock(Session.class);
         state = createMock(SessionState.class);
-        eventQueue = createMock(EventQueue.class);
-        adapter= new ControlAdapter(session, state);    
+        eventQueue = createMock(DefaultEventQueue.class);
+        adapter= new ControlAdapter(session, state, new Command(uid));    
     }
     
     /**
