@@ -16,7 +16,6 @@
         <module>fs-scxml-socket</module>
         <module>fs-scxml-adapter</module>
         <module>fs-scxml-application</module>
-        <module>fs-scxml-socket-api</module>
         <module>fs-scxml-application-api</module>
         <module>fs-scxml-adapter-api</module>
         <module>fs-scxml-lookup</module>
