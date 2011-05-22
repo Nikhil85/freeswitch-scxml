@@ -13,14 +13,13 @@ import java.util.Date;
 import java.util.HashSet;
 import org.freeswitch.config.spi.ConfigChangeListener;
 import org.freeswitch.scxml.ThreadPoolManager;
-import org.freeswitch.socket.TcpServer;
 import org.openide.util.Lookup;
 
 /**
  *
  * @author Jocke
  */
-public final class XsocketTcpServerImpl implements TcpServer, ConfigChangeListener {
+public final class XsocketTcpServerImpl implements ConfigChangeListener {
     
     public static final String TCP_PORT = "tcp.port";
 
@@ -28,7 +27,7 @@ public final class XsocketTcpServerImpl implements TcpServer, ConfigChangeListen
     private final IDataHandler iDataHandler;
     private IServer iServer;
     private int port = 9696;
-    private static final Set<String> CONFIG_KEYS = new HashSet<String>(1);
+    private static final Set<String> CONFIG_KEYS = new HashSet<>(1);
     
     static {
         CONFIG_KEYS.add(TCP_PORT);
@@ -64,7 +63,7 @@ public final class XsocketTcpServerImpl implements TcpServer, ConfigChangeListen
     }
 
 
-    @Override
+    
     public void startServer() {
         LOG.info("Try to start Server ...");
 
@@ -76,10 +75,6 @@ public final class XsocketTcpServerImpl implements TcpServer, ConfigChangeListen
         if  (iServer == null) {
             try {
                 iServer = new Server(port, iDataHandler);
-            } catch (UnknownHostException e) {
-                LOG.error(e.getMessage());
-                return;
-               
             } catch (IOException e) {
                 LOG.error(e.getMessage());
                 return;
@@ -105,9 +100,6 @@ public final class XsocketTcpServerImpl implements TcpServer, ConfigChangeListen
         }
     }
 
-    
-
-    @Override
     public void stopServer() {
         LOG.info("Try to stop Server ...");
 
