@@ -3,7 +3,7 @@ package org.freeswitch.scxml.actions;
 import java.util.Map;
 import org.freeswitch.adapter.api.HangupException;
 
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.Session;
 
 
 /**

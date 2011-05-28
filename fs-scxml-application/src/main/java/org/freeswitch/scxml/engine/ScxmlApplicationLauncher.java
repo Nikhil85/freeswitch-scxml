@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import org.freeswitch.adapter.api.Session;
-import org.freeswitch.scxml.ApplicationLauncher;
+import org.freeswitch.adapter.api.session.Session;
+import org.freeswitch.scxml.application.api.ApplicationLauncher;
 import org.openide.util.Lookup;
 
 /**

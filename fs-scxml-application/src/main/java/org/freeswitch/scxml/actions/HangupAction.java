@@ -5,7 +5,7 @@ package org.freeswitch.scxml.actions;
  * @author jocke
  */
 import org.freeswitch.adapter.api.HangupException;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.Session;
 
 /**
  * Handles the hangup element in the callxml 3.0 spec.

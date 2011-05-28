@@ -11,8 +11,8 @@ import org.junit.Test;
 
 import java.net.URL;
 import org.easymock.EasyMock;
-import org.freeswitch.adapter.api.Session;
-import org.freeswitch.scxml.ApplicationLauncher;
+import org.freeswitch.adapter.api.session.Session;
+import org.freeswitch.scxml.application.api.ApplicationLauncher;
 import org.freeswitch.test.utils.MockLookup;
 import org.junit.Before;
 
