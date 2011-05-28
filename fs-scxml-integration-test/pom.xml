@@ -76,11 +76,6 @@
         </dependency>
         <dependency>
             <groupId>org.freeswitch.scxml</groupId>
-            <artifactId>org.freeswitch.scxml.socket.api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.freeswitch.scxml</groupId>
             <artifactId>org.freeswitch.scxml.application.api</artifactId>
             <version>${project.version}</version>
         </dependency>

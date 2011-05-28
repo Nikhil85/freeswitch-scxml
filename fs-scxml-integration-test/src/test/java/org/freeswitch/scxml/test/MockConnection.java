@@ -1,6 +1,6 @@
 package org.freeswitch.scxml.test;
 
-import org.freeswitch.adapter.api.DTMF;
+import org.freeswitch.adapter.api.constant.DTMF;
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.UUID;
-import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.event.Event;
 import org.xsocket.connection.BlockingConnection;
 import org.xsocket.connection.IBlockingConnection;
 import static org.junit.Assert.*;
@@ -27,7 +27,6 @@ public class MockConnection {
     public static final String SAY = "say";
     public static final String RECORD = "record";
     public static final String BREAK = "break";
-    
     private static final String DLM = "\n\n";
     private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s)(\\w*)$", Pattern.MULTILINE);
     private static final Pattern ARGS_PATTERN = Pattern.compile("^(execute-app-arg:)(\\s)(.*)$?", Pattern.MULTILINE);
@@ -102,6 +101,7 @@ public class MockConnection {
         StringBuilder builder = new StringBuilder();
         builder.append("Event-Name: ").append(event).append("\n");
         vars.put("Channel-Unique-ID", uid);
+        vars.put("Unique-ID", uid);
         for (Map.Entry<String, String> en : vars.entrySet()) {
             builder.append(en.getKey()).append(": ").append(URLEncoder.encode(en.getValue(), "UTF-8")).append("\n");
         }
@@ -124,12 +124,19 @@ public class MockConnection {
 
         public void andReply(String event) throws IOException {
             Map<String, String> data = new HashMap<>();
-            data.put("Application", app);
+            puIfAbsent(data);
             ibc.write(createEvent(event, data));
         }
-        public void andReply(String event , Map<String, String> data) throws IOException {
-            data.put("Application", app);
+
+        public void andReply(String event, Map<String, String> data) throws IOException {
+            puIfAbsent(data);
             ibc.write(createEvent(event, data));
+        }
+
+        private void puIfAbsent(Map<String, String> data) {
+            if (!data.containsKey(app)) {
+                data.put("Application", app);
+            }
         }
     }
 }

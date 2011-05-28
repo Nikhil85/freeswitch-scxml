@@ -1,7 +1,7 @@
 package org.freeswitch.scxml.test.actions;
 
 import org.junit.Test;
-import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.event.Event;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class PlayAudioTest {
      con.close();
     }
     
-    @Test
+    @Test(timeout = 60000)
     public void testPhrase() throws IOException {
         con.fireEvent(Event.CHANNEL_DATA, Fixture.createDataEventMap("org/freeswitch/scxml/test/playAudioTest.xml"));
         con.expectApp(ANSWER).andReply(Event.CHANNEL_EXECUTE_COMPLETE);

@@ -4,8 +4,8 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.io.IOException;
 import java.util.HashMap;
-import org.freeswitch.adapter.api.DTMF;
-import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.constant.DTMF;
+import org.freeswitch.adapter.api.event.Event;
 import org.freeswitch.scxml.test.Fixture;
 import org.freeswitch.scxml.test.MockConnection;
 import org.junit.After;
@@ -40,7 +40,7 @@ public class MenuTest {
         con.close();
     }
     
-    @Test
+    @Test(timeout = 60000)
     public void testMatchChoiceOne() throws IOException {
         con.fireEvent(DTMF.ONE);
         con.expectApp(SPEAK, "Choice one").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
@@ -48,14 +48,15 @@ public class MenuTest {
         con.expectApp(HANGUP).andReply(Event.CHANNEL_EXECUTE_COMPLETE);  
     }
     
-    @Test
+    @Test(timeout = 60000)
     public void testMatchChoiceTwo() throws IOException {
         con.fireEvent(DTMF.TWO);
         con.expectApp(SPEAK, "Choice two").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
         con.expectApp(SPEAK, "Bye").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
         con.expectApp(HANGUP).andReply(Event.CHANNEL_EXECUTE_COMPLETE);  
     }
-    @Test
+    
+    @Test(timeout = 60000)
     public void testTermdigit() throws IOException {
         con.fireEvent(DTMF.POUND);
         con.expectApp(SPEAK, "Termdigit").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
@@ -63,7 +64,7 @@ public class MenuTest {
         testMatchChoiceOne();
     }
   
-    @Test
+    @Test(timeout = 60000)
     public void testNoMatch() throws IOException {
         con.fireEvent(DTMF.FIVE);
         con.expectApp(SPEAK, "No match").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
@@ -71,7 +72,7 @@ public class MenuTest {
         testMatchChoiceOne();
     }
     
-    @Test
+    @Test(timeout = 60000)
     public void testTimeout() throws IOException {
         con.expectApp(SPEAK, "Max time").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
         con.expectApp(PLAYBACK, "say:enter one or two").andReply(Event.CHANNEL_EXECUTE_COMPLETE);

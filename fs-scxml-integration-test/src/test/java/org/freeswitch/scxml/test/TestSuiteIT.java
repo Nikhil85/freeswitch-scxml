@@ -74,7 +74,6 @@ public class TestSuiteIT {
                 mavenBundle("org.freeswitch.scxml", "org.freeswitch.scxml.socket").versionAsInProject(),
                 mavenBundle("org.freeswitch.scxml", "org.freeswitch.scxml.adapter").versionAsInProject(),
                 mavenBundle("org.freeswitch.scxml", "org.freeswitch.scxml.application").versionAsInProject(),
-                mavenBundle("org.freeswitch.scxml", "org.freeswitch.scxml.socket.api").versionAsInProject(),
                 mavenBundle("org.freeswitch.scxml", "org.freeswitch.scxml.application.api").versionAsInProject(),
                 mavenBundle("org.freeswitch.scxml", "org.freeswitch.scxml.lookup").versionAsInProject(),
                 mavenBundle("org.freeswitch.scxml", "org.freeswitch.scxml.config").versionAsInProject(),
