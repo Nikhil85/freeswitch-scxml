@@ -1,16 +1,18 @@
 package org.freeswitch.socket.xsocket.inbound;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
-import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventQueue;
-import org.freeswitch.adapter.api.EventQueueListener;
-import org.freeswitch.adapter.api.InboundSessionFactory;
-import org.freeswitch.adapter.api.OutboundSessionFactory;
-import org.freeswitch.adapter.api.Session;
-import org.freeswitch.adapter.api.DefaultEventQueue;
-import org.freeswitch.socket.xsocket.XsocketEventProducer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import org.freeswitch.adapter.api.event.Event;
+import org.freeswitch.adapter.api.event.EventQueue;
+import org.freeswitch.adapter.api.event.EventQueueListener;
+import org.freeswitch.adapter.api.session.InboundSessionFactory;
+import org.freeswitch.adapter.api.session.OutboundSessionFactory;
+import org.freeswitch.adapter.api.session.Session;
+import org.freeswitch.adapter.api.event.DefaultEventQueue;
+import org.freeswitch.socket.xsocket.EventManger;
 import org.openide.util.Lookup;
 
 /**
@@ -19,39 +21,37 @@ import org.openide.util.Lookup;
  */
 public class DefaultInboundSessionFactory implements InboundSessionFactory {
 
-    /**
-     * TODO Maybe we should return a Future<Session>
-     * 
-     * @param dialUrl
-     * @param docUrl
-     * @param listener 
-     */
+    
     @Override
-    public void create(String dialUrl, URL docUrl, EventQueueListener listener) {
-        //TODO create 
+    public Future<Session> create(String dialUrl, EventQueueListener listener) {
+        ExecutorService exe = Lookup.getDefault().lookup(ExecutorService.class);
+        return exe.submit(new AsyncSessionCreator(dialUrl, listener));
     }
 
     private class AsyncSessionCreator implements Callable<Session> {
 
         private String dialString;
         private EventQueueListener listener;
-        private URL docUrl;
 
-        public AsyncSessionCreator(String dialString, EventQueueListener listener, URL docUrl) {
+        public AsyncSessionCreator(String dialString, EventQueueListener listener) {
             this.dialString = dialString;
             this.listener = listener;
-            this.docUrl = docUrl;
         }
 
         @Override
         public Session call() throws Exception {
-            XsocketClient client = new XsocketClient(dialString);
+            Session session = null;
             EventQueue eventQueue = new DefaultEventQueue();
             eventQueue.addListener(listener);
-            XsocketEventProducer producer = new XsocketEventProducer(eventQueue, client);
-            client.setProducer(producer);
-            Event connect = client.connect();
-            Session session = Lookup.getDefault().lookup(OutboundSessionFactory.class).create(new HashMap<String, Object>(connect.getBodyAsMap()), client, eventQueue);
+            EventManger eventManger = new EventManger(eventQueue);
+            XsocketClient client = new XsocketClient(dialString, eventManger);
+            client.connect();
+            Event connect = eventQueue.poll(1, TimeUnit.MINUTES);
+            
+            if (connect != null && Event.CHANNEL_ANSWER.equals(connect.getEventName())) {
+                session = Lookup.getDefault().lookup(OutboundSessionFactory.class).create(new HashMap<String, Object>(connect.getBodyAsMap()), eventManger, eventQueue);
+            }
+            
             return session;
         }
     }

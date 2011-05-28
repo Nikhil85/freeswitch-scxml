@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.freeswitch.adapter.api.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xsocket.connection.INonBlockingConnection;
@@ -23,7 +24,26 @@ public class EventReader {
     private static final Pattern EVENT_PATTERN = Pattern.compile("Event-Name:\\s(.*)", Pattern.MULTILINE);
     public static final String UTF8 = "UTF-8";
 
-    public String readEvent(final INonBlockingConnection connection) throws IOException {
+    /**
+     * This was taken from the FreeSwitch WIKI.
+     *
+     * <b>Pseudo code</b>
+     * <ol>
+     * <li> Look for \n\n in your receive buffer </li>
+     * <li> Examine data for existence of Content-Length </li>
+     * <li> If NOT present, process event and remove from receive buffer </li>
+     * <li> IF present, Shift buffer to remove 'header'
+     *      Evaluate content-length value </li>
+     * <li> Loop until receive buffer size is >= Content-length
+     *      Extract content-length bytes from buffer and process </li>
+     * </ol>
+     * </p>
+     *
+     * @param connection The connection to read and write to.
+     *
+     * @return true if all went well false otherwise.
+     */
+    public Event readEvent(final INonBlockingConnection connection) throws IOException {
 
         if (noDataAvailable(connection)) {
             return null;
@@ -33,11 +53,16 @@ public class EventReader {
 
         if (isCommandReply(header) || isDisconnectNotice(header)) {
             return null;
-        } else if (isError(header)) {
-            return "CHANNEL_ERROR";
         }
 
-        return readEventByHeader(header, connection);
+        String body = readEventByHeader(header, connection);
+
+        if (body != null) {
+            return Event.fromData(body);
+        
+        } else {
+            return null;
+        }
 
     }
 
@@ -63,14 +88,10 @@ public class EventReader {
 
     private String readEventByLength(String header, final INonBlockingConnection connection)
             throws IOException, NumberFormatException, BufferUnderflowException {
-
         String content = null;
-
         Matcher matcher = CONTENT_LENGTH_PATTERN.matcher(header);
-
         if (matcher.find()) {
             int length = Integer.parseInt(matcher.group(1));
-            // !! Do not catch BufferUnderflowException !!
             content = connection.readStringByLength(length, UTF8);
             LOG.trace("content ==========\n{}=========", content);
         }
@@ -106,9 +127,5 @@ public class EventReader {
 
     private boolean isCommandReply(String header) {
         return header.startsWith(COMMAND_REPLY);
-    }
-
-    private boolean isError(String header) {
-        return header.contains("-ERR");
     }
 }

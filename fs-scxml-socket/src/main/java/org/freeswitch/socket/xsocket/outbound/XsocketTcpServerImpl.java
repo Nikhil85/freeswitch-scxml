@@ -12,14 +12,14 @@ import org.xsocket.connection.Server;
 import java.util.Date;
 import java.util.HashSet;
 import org.freeswitch.config.spi.ConfigChangeListener;
-import org.freeswitch.scxml.ThreadPoolManager;
+import org.freeswitch.scxml.application.api.ThreadPoolManager;
 import org.openide.util.Lookup;
 
 /**
  *
  * @author Jocke
  */
-public final class XsocketTcpServerImpl implements ConfigChangeListener {
+public final class XsocketTcpServerImpl implements  ConfigChangeListener {
     
     public static final String TCP_PORT = "tcp.port";
 
@@ -63,7 +63,7 @@ public final class XsocketTcpServerImpl implements ConfigChangeListener {
     }
 
 
-    
+  
     public void startServer() {
         LOG.info("Try to start Server ...");
 
@@ -100,6 +100,7 @@ public final class XsocketTcpServerImpl implements ConfigChangeListener {
         }
     }
 
+    
     public void stopServer() {
         LOG.info("Try to stop Server ...");
 
