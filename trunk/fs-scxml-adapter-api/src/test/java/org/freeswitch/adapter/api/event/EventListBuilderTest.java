@@ -1,11 +1,17 @@
-package org.freeswitch.adapter.api;
+package org.freeswitch.adapter.api.event;
 
 
+import org.freeswitch.adapter.api.event.Event;
+import org.freeswitch.adapter.api.event.EventListBuilder;
+import org.freeswitch.adapter.api.event.EventList;
+import org.freeswitch.adapter.api.event.DefaultEventQueue;
 import java.util.Map;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Set;
 import org.easymock.EasyMock;
+import org.freeswitch.adapter.api.constant.DTMF;
+import org.freeswitch.adapter.api.HangupException;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

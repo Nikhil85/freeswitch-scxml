@@ -1,4 +1,6 @@
-package org.freeswitch.adapter.api;
+package org.freeswitch.adapter.api.event;
+
+import org.freeswitch.adapter.api.event.Event;
 
 /**
  *

@@ -1,4 +1,4 @@
-package org.freeswitch.adapter.api;
+package org.freeswitch.adapter.api.event;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -31,6 +31,8 @@ public class Event {
     public static final String DTMF = "DTMF";
     public static final String ERROR = "ERROR";
     public static final String CHANNEL_DATA = "CHANNEL_DATA";
+    public static final String CHANNEL_ANSWER = "CHANNEL_ANSWER";
+    
     private final String eventName;
     private String body;
     final Map<String, String> vars;
@@ -95,6 +97,9 @@ public class Event {
 
     public static Event named(String name) {
         return new Event(name);
+    }
+    public static Event named(String name, Map<String, String> vars) {
+        return new Event(name, vars);
     }
 
     public static Event fromData(String data) {

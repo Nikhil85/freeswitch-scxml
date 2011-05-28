@@ -2,13 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.freeswitch.adapter.api;
+package org.freeswitch.adapter.api.event;
 
+import org.freeswitch.adapter.api.event.EventList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import org.freeswitch.adapter.api.constant.DTMF;
+import org.freeswitch.adapter.api.HangupException;
 
 /**
  *

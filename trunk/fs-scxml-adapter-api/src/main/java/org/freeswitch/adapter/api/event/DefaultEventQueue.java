@@ -1,4 +1,4 @@
-package org.freeswitch.adapter.api;
+package org.freeswitch.adapter.api.event;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
-import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventQueue;
-import org.freeswitch.adapter.api.EventQueueListener;
 
 /**
  *

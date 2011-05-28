@@ -16,6 +16,6 @@ public interface CommandExecutor {
      *
      * @return True if the channel is open false otherwise.
      */
-    boolean isReady();
+        boolean isReady();
 
 }
