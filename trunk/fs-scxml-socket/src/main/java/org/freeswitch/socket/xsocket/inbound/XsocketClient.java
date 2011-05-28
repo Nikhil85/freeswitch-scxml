@@ -4,13 +4,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.BufferUnderflowException;
 import java.nio.channels.ClosedChannelException;
-import org.freeswitch.adapter.api.CommandExecutor;
-import org.freeswitch.adapter.api.Event;
-import org.freeswitch.socket.xsocket.EventMatcher;
+import org.freeswitch.adapter.api.event.Event;
 import org.freeswitch.socket.xsocket.EventReader;
-import org.freeswitch.socket.xsocket.XsocketEventProducer;
-import org.freeswitch.socket.xsocket.XsocketSocketWriter;
-import org.junit.Ignore;
+import org.freeswitch.socket.xsocket.EventManger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xsocket.MaxReadSizeExceededException;
@@ -22,23 +18,21 @@ import org.xsocket.connection.NonBlockingConnection;
  *
  * @author jocke
  */
-@Ignore
-public class XsocketClient implements CommandExecutor, EventMatcher, IDataHandler {
+public class XsocketClient implements IDataHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(XsocketClient.class);
     private INonBlockingConnection connection;
     private EventReader reader;
     private String dialString;
-    private XsocketEventProducer producer;
-    private XsocketSocketWriter writer;
+    private EventManger eventManger;
 
-    public XsocketClient(String dialString) {
-        this.dialString = dialString;
+    public XsocketClient(String dialString, EventManger eventManger) {
+        this.dialString = dialString + " &park()";
         this.connection = null;
         this.reader = new EventReader();
         this.connection = createConnection();
-        this.writer = new XsocketSocketWriter(connection);
-
+        this.eventManger = eventManger;
+        this.eventManger.setConnection(connection);
     }
 
     private NonBlockingConnection createConnection() {
@@ -49,17 +43,10 @@ public class XsocketClient implements CommandExecutor, EventMatcher, IDataHandle
         }
     }
 
-    public void setProducer(XsocketEventProducer producer) {
-        this.producer = producer;
-    }
-
-    public Event connect() throws IOException {
+    public void connect() throws IOException {
         connection.write("auth ClueCon\n\n");
         connection.write("event plain CHANNEL_ANSWER DTMF CHANNEL_EXECUTE_COMPLETE\n\n");
         connection.write("api originate " + dialString + " 100\n\n");
-        Event evt = Event.fromData(reader.readEvent(connection));
-        producer.onEvent(evt);
-        return evt;
     }
 
     public void close() throws IOException {
@@ -69,32 +56,14 @@ public class XsocketClient implements CommandExecutor, EventMatcher, IDataHandle
     @Override
     public boolean onData(INonBlockingConnection inbc) throws IOException, BufferUnderflowException, ClosedChannelException, MaxReadSizeExceededException {
 
-        String evt = reader.readEvent(connection);
+        Event evt = reader.readEvent(connection);
 
         if (evt != null) {
-            producer.onEvent(Event.fromData(evt));
+            eventManger.onEvent(evt);
         }
-
-        return true;
+        
+       return true;
     }
 
-    @Override
-    public void execute(String data) throws IOException {
-        writer.execute(data);
-    }
 
-    @Override
-    public boolean isReady() {
-        return writer.isConnected();
-    }
-
-    @Override
-    public boolean matches(String event) {
-        return writer.matches(event);
-    }
-   
-
-    public void myEvents(String uid) throws IOException {
-        connection.write("event " + uid + " \n\n");
-    }
 }
