@@ -9,9 +9,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.commons.scxml.model.CustomAction;
 import org.apache.commons.scxml.model.Var;
-import org.freeswitch.scxml.ApplicationLauncher;
-import org.freeswitch.scxml.ThreadPoolManager;
+import org.freeswitch.scxml.application.api.ApplicationLauncher;
+import org.freeswitch.scxml.application.api.ThreadPoolManager;
 import org.freeswitch.scxml.actions.AnswerAction;
+import org.freeswitch.scxml.actions.CallAction;
 import org.freeswitch.scxml.actions.ExitAction;
 import org.freeswitch.scxml.actions.GenToneAction;
 import org.freeswitch.scxml.actions.GetDigitsAction;
@@ -46,8 +47,7 @@ public class ApplicationActivator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        final ThreadPoolManagerImpl threadPoolManager = new ThreadPoolManagerImpl();
-        
+        final ThreadPoolManagerImpl threadPoolManager = new ThreadPoolManagerImpl();     
         context.registerService(ApplicationLauncher.class.getName(), new ScxmlApplicationLauncher(), null);
         context.registerService(ScxmlApplication.class.getName(), new ScxmlApplicationImp(), null);
         context.registerService(ThreadPoolManager.class.getName(), threadPoolManager, null);
@@ -70,6 +70,7 @@ public class ApplicationActivator implements BundleActivator {
         context.registerService(CustomAction.class.getName(), new CustomAction(NAME_SPACE, "gentone", GenToneAction.class), null);
         context.registerService(CustomAction.class.getName(), new CustomAction(NAME_SPACE, "say", SayAction.class), null);
         context.registerService(CustomAction.class.getName(), new CustomAction(NAME_SPACE, "send", SendAction.class), null);
+        context.registerService(CustomAction.class.getName(), new CustomAction(NAME_SPACE, "call", CallAction.class), null);
     }
 
     @Override

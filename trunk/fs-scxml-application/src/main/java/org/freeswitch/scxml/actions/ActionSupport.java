@@ -10,9 +10,9 @@ import org.apache.commons.scxml.Context;
 import org.apache.commons.scxml.Evaluator;
 import org.apache.commons.scxml.SCXMLExpressionException;
 import org.apache.commons.scxml.TriggerEvent;
-import org.freeswitch.adapter.api.DTMF;
-import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.constant.DTMF;
+import org.freeswitch.adapter.api.event.Event;
+import org.freeswitch.adapter.api.event.EventList;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +101,7 @@ public class ActionSupport {
 
     }
 
-    public final String eval(final String toEval) {
+    public String eval(final String toEval) {
         Object eval = null;
 
         if (toEval == null || toEval.isEmpty()) {

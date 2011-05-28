@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 
 
 import org.apache.commons.scxml.model.Action;
-import org.freeswitch.adapter.api.DTMF;
-import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.constant.DTMF;
+import org.freeswitch.adapter.api.event.EventList;
 import org.freeswitch.adapter.api.HangupException;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
 /**

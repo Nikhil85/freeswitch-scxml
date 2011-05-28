@@ -2,7 +2,7 @@ package org.freeswitch.scxml.actions;
 
 
 import org.freeswitch.adapter.api.HangupException;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.Session;
 
 /**
  *

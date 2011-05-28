@@ -1,10 +1,10 @@
 package org.freeswitch.scxml.actions;
 
-import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventList;
-import org.freeswitch.adapter.api.EventListBuilder;
+import org.freeswitch.adapter.api.event.Event;
+import org.freeswitch.adapter.api.event.EventList;
+import org.freeswitch.adapter.api.event.EventListBuilder;
 import org.freeswitch.adapter.api.HangupException;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 import org.junit.Before;
 import org.junit.Test;

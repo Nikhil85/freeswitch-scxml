@@ -9,8 +9,8 @@ import org.apache.commons.scxml.model.ModelException;
 import org.freeswitch.adapter.api.HangupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.freeswitch.adapter.api.EventList;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.event.EventList;
+import org.freeswitch.adapter.api.session.Session;
 import org.freeswitch.scxml.engine.CallXmlEvent;
 
 /**
