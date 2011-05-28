@@ -1,11 +1,11 @@
 package org.freeswitch.scxml.test.actions;
 
-import org.freeswitch.adapter.api.DTMF;
+import org.freeswitch.adapter.api.constant.DTMF;
 import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.IOException;
-import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.event.Event;
 import org.freeswitch.scxml.test.Fixture;
 import org.freeswitch.scxml.test.MockConnection;
 import org.junit.After;
@@ -37,7 +37,7 @@ public class CountTest {
         con.close();
     }
 
-    @Test
+    @Test(timeout = 60000)
     public void testTermdigit() throws IOException {
         
         con.expectApp(PLAYBACK, "say:enter one or two").andReply(Event.CHANNEL_EXECUTE_COMPLETE);

@@ -144,9 +144,6 @@
             <xsd:attribute name="expr" type="xsd:string">
                 <xsd:annotation>
                     <xsd:documentation xml:lang="en">
-
-
-
                         This attribute can be used if you want to specify a hangup cause. The String should be one of the causes listed at
                         http://wiki.freeswitch.org/wiki/Hangup_causes. The string will be put in the hangupcause header.
 
@@ -402,70 +399,6 @@
             <xsd:attribute name="attachment" type="xsd:string"/>
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="call">
-        <xsd:annotation>
-            <xsd:documentation>
-
-                The call element allows you to place calls to other sip endpoints.
-            </xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexType>
-            <xsd:sequence/>
-            <xsd:attribute name="maxtime" type="xsd:string">
-                <xsd:annotation>
-                    <xsd:documentation>
-                        Specifies how long the the platform should try to reach the sip endpoint before throwing a noanswer event.
-
-                        Format:
-
-                        The string begins with a required numeric value. The valid qualifiers are:
-
-                        * m: minutes
-                        * s: seconds (default)
-                        * ms: milliseconds
-
-                        Default:
-
-                        30s
-                    </xsd:documentation>
-                </xsd:annotation>
-            </xsd:attribute>
-            <xsd:attribute name="callerID" type="xsd:string">
-                <xsd:annotation>
-                    <xsd:documentation>
-
-                        This attribute sets the display name of the outbound call.
-                    </xsd:documentation>
-                </xsd:annotation>
-            </xsd:attribute>
-            <xsd:attribute name="id" type="xsd:string">
-                <xsd:annotation>
-                    <xsd:documentation>
-
-                        Not implemented
-                    </xsd:documentation>
-                </xsd:annotation>
-            </xsd:attribute>
-            <xsd:attribute name="value" type="xsd:string">
-                <xsd:annotation>
-                    <xsd:documentation>
-
-                        The value for this attribute defines the URL describing the place to initiate a call to. An empty value will result in un error.
-                    </xsd:documentation>
-                </xsd:annotation>
-            </xsd:attribute>
-            <xsd:attribute ref="tns:test"/>
-            <xsd:attribute name="busytones" type="xsd:int">
-                <xsd:annotation>
-                    <xsd:documentation>
-
-                        This attribute let's one set how many busy tones should be generated before throwing a busy event.
-                        Defaults to 0.
-                    </xsd:documentation>
-                </xsd:annotation>
-            </xsd:attribute>
-        </xsd:complexType>
-    </xsd:element>
     <xsd:element name="inputdigits">
         <xsd:complexType>
             <xsd:sequence/>
@@ -477,6 +410,13 @@
             <xsd:attribute name="includetermdigit" type="xsd:boolean"/>
             <xsd:attribute name="cleardigits" type="xsd:boolean"/>
             <xsd:attribute name="timeout" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="call">
+        <xsd:complexType>
+            <xsd:sequence/>
+            <xsd:attribute name="value" type="xsd:string"/>
+            <xsd:attribute name="url" type="xsd:string"/>
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

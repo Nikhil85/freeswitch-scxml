@@ -4,9 +4,9 @@ import java.lang.annotation.Annotation;
 import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
-import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.event.Event;
 import java.io.IOException;
-import org.freeswitch.adapter.api.DTMF;
+import org.freeswitch.adapter.api.constant.DTMF;
 import org.freeswitch.scxml.test.Fixture;
 import org.freeswitch.scxml.test.MockConnection;
 import org.junit.After;
@@ -41,7 +41,7 @@ public class GetDigitsTest {
         con.close();
     }
     
-    @Test
+    @Test(timeout = 60000)
     public void testMaxDigits() throws IOException {
         con.fireEvent(DTMF.ONE);
         con.fireEvent(DTMF.TWO);
@@ -54,7 +54,7 @@ public class GetDigitsTest {
         con.expectApp(HANGUP).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
     }
     
-    @Test
+    @Test(timeout = 60000)
     public void testTermdigit() throws IOException {
         con.fireEvent(DTMF.ONE);
         con.fireEvent(DTMF.TWO);
@@ -65,7 +65,7 @@ public class GetDigitsTest {
         con.expectApp(HANGUP).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
     }
 
-    @Test
+    @Test(timeout = 60000)
     public void testMaxTime() throws IOException {
         con.fireEvent(DTMF.ONE);
         con.fireEvent(DTMF.TWO);
