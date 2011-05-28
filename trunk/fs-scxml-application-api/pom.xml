@@ -45,8 +45,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.freeswitch.scxml</Export-Package>
-                        <Private-Package>org.freeswitch.scxml.*</Private-Package>
+                        <Export-Package>org.freeswitch.scxml.application.api</Export-Package>
+                        <Private-Package>org.freeswitch.scxml.application.api.*</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

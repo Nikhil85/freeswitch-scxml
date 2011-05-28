@@ -1,6 +1,6 @@
-package org.freeswitch.scxml;
+package org.freeswitch.scxml.application.api;
 
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.Session;
 
 
 /**
