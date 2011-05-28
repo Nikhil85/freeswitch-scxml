@@ -1,4 +1,4 @@
-package org.freeswitch.adapter.api;
+package org.freeswitch.adapter.api.constant;
 
 import java.util.Collection;
 import java.util.EnumSet;

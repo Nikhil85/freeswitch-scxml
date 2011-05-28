@@ -1,5 +1,6 @@
-package org.freeswitch.adapter.api;
+package org.freeswitch.adapter.api.event;
 
+import org.freeswitch.adapter.api.event.Event;
 import java.util.Map;
 import java.util.HashMap;
 import org.junit.Test;

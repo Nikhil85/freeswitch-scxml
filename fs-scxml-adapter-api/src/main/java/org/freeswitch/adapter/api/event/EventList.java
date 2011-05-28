@@ -1,9 +1,11 @@
-package org.freeswitch.adapter.api;
+package org.freeswitch.adapter.api.event;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import org.freeswitch.adapter.api.constant.DTMF;
+import org.freeswitch.adapter.api.constant.VarName;
 
 /**
  *

@@ -1,6 +1,8 @@
-package org.freeswitch.adapter.api;
+package org.freeswitch.adapter.api.session;
 
+import org.freeswitch.adapter.api.event.EventQueue;
 import java.util.Map;
+import org.freeswitch.adapter.api.CommandExecutor;
 
 /**
  *
