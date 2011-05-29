@@ -1,7 +1,7 @@
 package org.freeswitch.adapter.osgi;
 
-import org.freeswitch.adapter.SessionFactoryImpl;
-import org.freeswitch.adapter.api.OutboundSessionFactory;
+import org.freeswitch.adapter.internal.session.SessionFactoryImpl;
+import org.freeswitch.adapter.api.session.OutboundSessionFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;

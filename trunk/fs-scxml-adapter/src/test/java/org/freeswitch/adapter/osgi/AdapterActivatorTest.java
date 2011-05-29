@@ -2,7 +2,7 @@ package org.freeswitch.adapter.osgi;
 
 import java.util.Dictionary;
 import org.easymock.Capture;
-import org.freeswitch.adapter.api.OutboundSessionFactory;
+import org.freeswitch.adapter.api.session.OutboundSessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;

@@ -1,10 +1,10 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.internal.session;
 
+import java.util.concurrent.Future;
 import java.net.MalformedURLException;
-import java.net.URL;
-import org.freeswitch.adapter.api.EventQueueListener;
-import org.freeswitch.adapter.api.InboundSessionFactory;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.event.EventQueueListener;
+import org.freeswitch.adapter.api.session.InboundSessionFactory;
+import org.freeswitch.adapter.api.session.Session;
 import org.junit.Before;
 import org.junit.Test;
 import static org.easymock.EasyMock.*;
@@ -35,11 +35,10 @@ public class CallAdapterTest {
     @Test
     public void testCall() throws MalformedURLException {
         String toDial = "sip:doe@host";
-        URL docUrl = new URL("file://path");
         expect(session.lookup(InboundSessionFactory.class)).andReturn(factory);
-        factory.create(toDial, docUrl, listener);
+        expect(factory.create(toDial, listener)).andReturn(createNiceMock(Future.class));
         replay(session, listener, factory);
-        adapter.call(toDial, docUrl, listener);
+        adapter.call(toDial,listener);
         verify(session, listener, factory);
     }
     
@@ -49,12 +48,10 @@ public class CallAdapterTest {
     @Test
     public void testCallFactoryNotFound() throws MalformedURLException {
         String toDial = "sip:doe@host";
-        URL docUrl = new URL("file://path");
         expect(session.lookup(InboundSessionFactory.class)).andReturn(null);
         replay(session, listener, factory);
-        adapter.call(toDial, docUrl, listener);
+        adapter.call(toDial, listener);
         verify(session, listener, factory);
     }
-    
-    
+   
 }

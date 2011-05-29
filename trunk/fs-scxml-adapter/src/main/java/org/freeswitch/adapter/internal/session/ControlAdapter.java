@@ -1,13 +1,14 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.internal.session;
 
+import org.freeswitch.adapter.internal.session.SessionState;
 import java.util.Map;
-import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventList;
-import org.freeswitch.adapter.api.EventListBuilder;
-import org.freeswitch.adapter.api.EventQueue;
+import org.freeswitch.adapter.api.event.Event;
+import org.freeswitch.adapter.api.event.EventList;
+import org.freeswitch.adapter.api.event.EventListBuilder;
+import org.freeswitch.adapter.api.event.EventQueue;
 import org.freeswitch.adapter.api.Extension;
 import org.freeswitch.adapter.api.HangupException;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ class ControlAdapter implements Extension {
     public EventList answer() throws HangupException {
         LOG.trace("Session#{}: answer ...", session.getUuid());
         if (state.isNotAnswered()) {
-            EventQueue eventQueue = session.execute(Command.answer());
+            EventQueue eventQueue = session.execute(cmd.answer());
             state.setNotAnswered(false);
             return new EventListBuilder(eventQueue).consume().build();
 

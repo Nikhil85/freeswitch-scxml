@@ -1,10 +1,9 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.internal.session;
 
-import java.net.URL;
-import org.freeswitch.adapter.api.DTMF;
-import org.freeswitch.adapter.api.Event;
+import org.freeswitch.adapter.api.constant.DTMF;
+import org.freeswitch.adapter.api.event.Event;
 import org.freeswitch.adapter.api.CommandExecutor;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.Session;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
@@ -14,10 +13,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import org.freeswitch.adapter.api.EventList;
-import org.freeswitch.adapter.api.EventQueue;
-import org.freeswitch.adapter.api.EventListBuilder;
-import org.freeswitch.adapter.api.EventQueueListener;
+import org.freeswitch.adapter.api.event.EventList;
+import org.freeswitch.adapter.api.event.EventQueue;
+import org.freeswitch.adapter.api.event.EventListBuilder;
+import org.freeswitch.adapter.api.event.EventQueueListener;
 import org.freeswitch.adapter.api.Extension;
 import org.freeswitch.adapter.api.HangupException;
 import org.openide.util.Lookup;
@@ -213,8 +212,8 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
     }
 
     @Override
-    public void call(String value, URL url, EventQueueListener listener) {
-        callAdapter.call(value, url, listener);
+    public void call(String value, EventQueueListener listener) {
+          callAdapter.call(value,listener);
     }
 
     @Override

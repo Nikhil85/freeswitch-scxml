@@ -1,7 +1,7 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.internal.session;
 
 import org.freeswitch.adapter.api.Extension;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.Session;
 import org.junit.Ignore;
 
 /**

@@ -1,15 +1,15 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.internal.session;
 
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
-import org.freeswitch.adapter.api.DTMF;
-import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventList;
-import org.freeswitch.adapter.api.EventListBuilder;
-import org.freeswitch.adapter.api.EventQueue;
+import org.freeswitch.adapter.api.constant.DTMF;
+import org.freeswitch.adapter.api.event.Event;
+import org.freeswitch.adapter.api.event.EventList;
+import org.freeswitch.adapter.api.event.EventListBuilder;
+import org.freeswitch.adapter.api.event.EventQueue;
 import org.freeswitch.adapter.api.Extension;
 import org.freeswitch.adapter.api.HangupException;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ public class DigitsAdapter implements Extension {
 
     public EventList read(int maxDigits, String prompt, long timeout, Set<DTMF> terms) throws HangupException {
         LOG.info("Session#{}: read ...  timeout -->{}", session.getUuid(), timeout);
-        EventQueue eventQueue = session.execute(cmd.playback(prompt, false));
+        EventQueue eventQueue = session.execute(cmd.playback(prompt));
         EventListBuilder builder = new EventListBuilder(eventQueue).maxDigits(maxDigits).termDigits(terms).consume();
         
         if (builder.containsAnyEvent(Event.CHANNEL_EXECUTE_COMPLETE)) {
