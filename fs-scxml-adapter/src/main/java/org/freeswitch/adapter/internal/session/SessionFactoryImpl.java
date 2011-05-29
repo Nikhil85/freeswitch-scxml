@@ -1,15 +1,15 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.internal.session;
 
 
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.freeswitch.adapter.api.OutboundSessionFactory;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.OutboundSessionFactory;
+import org.freeswitch.adapter.api.session.Session;
 import java.util.Map;
 import org.freeswitch.adapter.api.CommandExecutor;
-import org.freeswitch.adapter.api.EventQueue;
+import org.freeswitch.adapter.api.event.EventQueue;
 import org.freeswitch.config.spi.ConfigChangeListener;
 
 /**

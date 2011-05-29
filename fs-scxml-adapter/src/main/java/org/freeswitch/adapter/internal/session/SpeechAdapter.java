@@ -1,11 +1,11 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.internal.session;
 
-import org.freeswitch.adapter.api.EventList;
-import org.freeswitch.adapter.api.EventListBuilder;
-import org.freeswitch.adapter.api.EventQueue;
+import org.freeswitch.adapter.api.event.EventList;
+import org.freeswitch.adapter.api.event.EventListBuilder;
+import org.freeswitch.adapter.api.event.EventQueue;
 import org.freeswitch.adapter.api.Extension;
 import org.freeswitch.adapter.api.HangupException;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ public class SpeechAdapter implements Extension {
     
     public EventList speak(String text) throws HangupException {
         LOG.debug("Session#{}: speak ...", session.getUuid());
-        EventQueue eventQueue = session.execute(cmd.speak(text, false));
+        EventQueue eventQueue = session.execute(cmd.speak(text));
         return new EventListBuilder(eventQueue).consume().build();
     }
 

@@ -1,11 +1,12 @@
-package org.freeswitch.adapter;
+package org.freeswitch.adapter.internal.session;
 
-import org.freeswitch.adapter.api.DefaultEventQueue;
+import org.freeswitch.adapter.internal.session.SpeechAdapter;
+import org.freeswitch.adapter.api.event.DefaultEventQueue;
 import java.util.concurrent.TimeUnit;
-import org.freeswitch.adapter.api.Event;
-import org.freeswitch.adapter.api.EventList;
+import org.freeswitch.adapter.api.event.Event;
+import org.freeswitch.adapter.api.event.EventList;
 import org.freeswitch.adapter.api.HangupException;
-import org.freeswitch.adapter.api.Session;
+import org.freeswitch.adapter.api.session.Session;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -60,7 +61,7 @@ public class SpeechAdapterTest {
     public void testSpeak() throws InterruptedException, HangupException {
 
         expect(session.getUuid()).andReturn(UID);
-        expect(session.execute(command.speak("test", false))).andReturn(queue);
+        expect(session.execute(command.speak("test"))).andReturn(queue);
         expect(queue.poll(5, TimeUnit.MINUTES)).andReturn(Event.named(Event.CHANNEL_EXECUTE_COMPLETE));
 
         replay(session, queue);
