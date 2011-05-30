@@ -16,9 +16,9 @@ import java.util.concurrent.TimeUnit;
 import org.freeswitch.adapter.api.event.EventList;
 import org.freeswitch.adapter.api.event.EventQueue;
 import org.freeswitch.adapter.api.event.EventListBuilder;
-import org.freeswitch.adapter.api.event.EventQueueListener;
 import org.freeswitch.adapter.api.Extension;
 import org.freeswitch.adapter.api.HangupException;
+import org.freeswitch.adapter.api.constant.VarName;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
@@ -67,8 +67,8 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
         content.add(audioAdapter);
         content.add(controlAdapter);
         content.add(digitsAdapter);
+        content.add(callAdapter);
         this.lkp = new ProxyLookup(Lookup.getDefault(), new AbstractLookup(content));
-
     }
 
     @Override
@@ -83,7 +83,7 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
 
     @Override
     public String getUuid() {
-        return (String) sessionData.get("Unique-ID");
+        return (String) sessionData.get(VarName.UNIQUE_ID);
     }
 
     public EventQueue getEventQueue() {
@@ -212,8 +212,8 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
     }
 
     @Override
-    public void call(String value, EventQueueListener listener) {
-          callAdapter.call(value,listener);
+    public String call(String value) {
+         return callAdapter.call(value);
     }
 
     @Override

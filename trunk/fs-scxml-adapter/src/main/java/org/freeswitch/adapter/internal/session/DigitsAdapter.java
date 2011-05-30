@@ -48,12 +48,12 @@ public class DigitsAdapter implements Extension {
         EventQueue eventQueue = session.execute(cmd.playback(prompt));
         EventListBuilder builder = new EventListBuilder(eventQueue).maxDigits(maxDigits).termDigits(terms).consume();
         
-        if (builder.containsAnyEvent(Event.CHANNEL_EXECUTE_COMPLETE)) {
+        if (builder.contains(Event.CHANNEL_EXECUTE_COMPLETE)) {
             LOG.trace("Session#{} the prompt playing was stopped, start timer", session.getUuid());
             ScheduledFuture<Boolean> future = session.scheduleTimeout(timeout);
             builder.reset().consume();
             cancelFuture(future);
-        } else if (!builder.containsAnyEvent(Event.CHANNEL_HANGUP)) {
+        } else if (!builder.contains(Event.CHANNEL_HANGUP)) {
             LOG.trace("Session#{} the prompt is still playing, cancel it", session.getUuid());
             session.breakAction();
             builder.consume();
