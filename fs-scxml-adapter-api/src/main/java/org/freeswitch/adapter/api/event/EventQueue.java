@@ -1,6 +1,5 @@
 package org.freeswitch.adapter.api.event;
 
-import org.freeswitch.adapter.api.event.Event;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,9 +17,9 @@ public interface EventQueue {
     Event poll(int i, TimeUnit timeUnit) throws InterruptedException;
 
     Event poll();
-
-    void addListener(EventQueueListener listener);
     
-    void removeListener(EventQueueListener listener);
+    public void dispose();
+ 
+    public void fireEvent(Event event, String uid);
     
 }

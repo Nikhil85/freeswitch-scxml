@@ -13,12 +13,10 @@ import static org.easymock.EasyMock.*;
 public class DefaultEventQueueTest {
 
     private DefaultEventQueue eventQueue;
-    private EventQueueListener listener;
 
     @Before
     public void setUp() {
-        eventQueue = new DefaultEventQueue();
-        listener = createMock(EventQueueListener.class);
+        eventQueue = new DefaultEventQueue("1234");
     }
 
     @After
@@ -30,14 +28,8 @@ public class DefaultEventQueueTest {
      */
     @Test
     public void testAdd() {
-        
-        eventQueue.addListener(listener);
-        listener.onAdd(isA(Event.class));
-        
-        replay(listener);
         eventQueue.add(Event.named(Event.CHANNEL_EXECUTE_COMPLETE));
-        verify(listener);
-        
+
         assertFalse(eventQueue.isEmpty());
         assertTrue(eventQueue.poll().getEventName().equals(Event.CHANNEL_EXECUTE_COMPLETE));
         assertNull(eventQueue.poll());
@@ -56,5 +48,4 @@ public class DefaultEventQueueTest {
         assertTrue(eventQueue.poll().getEventName().equals(Event.CHANNEL_EXECUTE_COMPLETE));
         assertNull(eventQueue.poll());
     }
-
 }

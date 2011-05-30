@@ -29,7 +29,7 @@ public final class EventListBuilderTest {
      */
     @Before
     public void setUp() {
-        queue = new DefaultEventQueue();
+        queue = new DefaultEventQueue("1234");
     }
 
     /**
