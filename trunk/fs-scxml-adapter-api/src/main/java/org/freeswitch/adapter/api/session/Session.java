@@ -1,9 +1,7 @@
 package org.freeswitch.adapter.api.session;
 
-import org.freeswitch.adapter.api.event.EventQueueListener;
 import org.freeswitch.adapter.api.event.EventQueue;
 import org.freeswitch.adapter.api.event.EventList;
-import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -302,6 +300,6 @@ public interface Session {
      * @param value The dial string 
      * @param url   The SCXML document to execute if the call was successful.
      */
-    public void call(String value, EventQueueListener listener);
+    public String call(String value);
 
 }

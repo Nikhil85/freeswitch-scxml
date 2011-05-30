@@ -1,10 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.freeswitch.adapter.api.event;
 
-import org.freeswitch.adapter.api.event.EventList;
+import java.util.List;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +60,7 @@ public final class EventListBuilder {
     }
 
     private boolean noFinalEvent() {
-        return !buildIsFinal() && !endsWithDtmf(termDtmfs) && !(maxNumberOfDtmfs());
+        return onlyDtmf() && !endsWithDtmf(termDtmfs) && !(maxNumberOfDtmfs());
     }
 
     private void poll() throws InterruptedException, HangupException {
@@ -80,19 +76,20 @@ public final class EventListBuilder {
         return maxNumOfDTMFChars <= eventList.sizeOfDtmfs();
     }
 
-    private boolean buildIsFinal() {
-        return containsAnyEvent(Event.CHANNEL_EXECUTE_COMPLETE, Event.TIMEOUT, Event.CHANNEL_HANGUP);
-    }
-
-    public boolean containsAnyEvent(String... evts) {
-        for (String name : evts) {
-            if (eventList.contains(name)) {
-                return true;
-            }
+    private boolean onlyDtmf() {
+        List<Event> events = eventList.getEvents();
+        for (Event event : events) {
+             if(!event.getEventName().equals(Event.DTMF)) {
+                 return false;
+             }
         }
-        return false;
+        return true;
     }
 
+    public boolean contains(String eventName) {
+        return eventList.contains(eventName);
+    }
+    
     public EventList build() {
         return eventList;
     }

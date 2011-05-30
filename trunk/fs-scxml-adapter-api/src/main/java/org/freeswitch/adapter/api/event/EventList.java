@@ -1,6 +1,7 @@
 package org.freeswitch.adapter.api.event;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -87,6 +88,10 @@ public final class EventList {
         }
 
         return null;
+    }
+
+    public List<Event> getEvents() {
+        return Collections.unmodifiableList(events);
     }
 
     public DTMF getSingleResult() {

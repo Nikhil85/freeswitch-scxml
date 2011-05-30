@@ -1,10 +1,9 @@
 package org.freeswitch.adapter.api.event;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -12,32 +11,35 @@ import java.util.concurrent.TimeUnit;
  * @author jocke
  */
 public class DefaultEventQueue implements EventQueue {
-
+    
     private BlockingQueue<Event> eventQueue;
-    private EventQueueListener listener;
-    private List<EventQueueListener> listeners;
-
-    public DefaultEventQueue() {
+    private final String uid;
+    private static final ConcurrentHashMap<String, DefaultEventQueue> QUEUES = new ConcurrentHashMap<>();
+    
+    public DefaultEventQueue(String uid) {
         eventQueue = new ArrayBlockingQueue<>(50);
+        this.uid = uid;
     }
-
-    public DefaultEventQueue(BlockingQueue<Event> eventQueue) {
+    
+    public DefaultEventQueue(BlockingQueue<Event> eventQueue, String uid) {
         this.eventQueue = eventQueue;
+        this.uid = uid;
     }
-
+    
     @Override
     public Event poll(int i, TimeUnit timeUnit) throws InterruptedException {
         return eventQueue.poll(i, timeUnit);
     }
-
+    
     @Override
     public boolean add(Event e) {
-        if(listener != null) {
-            listener.onAdd(e);
+        if (Event.CHANNEL_HANGUP.equals(e.getEventName())) {
+            dispose();
         }
+        
         return eventQueue.add(e);
     }
-
+    
     @Override
     public boolean clearDigits() {
         boolean removed = false;
@@ -50,29 +52,27 @@ public class DefaultEventQueue implements EventQueue {
         }
         return removed;
     }
-
+    
     @Override
     public boolean isEmpty() {
         return eventQueue.isEmpty();
     }
-
+    
     @Override
     public Event poll() {
         return eventQueue.poll();
     }
-
+    
     @Override
-    public void addListener(EventQueueListener listener) {
-        if(listeners == null) {
-            listeners = new ArrayList<>(5);
+    public void fireEvent(Event event, String uid) {
+        DefaultEventQueue queue = QUEUES.get(uid);
+        if (queue != null) {
+            queue.add(event);
         }
-        this.listener = listener;
     }
     
     @Override
-    public void removeListener(EventQueueListener listener) {
-        if(listeners != null) {
-            listeners.remove(listener);
-        }
+    public void dispose() {
+        QUEUES.remove(this.uid);
     }
 }
