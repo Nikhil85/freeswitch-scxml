@@ -60,7 +60,7 @@ public final class GenToneAction extends AbstractAction {
 
 
     @Override
-    public void handleAction(Session ivrSession) throws HangupException {
+    public void handleAction(Session ivrSession, ActionSupport actionSupport) throws HangupException {
 
         if (value.equalsIgnoreCase(RING)) {
             ivrSession.streamFile(RINGING.replace("-repeat-", Integer.toString(repeat)));

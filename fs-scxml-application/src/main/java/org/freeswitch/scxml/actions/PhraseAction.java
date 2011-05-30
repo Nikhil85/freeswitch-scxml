@@ -51,15 +51,15 @@ public final class PhraseAction extends AbstractAction {
     }
     
     @Override
-    public void handleAction(Session fsSession) throws HangupException {
+    public void handleAction(Session fsSession, ActionSupport actionSupport) throws HangupException {
         
         if(type == null || method == null || value == null) {
-            fireErrorEvent(CallXmlEvent.ERROR);
+            actionSupport.fireErrorEvent(CallXmlEvent.ERROR);
             log.error("Not a valid phrase command {} " , this);
             return;
         }
         
-        proceed(fsSession.say(module, type.toUpperCase(), method.toUpperCase(), eval(value)));
+        actionSupport.proceed(fsSession.say(module, type.toUpperCase(), method.toUpperCase(), actionSupport.eval(value)));
     }
 
     @Override

@@ -1,11 +1,9 @@
 package org.freeswitch.scxml.actions;
 
-import org.freeswitch.adapter.api.event.EventQueueListener;
 import org.freeswitch.adapter.api.session.Session;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
 
 /**
@@ -24,7 +22,6 @@ public class CallActionTest {
         callAction = new CallAction();
         as = createMock(ActionSupport.class);
         session = createMock(Session.class);
-        callAction.setActionSupport(as);
         callAction.setValue(value);
         
     }
@@ -41,10 +38,10 @@ public class CallActionTest {
         
         expect(as.validateFields(value)).andReturn(Boolean.TRUE);
         expect(as.eval(value)).andReturn(value);
-        session.call(eq(value), isA(EventQueueListener.class));
+        session.call(eq(value));
         
         replay(session, as);
-        callAction.handleAction(session);
+        callAction.handleAction(session, as);
         verify(session, as);
     }
 }

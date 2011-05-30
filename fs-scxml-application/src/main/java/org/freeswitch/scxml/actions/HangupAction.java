@@ -21,7 +21,7 @@ public final class HangupAction extends AbstractAction {
     private static final long serialVersionUID = -6083018410619271886L;
 
     @Override
-    public void handleAction(Session ivrSession) throws HangupException {
+    public void handleAction(Session ivrSession, ActionSupport actionSupport) throws HangupException {
         ivrSession.hangup();
     }
 

@@ -25,7 +25,6 @@ public final class AnswerActionTest {
         actionSupport = createMock(ActionSupport.class);
         session = createMock(Session.class);
         action = new AnswerAction();
-        action.setActionSupport(actionSupport);
     }
 
     /**
@@ -41,7 +40,7 @@ public final class AnswerActionTest {
         actionSupport.setContextVar("isconnected", Boolean.TRUE);
 
         replay(actionSupport, session);
-        action.handleAction(session);
+        action.handleAction(session, actionSupport);
         verify(actionSupport, session);
     }
 
@@ -56,7 +55,7 @@ public final class AnswerActionTest {
         actionSupport.setContextVar("isconnected", Boolean.FALSE);
 
         replay(session, actionSupport);
-        action.handleAction(session);
+        action.handleAction(session, actionSupport);
         verify(session, actionSupport);
     }
 }

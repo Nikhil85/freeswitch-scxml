@@ -61,9 +61,9 @@ public final class ExitAction extends AbstractAction {
 
 
     @Override
-    public void handleAction(Session ivrSession) throws HangupException{
+    public void handleAction(Session ivrSession, ActionSupport actionSupport) throws HangupException{
 
-        Map<String, Object> vars = getNameListAsMap(namelist);
+        Map<String, String> vars = actionSupport.getNameListAsMap(namelist);
 
         if (vars.isEmpty()) {
             ivrSession.hangup();

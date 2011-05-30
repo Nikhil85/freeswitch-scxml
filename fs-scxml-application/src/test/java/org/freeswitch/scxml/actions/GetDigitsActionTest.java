@@ -36,7 +36,6 @@ public final class GetDigitsActionTest {
         action.setMaxdigits(MAX_DIGITS);
         action.setMaxtime(MAX_TIME_STRING);
         action.setIncludetermdigit(false);
-        action.setActionSupport(actionSupport);
     }
 
     @Test
@@ -48,7 +47,7 @@ public final class GetDigitsActionTest {
         actionSupport.fireEvent(CallXmlEvent.MAXTIME);
         actionSupport.setContextVar(NUMBER, dtmfs);
         replay(actionSupport, session);
-        action.handleAction(session);
+        action.handleAction(session, actionSupport);
         verify(actionSupport, session);
     }
 
@@ -59,7 +58,7 @@ public final class GetDigitsActionTest {
         actionSupport.fireEvent(CallXmlEvent.TERMDIGIT);
         actionSupport.setContextVar(NUMBER, "123467");
         replay(actionSupport, session);
-        action.handleAction(session);
+        action.handleAction(session, actionSupport);
         verify(actionSupport, session);
     }
   
@@ -71,7 +70,7 @@ public final class GetDigitsActionTest {
         actionSupport.fireEvent(CallXmlEvent.MAXDIGITS);
         actionSupport.setContextVar(NUMBER, digits);
         replay(actionSupport, session);
-        action.handleAction(session);
+        action.handleAction(session, actionSupport);
         verify(actionSupport, session);
     }
     

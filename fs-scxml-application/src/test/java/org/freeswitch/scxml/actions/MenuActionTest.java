@@ -32,7 +32,6 @@ public class MenuActionTest {
       action = new MenuAction();
       action.setValue(PROMPT);
       action.setChoices("1");
-      action.setActionSupport(actionSupport);
       
     }
 
@@ -109,7 +108,7 @@ public class MenuActionTest {
     
     private void handleAction() throws HangupException {
         replay(ivrSession, actionSupport);
-        action.handleAction(ivrSession);
+        action.handleAction(ivrSession, actionSupport);
         verify(ivrSession, actionSupport);
     }
 }

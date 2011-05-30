@@ -21,17 +21,17 @@ public final class AnswerAction extends AbstractAction  {
 
 
     @Override
-    public void handleAction(Session ivrSession) throws HangupException {
+    public void handleAction(Session ivrSession, ActionSupport actionSupport) throws HangupException {
 
         EventList event = ivrSession.answer();
 
         //If no hangup or error event
-        if (proceed(event)) {
-            fireEvent(CallXmlEvent.ANSWER);
-            setContextVar("isconnected", Boolean.TRUE);
+        if (actionSupport.proceed(event)) {
+            actionSupport.fireEvent(CallXmlEvent.ANSWER);
+            actionSupport.setContextVar("isconnected", Boolean.TRUE);
         
         } else {
-            setContextVar("isconnected", Boolean.FALSE);
+            actionSupport.setContextVar("isconnected", Boolean.FALSE);
             log.debug("Error or hangup in answer {} ", event );
         }
 

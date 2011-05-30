@@ -29,10 +29,7 @@ public final class GetDigitsAction extends AbstractAction {
     private String termdigits = "#";
     private String var;
 
-    public int getMaxTimeAsInt() {
-        return getMillisFromString(maxtime);
-    }
-
+   
     public boolean isCleardigits() {
         return cleardigits;
     }
@@ -86,7 +83,7 @@ public final class GetDigitsAction extends AbstractAction {
      * @param ivrSession The session that will execute the actions.
      */
     @Override
-    public void handleAction(Session ivrSession) throws HangupException {
+    public void handleAction(Session ivrSession, ActionSupport actionSupport) throws HangupException {
 
         Set<DTMF> terms = DTMF.setFromString(termdigits);
 
@@ -94,27 +91,27 @@ public final class GetDigitsAction extends AbstractAction {
             ivrSession.clearDigits();
         }
 
-        EventList evt = ivrSession.getDigits(maxdigits, terms, getMaxTimeAsInt());
+        EventList evt = ivrSession.getDigits(maxdigits, terms, actionSupport.getMillisFromString(maxtime));
 
         if (evt.containsAny(terms)) {
-            fireEvent(CallXmlEvent.TERMDIGIT);
+            actionSupport.fireEvent(CallXmlEvent.TERMDIGIT);
 
         } else if (evt.sizeOfDtmfs() >= maxdigits) {
-            fireEvent(CallXmlEvent.MAXDIGITS);
+            actionSupport.fireEvent(CallXmlEvent.MAXDIGITS);
 
         } else if (evt.contains(Event.TIMEOUT)) {
-            fireEvent(CallXmlEvent.MAXTIME);
+            actionSupport.fireEvent(CallXmlEvent.MAXTIME);
 
         } else {
-            fireEvent(CallXmlEvent.ERROR);
+            actionSupport.fireEvent(CallXmlEvent.ERROR);
             log.warn("An unknown event happend !!!");
         }
 
         if (includetermdigit) {
-            setContextVar(var, evt.dtmfsAsString());
+            actionSupport.setContextVar(var, evt.dtmfsAsString());
 
         } else {
-            setContextVar(var, evt.dtmfsAsString(terms));
+            actionSupport.setContextVar(var, evt.dtmfsAsString(terms));
         }
 
     }
