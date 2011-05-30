@@ -1,7 +1,5 @@
 package org.freeswitch.adapter.internal.session;
 
-import org.freeswitch.adapter.internal.session.SessionState;
-import java.util.Map;
 import org.freeswitch.adapter.api.event.Event;
 import org.freeswitch.adapter.api.event.EventList;
 import org.freeswitch.adapter.api.event.EventListBuilder;
