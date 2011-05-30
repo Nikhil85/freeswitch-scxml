@@ -1,9 +1,9 @@
 package org.freeswitch.socket.xsocket.outbound;
 
+import java.util.Map;
 import org.freeswitch.socket.xsocket.EventManger;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.BufferUnderflowException;
 import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +12,10 @@ import org.xsocket.connection.IConnectHandler;
 import org.xsocket.connection.IDataHandler;
 import org.xsocket.connection.IDisconnectHandler;
 import org.xsocket.connection.INonBlockingConnection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.freeswitch.adapter.api.constant.VarName;
 import org.freeswitch.adapter.api.event.DefaultEventQueue;
 import org.freeswitch.adapter.api.event.Event;
 import org.freeswitch.adapter.api.session.OutboundSessionFactory;
-import org.freeswitch.adapter.api.session.Session;
 import org.freeswitch.scxml.application.api.ThreadPoolManager;
 import org.freeswitch.socket.xsocket.ApplicationRunner;
 import org.freeswitch.socket.xsocket.EventReader;
@@ -31,8 +29,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
 
     private static final Logger LOG = LoggerFactory.getLogger(EventSocketHandler.class);
     private final EventReader reader = new EventReader();
-
-
+    
     @Override
     public boolean onData(final INonBlockingConnection connection) throws IOException {
 
@@ -63,11 +60,12 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
             LOG.warn("No factory found in lookup ");
             return;
         }
-
-        DefaultEventQueue eventQueue = new DefaultEventQueue();
+        
+        Map<String, String> vars = evt.getBodyAsMap();
+        DefaultEventQueue eventQueue = new DefaultEventQueue(vars.get(VarName.UNIQUE_ID));
         EventManger manger = new EventManger(connection, eventQueue);
         connection.setAttachment(manger);
-        runApplication(new ApplicationRunner(factory.create(new HashMap<String, Object>(evt.getBodyAsMap()), manger, eventQueue)));
+        runApplication(new ApplicationRunner(factory.create(new HashMap<String, Object>(vars), manger, eventQueue)));
     }
 
     private void runApplication(Runnable appRunner) {
