@@ -150,16 +150,9 @@ public final class RecordAudioAction extends AbstractAction {
         this.termdigits = digits;
     }
 
-    /**
-     *
-     * @return maxtime as un integer in milliseconds.
-     */
-    public int getMaxtimeAsMillis() {
-        return getMillisFromString(maxtime);
-    }
 
     @Override
-    public void handleAction(Session fsSession) throws HangupException {
+    public void handleAction(Session fsSession, ActionSupport actionSupport) throws HangupException {
 
         Set<DTMF> dtmfTerminationDigits = DTMF.setFromString(termdigits);
 
@@ -167,20 +160,20 @@ public final class RecordAudioAction extends AbstractAction {
             fsSession.clearDigits();
         }
 
-        EventList eventList = fsSession.recordFile(getMaxtimeAsMillis(), beep, dtmfTerminationDigits, format);
+        EventList eventList = fsSession.recordFile(actionSupport.getMillisFromString(maxtime), beep, dtmfTerminationDigits, format);
 
         String[] data = getData(eventList);
 
-        setContextVar(var, data[0]);
-        setContextVar(getTimevar(), data[1]);
+        actionSupport.setContextVar(var, data[0]);
+        actionSupport.setContextVar(getTimevar(), data[1]);
 
-        if (proceed(eventList)) {
+        if (actionSupport.proceed(eventList)) {
 
             if (eventList.containsAny(dtmfTerminationDigits)) {
-                fireEvent(CallXmlEvent.TERMDIGIT);
+                actionSupport.fireEvent(CallXmlEvent.TERMDIGIT);
 
             } else {
-                fireEvent(CallXmlEvent.MAXTIME);
+                actionSupport.fireEvent(CallXmlEvent.MAXTIME);
             }
         }
     }

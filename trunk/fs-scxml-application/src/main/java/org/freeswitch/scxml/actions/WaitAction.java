@@ -36,17 +36,10 @@ public final class WaitAction extends AbstractAction {
         this.value = timeToWait;
     }
 
-    /**
-     *
-     * @return The value as un integer of time in milliseconds.
-     */
-    public int getIntValue() {
-        return getMillisFromString(value);
-    }
 
     @Override
-    public void handleAction(Session ivrSession) throws HangupException {
-        ivrSession.sleep(getIntValue());
+    public void handleAction(Session ivrSession, ActionSupport actionSupport) throws HangupException {
+        ivrSession.sleep(actionSupport.getMillisFromString(value));
     }
 
 

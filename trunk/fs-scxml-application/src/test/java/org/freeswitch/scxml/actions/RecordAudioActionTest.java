@@ -39,7 +39,6 @@ public final class RecordAudioActionTest {
         action.setMaxtime("60s");
         action.setFormat("wav");
         action.setTermdigits("#");
-        action.setActionSupport(actionSupport);
     }
 
     /**
@@ -62,7 +61,7 @@ public final class RecordAudioActionTest {
         actionSupport.fireEvent(CallXmlEvent.MAXTIME);
         
         replay(session, actionSupport);
-        action.handleAction(session);
+        action.handleAction(session, actionSupport);
         verify(session, actionSupport);
 
     }

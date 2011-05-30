@@ -21,7 +21,7 @@ public final class ExitActionTest {
     private ExitAction action;
     private ActionSupport actionSupport;
     private String varNames = "test1 test2";
-    private HashMap<String, Object> vars;
+    private HashMap<String, String> vars;
     
     /**
      * Set up the test.
@@ -32,9 +32,8 @@ public final class ExitActionTest {
         session = EasyMock.createMock(Session.class);
         
         action = new ExitAction();
-        vars = new HashMap<String, Object>();
+        vars = new HashMap<>();
         action.setNamelist(varNames);
-        action.setActionSupport(actionSupport);
     }
 
     @Test
@@ -45,7 +44,7 @@ public final class ExitActionTest {
         expect(session.hangup()).andReturn(EventListBuilder.single(Event.CHANNEL_EXECUTE_COMPLETE));
         
         replay(actionSupport, session);
-        action.handleAction(session);
+        action.handleAction(session, actionSupport);
         verify(actionSupport, session);
     }
 

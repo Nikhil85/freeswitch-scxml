@@ -57,12 +57,12 @@ public final class PlayAudioAction extends AbstractAction {
     }
 
     @Override
-    public void handleAction(Session ivrSession) throws HangupException {
+    public void handleAction(Session ivrSession, ActionSupport actionSupport) throws HangupException {
 
-        String prompt = getPath(value);
+        String prompt = actionSupport.getPath(value);
 
         if (prompt == null) {
-            fireEvent(CallXmlEvent.ERROR);
+            actionSupport.fireEvent(CallXmlEvent.ERROR);
             return;
         }
 
@@ -71,7 +71,7 @@ public final class PlayAudioAction extends AbstractAction {
         if (termdigits == null || termdigits.isEmpty()) {
 
             event = ivrSession.streamFile(prompt);
-            proceed(event);
+            actionSupport.proceed(event);
 
         } else {
 
@@ -79,10 +79,10 @@ public final class PlayAudioAction extends AbstractAction {
 
             event = ivrSession.streamFile(prompt, terms);
 
-            if (proceed(event)) {
+            if (actionSupport.proceed(event)) {
 
                 if (event.containsAny(terms)) {
-                    fireEvent(CallXmlEvent.TERMDIGIT);
+                    actionSupport.fireEvent(CallXmlEvent.TERMDIGIT);
                 }
 
             } else {

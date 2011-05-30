@@ -29,7 +29,7 @@ public final class SayAction extends AbstractAction implements ExternalContent {
      */
     public SayAction() {
         super();
-        this.externalNodes = new ArrayList<Text>();
+        this.externalNodes = new ArrayList<>();
     }
 
     /**
@@ -51,7 +51,7 @@ public final class SayAction extends AbstractAction implements ExternalContent {
 
 
     @Override
-    public void handleAction(Session ivrSession) throws HangupException {
+    public void handleAction(Session ivrSession, ActionSupport actionSupport) throws HangupException {
 
         if (externalNodes.isEmpty()) {
 
@@ -60,7 +60,7 @@ public final class SayAction extends AbstractAction implements ExternalContent {
         } else {
 
             Text text = externalNodes.get(0);
-            String toSay = eval(text.getWholeText().trim());
+            String toSay = actionSupport.eval(text.getWholeText().trim());
             ivrSession.speak(toSay);
         }
 

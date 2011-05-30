@@ -35,7 +35,6 @@ public final class PlayAudioActionTest {
         action = new PlayAudioAction();
         action.setValue(VALUE);
         action.setTermdigits("#");
-        action.setActionSupport(actionSupport);
     }
 
     @Test
@@ -47,7 +46,7 @@ public final class PlayAudioActionTest {
         expect(session.streamFile(PROMPT, EnumSet.of(DTMF.STAR, DTMF.POUND))).andReturn(evtl);
         actionSupport.fireEvent(CallXmlEvent.TERMDIGIT);
         replay(session, actionSupport);
-        action.handleAction(session);
+        action.handleAction(session, actionSupport);
         verify(session, actionSupport);
     }
 
@@ -60,7 +59,7 @@ public final class PlayAudioActionTest {
         expect(actionSupport.proceed(evtl)).andReturn(Boolean.TRUE);
         expect(session.streamFile(PROMPT)).andReturn(evtl);
         replay(session, actionSupport);
-        action.handleAction(session);
+        action.handleAction(session, actionSupport);
         verify(session, actionSupport);
 
     }

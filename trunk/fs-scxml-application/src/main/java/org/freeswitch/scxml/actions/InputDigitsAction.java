@@ -78,15 +78,6 @@ public final class InputDigitsAction extends AbstractAction {
         this.mindigits = digits;
     }
 
-    /**
-     * A method that transforms a string with a qualifier like
-     * 10m 10ms 10s to time in milliseconds.
-     *
-     * @return The time as a integer.
-     */
-    public int getMaxTimeAsInt() {
-        return getMillisFromString(maxtime);
-    }
 
     /**
      * A get method for the cleardigits attribute.
@@ -189,17 +180,17 @@ public final class InputDigitsAction extends AbstractAction {
     }
 
     @Override
-    public void handleAction(Session ivrSession) throws HangupException {
+    public void handleAction(Session ivrSession, ActionSupport actionSupport) throws HangupException {
 
         Set<DTMF> terms = DTMF.setFromString(termdigits);
 
         String file;
 
         if (value != null) {
-            file = getPath(value);
+            file = actionSupport.getPath(value);
 
         } else if (say != null) {
-            file = "say:" + eval(say);
+            file = "say:" + actionSupport.eval(say);
 
         } else {
             log.error("Both value and say are null in inputdigits");
@@ -210,40 +201,40 @@ public final class InputDigitsAction extends AbstractAction {
             ivrSession.clearDigits();
         }
 
-        EventList evt = ivrSession.read(maxdigits, file, getMaxTimeAsInt(), terms);
+        EventList evt = ivrSession.read(maxdigits, file, actionSupport.getMillisFromString(maxtime), terms);
 
         if (evt != null) {
 
             if (includetermdigit) {
-                setContextVar(var, evt.dtmfsAsString());
+                actionSupport.setContextVar(var, evt.dtmfsAsString());
 
             } else {
-                setContextVar(var, evt.dtmfsAsString(terms));
+                actionSupport.setContextVar(var, evt.dtmfsAsString(terms));
             }
 
         }
 
-        if (!proceed(evt)) {
+        if (!actionSupport.proceed(evt)) {
             return;
         }
 
         if (evt.containsAny(terms)) {
 
             if (evt.sizeOfDtmfs() <= mindigits) {
-                fireEvent(CallXmlEvent.MINDIGITS);
+                actionSupport.fireEvent(CallXmlEvent.MINDIGITS);
 
             } else {
-                fireEvent(CallXmlEvent.TERMDIGIT);
+                actionSupport.fireEvent(CallXmlEvent.TERMDIGIT);
             }
 
         } else if (evt.sizeOfDtmfs() >= maxdigits) {
-            fireEvent(CallXmlEvent.MAXDIGITS);
+            actionSupport.fireEvent(CallXmlEvent.MAXDIGITS);
 
         } else if (evt.contains(Event.TIMEOUT)) {
-            fireEvent(CallXmlEvent.MAXTIME);
+            actionSupport.fireEvent(CallXmlEvent.MAXTIME);
 
         } else {
-            fireEvent(CallXmlEvent.ERROR);
+            actionSupport.fireEvent(CallXmlEvent.ERROR);
             log.warn("An unknown event happend !!! " + evt);
         }
     }

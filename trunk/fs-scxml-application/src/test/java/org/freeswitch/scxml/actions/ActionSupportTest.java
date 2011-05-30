@@ -48,7 +48,7 @@ public final class ActionSupportTest {
         expect(ctx.getVars()).andReturn(ctxVarMap);
         
         EasyMock.replay(ctx);
-        Map<String, Object> nListMap = actionSupport.getNameListAsMap(vars);
+        Map<String, String> nListMap = actionSupport.getNameListAsMap(vars);
         EasyMock.verify(ctx);
         
         assertTrue("Should contain var1 ", nListMap.containsKey("var1"));
@@ -63,7 +63,7 @@ public final class ActionSupportTest {
     }
 
     private Map<String, Object> createVarMap() {
-        Map<String, Object> ctxVarMap = new HashMap<String, Object>();
+        Map<String, Object> ctxVarMap = new HashMap<>();
         ctxVarMap.put("var1", "value1");
         ctxVarMap.put("var2", "value2");
         ctxVarMap.put("var3", "value3");
@@ -77,10 +77,10 @@ public final class ActionSupportTest {
     @Test
     public void testGetNameListAsMapNullOrEmpty() {
 
-        Map<String, Object> nListMap = actionSupport.getNameListAsMap("");
+        Map<String, String> nListMap = actionSupport.getNameListAsMap("");
         assertTrue("Empty String was passed in should be empty ", nListMap.isEmpty());
 
-        Map<String, Object> emptyMap = actionSupport.getNameListAsMap(null);
+        Map<String, String> emptyMap = actionSupport.getNameListAsMap(null);
         assertTrue("null was passed in should be empty ", emptyMap.isEmpty());
     }
 }

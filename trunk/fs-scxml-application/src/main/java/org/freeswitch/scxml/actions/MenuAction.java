@@ -70,18 +70,6 @@ public final class MenuAction extends AbstractAction {
         this.maxtime = time;
     }
 
-    /**
-     *
-     * @return timeInInt
-     */
-    public int getMaxtimeAsInt() {
-        if (maxtime == null) {
-            return DEFAULT_MAXTIME;
-
-        } else {
-            return getMillisFromString(maxtime);
-        }
-    }
 
     /**
      *
@@ -150,22 +138,22 @@ public final class MenuAction extends AbstractAction {
     }
 
     @Override
-    public void handleAction(Session ivrSession) throws HangupException {
+    public void handleAction(Session ivrSession, ActionSupport actionSupport) throws HangupException {
 
         String file;
 
         if (value != null) {
-            file = getPath(value);
+            file = actionSupport.getPath(value);
 
         } else if (say != null) {
-            file = "say:" + eval(say);
+            file = "say:" + actionSupport.eval(say);
 
         } else {
             log.error("Both value and say are null in menu");
             return;
         }
 
-        int maxTime = getMaxtimeAsInt();
+        int maxTime = actionSupport.getMillisFromString(maxtime);
 
         Set<DTMF> terms = DTMF.setFromString(termdigits);
 
@@ -175,31 +163,31 @@ public final class MenuAction extends AbstractAction {
 
         EventList evt = ivrSession.read(1, file, maxTime, terms);
 
-        if (proceed(evt)) {
+        if (actionSupport.proceed(evt)) {
 
-            Set<DTMF> dtmfChoices = getChoices();
+            Set<DTMF> dtmfChoices = getChoices(actionSupport);
 
             if (evt.containsAny(terms)) {
-                fireEvent(CallXmlEvent.TERMDIGIT);
+                actionSupport.fireEvent(CallXmlEvent.TERMDIGIT);
 
             } else if (evt.contains(Event.TIMEOUT)) {
-                fireEvent(CallXmlEvent.MAXTIME);
+                actionSupport.fireEvent(CallXmlEvent.MAXTIME);
 
             } else if (evt.sizeOfDtmfs() > 0) {
 
                 DTMF choice = evt.getSingleResult();
 
                 if (dtmfChoices.contains(choice)) {
-                    fireChoiceEvent(choice);
-                    fireMatchEvent(choice);
+                    actionSupport.fireChoiceEvent(choice);
+                    actionSupport.fireMatchEvent(choice);
 
                 } else {
-                    fireEvent(CallXmlEvent.NOMATCH);
+                    actionSupport.fireEvent(CallXmlEvent.NOMATCH);
 
                 }
 
             } else {
-                fireEvent(CallXmlEvent.ERROR);
+                actionSupport.fireEvent(CallXmlEvent.ERROR);
             }
 
 
@@ -231,7 +219,7 @@ public final class MenuAction extends AbstractAction {
      * @return DTMF choices from the choices field, if null choices
      *         from the choicesexpr field.
      */
-    private Set<DTMF> getChoices() {
+    private Set<DTMF> getChoices(ActionSupport actionSupport) {
 
         Set<DTMF> dtmfChoices = null;
 
@@ -239,10 +227,10 @@ public final class MenuAction extends AbstractAction {
             dtmfChoices = DTMF.setFromString(choices);
 
         } else if (choicesexpr != null) {
-            dtmfChoices = DTMF.setFromString(eval(choicesexpr));
+            dtmfChoices = DTMF.setFromString(actionSupport.eval(choicesexpr));
 
         } else {
-            fireErrorEvent(CallXmlEvent.ERROR);
+            actionSupport.fireErrorEvent(CallXmlEvent.ERROR);
             throw new IllegalArgumentException("A menu with no choices is not a menu");
         }
 
