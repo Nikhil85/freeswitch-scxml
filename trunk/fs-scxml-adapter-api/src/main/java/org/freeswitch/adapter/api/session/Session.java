@@ -4,6 +4,7 @@ import org.freeswitch.adapter.api.event.EventQueue;
 import org.freeswitch.adapter.api.event.EventList;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import org.freeswitch.adapter.api.constant.DTMF;
 import org.freeswitch.adapter.api.HangupException;
