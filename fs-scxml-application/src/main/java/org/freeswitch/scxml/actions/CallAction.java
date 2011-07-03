@@ -43,9 +43,6 @@ public class CallAction extends AbstractAction {
     
     @Override
     public void handleAction(Session session, ActionSupport actionSupport) throws HangupException {
-
-        LOG.warn("Hello I will make call");
-
         if (notValid(actionSupport)) {
             return;
         }
