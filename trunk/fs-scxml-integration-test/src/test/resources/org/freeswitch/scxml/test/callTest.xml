@@ -17,7 +17,7 @@
             <fs:answer/>
         </sc:onentry>
         <sc:transition target="await">
-            <fs:call value="'sofia/external/jocke@213.136.53.177:5050'" />
+            <fs:call value="'sofia/external/jocke@127.0.0.1:5070'"/>
         </sc:transition>
     </sc:state>
     
