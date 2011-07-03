@@ -4,6 +4,7 @@ import java.util.concurrent.Future;
 import java.net.MalformedURLException;
 import org.freeswitch.adapter.api.session.Session;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.easymock.EasyMock.*;
 
@@ -11,6 +12,7 @@ import static org.easymock.EasyMock.*;
  *
  * @author jocke
  */
+@Ignore
 public class CallAdapterTest {
     
     private Session session;
