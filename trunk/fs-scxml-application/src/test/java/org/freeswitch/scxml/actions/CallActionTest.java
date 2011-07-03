@@ -1,5 +1,6 @@
 package org.freeswitch.scxml.actions;
 
+import org.junit.Ignore;
 import org.freeswitch.adapter.api.session.Session;
 import org.junit.After;
 import org.junit.Before;
@@ -10,6 +11,7 @@ import static org.easymock.EasyMock.*;
  *
  * @author jocke
  */
+@Ignore
 public class CallActionTest {
 
     private CallAction callAction;
