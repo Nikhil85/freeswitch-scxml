@@ -93,7 +93,8 @@ public final class EventListBuilder {
     public EventList build() {
         return eventList;
     }
-
+    
+    /**TODO move these methods to the event list class**/
     public static EventList single(String event) {
         EventList el = new EventList();
         el.add(new Event(event));

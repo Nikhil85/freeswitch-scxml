@@ -4,7 +4,6 @@ import org.freeswitch.adapter.api.event.EventQueue;
 import org.freeswitch.adapter.api.event.EventList;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import org.freeswitch.adapter.api.constant.DTMF;
 import org.freeswitch.adapter.api.HangupException;
@@ -295,12 +294,12 @@ public interface Session {
      */
     public <T> T lookup(Class<T> clazz);
     
-    /***
-     * Call a 
-     * 
-     * @param value The dial string 
-     * @param url   The SCXML document to execute if the call was successful.
-     */
-    public String call(String value);
+    
+    public EventList call(String value);
+    
+    public EventList bridge(String sessionId1, String SessionId2);
+    
+    
+    
 
 }
