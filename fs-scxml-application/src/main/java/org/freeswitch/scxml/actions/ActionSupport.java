@@ -105,21 +105,16 @@ public class ActionSupport {
      * @return The path.
      */
     public String getPath(String expr) {
-        String target = eval(expr);
+        return getUrl(eval(expr)).getFile();
+    }
 
-        URL base = (URL) ctx.get("base");
-        URL targetU = null;
-
+    public URL getUrl(String target) throws IllegalStateException {
         try {
-            targetU = new URL(base, target);
-            return targetU.getFile();
-
+            return new URL((URL) ctx.get("base"), target);
         } catch (MalformedURLException ex) {
             LOG.error(ex.getMessage());
             throw new IllegalStateException("Failed to get prompt");
         }
-
-
     }
 
     /**
@@ -304,7 +299,7 @@ public class ActionSupport {
      * @return <code>true</code> if a all fields are valid
      *         <code>false</code> otherwise.
      */
-    public boolean validateFields(String... fields) {
+    public boolean validFields(String... fields) {
 
         boolean isValid = true;
 
