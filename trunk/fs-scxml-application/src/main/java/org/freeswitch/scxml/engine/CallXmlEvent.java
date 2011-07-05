@@ -45,7 +45,16 @@ public enum CallXmlEvent {
     /** The entered digit has match. **/
     MATCH("match"),
     /** The caller entered to few digits. **/
-    MINDIGITS("mindigits");
+    MINDIGITS("mindigits"),
+    /** The dialed number is busy **/
+    BUSY("busy"),
+    
+    /** The dialed did not answer the call**/
+    NOANSWER("noanswer"),
+    
+    /**Two calls has been bridged together **/
+    BRIDGED("bridged");
+    
     private String eventString;
 
     /**

@@ -1,17 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.freeswitch.scxml.module;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.commons.scxml.model.CustomAction;
 import org.apache.commons.scxml.model.Var;
 import org.freeswitch.scxml.application.api.ApplicationLauncher;
 import org.freeswitch.scxml.application.api.ThreadPoolManager;
 import org.freeswitch.scxml.actions.AnswerAction;
+import org.freeswitch.scxml.actions.BridgeAction;
 import org.freeswitch.scxml.actions.CallAction;
 import org.freeswitch.scxml.actions.ExitAction;
 import org.freeswitch.scxml.actions.GenToneAction;
@@ -71,6 +67,7 @@ public class ApplicationActivator implements BundleActivator {
         context.registerService(CustomAction.class.getName(), new CustomAction(NAME_SPACE, "say", SayAction.class), null);
         context.registerService(CustomAction.class.getName(), new CustomAction(NAME_SPACE, "send", SendAction.class), null);
         context.registerService(CustomAction.class.getName(), new CustomAction(NAME_SPACE, "call", CallAction.class), null);
+        context.registerService(CustomAction.class.getName(), new CustomAction(NAME_SPACE, "bridge", BridgeAction.class), null);
     }
 
     @Override
