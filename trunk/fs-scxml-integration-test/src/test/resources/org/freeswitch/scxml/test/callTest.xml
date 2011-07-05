@@ -8,37 +8,37 @@
            fs-core.xsd"
            initialstate="intro-main">
     
-    <sc:datamodel>
-        <sc:data name="await" expr="0" />    
-    </sc:datamodel>
-    
     <sc:state id="intro-main">
         <sc:onentry>
             <fs:answer/>
         </sc:onentry>
-        <sc:transition target="await">
-            <fs:call value="'sofia/external/jocke@127.0.0.1:5070'"/>
+        <sc:transition target="setup">
+            <fs:call reasonvar="cause" var="calleeId"  value="'sofia/external/jocke@127.0.0.1:5050'" />
         </sc:transition>
     </sc:state>
     
-    <sc:state id="await">
+    <sc:state id="setup">
         <sc:onentry>
-            <sc:log expr="'await'" />
-            <sc:assign name="await" expr="await = await + 1" />
+            <sc:log expr="'setup'" />
         </sc:onentry>
-            
-        <sc:transition target="await" cond="await lt 4" >
-            <fs:gentone value="ring" repeat="10" />    
-        </sc:transition>
-           
-        <sc:transition event="answer" target="exit" >
-            <fs:say>'Far end answerd the call'</fs:say>    
+        
+        <sc:transition event="answer">
+            <fs:bridge id1="Unique-ID" id2="calleeId" />
         </sc:transition>
         
-        <sc:transition event="hangup" target="exit" >
-            <sc:assign name="await" expr="await = 5" />
-            <sc:log expr="'hangup'" />
+        <sc:transition event="busy">
+            <fs:say>'The destination you have dialed is busy' </fs:say>
         </sc:transition>
+        
+        <sc:transition event="noanswer" target="exit">
+            <sc:log expr="'no answer ' + cause" />
+            <fs:say>'no answer ' + cause</fs:say>
+        </sc:transition>
+        
+        <sc:transition event="bridged">
+            <sc:log expr="'the call has been bridged'" />
+            <fs:say>'please talk to each other'</fs:say>
+        </sc:transition>        
         
     </sc:state>
     
