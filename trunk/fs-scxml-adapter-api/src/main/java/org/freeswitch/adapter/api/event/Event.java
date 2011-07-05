@@ -32,6 +32,7 @@ public class Event {
     public static final String ERROR = "ERROR";
     public static final String CHANNEL_DATA = "CHANNEL_DATA";
     public static final String CHANNEL_ANSWER = "CHANNEL_ANSWER";
+    public static final String API_RESPONSE = "API_RESPONSE";
     
     private final String eventName;
     private String body;
