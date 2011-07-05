@@ -1,9 +1,10 @@
 package org.freeswitch.adapter.internal.session;
-
 import java.util.concurrent.TimeUnit;
-import org.freeswitch.adapter.api.event.Event;
-import org.freeswitch.adapter.api.event.EventQueue;
 import org.freeswitch.adapter.api.Extension;
+import org.freeswitch.adapter.api.event.Event;
+import org.freeswitch.adapter.api.event.EventList;
+import org.freeswitch.adapter.api.event.EventListBuilder;
+import org.freeswitch.adapter.api.event.EventQueue;
 import org.freeswitch.adapter.api.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,27 +15,35 @@ import org.slf4j.LoggerFactory;
  */
 public class CallAdapter implements Extension {
     
+    static final String API_ORIGINATE = "api originate ";
+    //&socket(127.0.0.1:9696 async full)
+    
     private Session session;
     private static final Logger LOG = LoggerFactory.getLogger(CallAdapter.class);
-    
+
     public CallAdapter(Session session) {
         this.session = session;
     }
-    
-    public String call(String dialString) {
-        EventQueue eventQueue = session.getEventQueue();
-        final String dial = "api originate [tts_engine=flite,tts_voice=kal,scxml=file:/home/jocke/NetBeansProjects/fs-scxml/fs-scxml-integration-test/src/test/resources/org/freeswitch/scxml/test/countTest.xml]" + dialString + " &socket(127.0.0.1:9696 async full)\n\n";
-        LOG.info(dial);
-        session.execute(dial);
-        Event poll;
+
+    public EventList call(String dialString) {
+        final String dial = API_ORIGINATE + dialString + " &park()\n\n";
+        LOG.trace(dial);
+        EventQueue eventQueue = session.execute(dial);
         try {
-            poll = eventQueue.poll(1, TimeUnit.MINUTES);
-            LOG.info("#######################" + poll + "########################");
+            return EventListBuilder.single(eventQueue.poll(5, TimeUnit.MINUTES));
         } catch (InterruptedException ex) {
-            ex.printStackTrace();
+            return EventListBuilder.single(Event.CHANNEL_HANGUP);
         }
-       
-        return null;
-       
+    }
+    
+    public EventList bridge(String sessionId1, String sessionId2) {
+        final String dial = "api uuid_bridge " + sessionId1 + " " + sessionId2 + "\n\n";
+        LOG.trace(dial);
+        session.execute(dial);
+        try {
+            return EventListBuilder.single(session.getEventQueue().poll(5, TimeUnit.MINUTES));
+        } catch (InterruptedException ex) {
+            return EventListBuilder.single(Event.CHANNEL_HANGUP);
+        }
     }
 }

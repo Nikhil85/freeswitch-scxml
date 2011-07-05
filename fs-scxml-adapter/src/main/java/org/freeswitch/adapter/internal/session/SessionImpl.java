@@ -10,7 +10,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -213,15 +212,18 @@ public final class SessionImpl implements Session, Callable<Boolean>, SessionSta
     }
 
     @Override
-    public String call(String value) {
-         return callAdapter.call(value);
+    public EventList call(String value) {
+        return callAdapter.call(value);
+    }
+
+    @Override
+    public EventList bridge(String id1, String id2) {
+        return callAdapter.bridge(sessionid, sessionid);
     }
 
     @Override
     public EventQueue execute(String data) {
-
         if (executor.isReady()) {
-
             try {
                 executor.execute(data);
             } catch (IOException ex) {
