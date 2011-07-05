@@ -22,7 +22,7 @@ public class EventManger implements CommandExecutor {
     private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s+)(\\w*)$", Pattern.MULTILINE);
     private final EventQueue queue;
     private INonBlockingConnection connection;
-    private Stack<String> apps = new Stack<>();
+    private Stack<String> transactions = new Stack<>();
 
     /**
      *
@@ -42,14 +42,22 @@ public class EventManger implements CommandExecutor {
     }
 
     void setApps(Stack<String> apps) {
-        this.apps = apps;
+        this.transactions = apps;
     }
 
+    Stack<String> getApps() {
+        return transactions;
+    }
+   
     public void onEvent(Event evt) {
+
+        if (evt == null) {
+            throw new NullPointerException("Null event");
         
-        if(evt == null) throw new NullPointerException("Null event");
-        else LOG.info("Process event " + evt.getEventName());
-        
+        } else {
+            LOG.debug("Process event {}" , evt.getEventName());
+        }
+
         if (Event.CHANNEL_EXECUTE_COMPLETE.equals(evt.getEventName()) && isCurrentTransaktion(evt.getVar(VarName.APPLICATION))) {
             queue.add(evt);
 
@@ -58,27 +66,28 @@ public class EventManger implements CommandExecutor {
         }
     }
 
-
     public boolean isCurrentTransaktion(String application) {
 
         if (application == null || application.isEmpty()) {
             LOG.error("No match for null or empty string");
             return false;
 
-        } else if (apps.isEmpty()) {
+        } else if (transactions.isEmpty()) {
             LOG.warn("No current transaction to match for {} ", application);
             return false;
         }
 
-        String executedAppName = apps.pop();
+        String executedAppName = transactions.pop();
         LOG.trace("Matching {} with {} ", executedAppName, application);
         return application.equals(executedAppName);
     }
 
     @Override
     public void execute(String data) throws IOException {
-        String execute_app_name = findApplication(data);
-        apps.push(execute_app_name);
+        String executeAppName = findApplication(data);
+        if (executeAppName != null) {
+            transactions.push(executeAppName);
+        }
         synchronized (this) {
             connection.write(data.getBytes());
         }
@@ -88,6 +97,8 @@ public class EventManger implements CommandExecutor {
         Matcher matcher = APP_PATTERN.matcher(data);
         if (matcher.find()) {
             return matcher.group(3);
+        } else if (data.startsWith("api")) {
+            return null;
         } else {
             throw new IllegalStateException("Could not find application in \n" + data);
         }

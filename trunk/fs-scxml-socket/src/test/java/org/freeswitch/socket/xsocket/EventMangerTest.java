@@ -1,7 +1,6 @@
 package org.freeswitch.socket.xsocket;
 
 import java.util.Stack;
-import javax.smartcardio.CommandAPDU;
 import org.freeswitch.adapter.api.event.Event;
 import org.freeswitch.adapter.api.event.EventQueue;
 import org.junit.After;
@@ -75,18 +74,37 @@ public class EventMangerTest {
         assertTrue(eventManger.isCurrentTransaktion("break"));
     
     }
-
+    
     /**
-     * Test of isReady method, of class EventManger.
+     * Test of execute method, of class EventManger.
+     */
+    @Test(expected = IllegalStateException.class)
+    public void testExecuteNoAppName() throws Exception {
+        StringBuilder builder = new StringBuilder();
+        builder.append("sendmsg ").append("1111").append("\n");
+        builder.append("call-command: execute\n\n");
+        String command = builder.toString();
+      
+        replay(connection);
+        eventManger.execute(command);
+        verify(connection);
+   
+    }
+    
+    /**
+     * Test of execute method, of class EventManger.
      */
     @Test
-    public void testIsReady() {
+    public void testExecuteApi() throws Exception {
+        StringBuilder builder = new StringBuilder();
+        builder.append("api originate ").append("testData").append("\n\n");
+        String command = builder.toString();
+        
+        expect(connection.write(command.getBytes())).andReturn(1);
+        replay(connection);
+        eventManger.execute(command);
+        verify(connection);
+        assertTrue(eventManger.getApps().isEmpty());
     }
 
-    /**
-     * Test of onClose method, of class EventManger.
-     */
-    @Test
-    public void testOnClose() {
-    }
 }

@@ -38,7 +38,7 @@ public final class EventReaderTest {
     @Test
     public void testReadEventDTMF() throws IOException {
         expect(connection.available()).andReturn(500);
-        expect(connection.readStringByDelimiter("\n\n")).andReturn(testEvents.get(DTMF_1));
+        expect(connection.readStringByDelimiter(EventReader.LINE_BREAKS)).andReturn(testEvents.get(DTMF_1));
         Event evt = readEvent();
         assertEquals(Event.DTMF, evt.getEventName());
         assertEquals("1", evt.getVar(VarName.DTMF_DIGIT));
@@ -47,41 +47,59 @@ public final class EventReaderTest {
     @Test
     public void testReadEventChannelCreate() throws IOException {
         expect(connection.available()).andReturn(500);
-        expect(connection.readStringByDelimiter("\n\n")).andReturn(testEvents.get(CHANNEL_DESTROY));
+        expect(connection.readStringByDelimiter(EventReader.LINE_BREAKS)).andReturn(testEvents.get(CHANNEL_DESTROY));
         Event evt = readEvent();
         assertEquals(Event.CHANNEL_DESTROY, evt.getEventName());
     }
-    
+
     @Test
     public void testReadEventByContentLength() throws IOException {
         expect(connection.available()).andReturn(500);
-        expect(connection.readStringByDelimiter("\n\n")).andReturn("Content-Length: 600");
-        expect(connection.readStringByLength(600, "UTF-8")).andReturn(testEvents.get(CHANNEL_DESTROY));
+        expect(connection.readStringByDelimiter(EventReader.LINE_BREAKS)).andReturn("Content-Length: 600");
+        expect(connection.readStringByLength(600, EventReader.UTF8)).andReturn(testEvents.get(CHANNEL_DESTROY));
         Event evt = readEvent();
         assertEquals(Event.CHANNEL_DESTROY, evt.getEventName());
     }
-    
+
     @Test
     public void testReadEventNoData() throws IOException {
         expect(connection.available()).andReturn(-1);
         assertNull(readEvent());
     }
-    
+
     @Test
     public void testReadEventCommadReply() throws IOException {
         expect(connection.available()).andReturn(300);
-        expect(connection.readStringByDelimiter("\n\n")).andReturn(EventReader.COMMAND_REPLY);
+        expect(connection.readStringByDelimiter(EventReader.LINE_BREAKS)).andReturn(EventReader.COMMAND_REPLY);
         assertNull(readEvent());
     }
-    
+
     @Test
     public void testReadEventDisconnectNotice() throws IOException {
         expect(connection.available()).andReturn(300);
-        expect(connection.readStringByDelimiter("\n\n")).andReturn(EventReader.DISCONNECT_NOTICE);
+        expect(connection.readStringByDelimiter(EventReader.LINE_BREAKS)).andReturn(EventReader.DISCONNECT_NOTICE);
         assertNull(readEvent());
     }
-    
-    
+
+    @Test
+    public void testReadEventApiResponse() throws IOException {
+        int contentLength = 22;
+        final String body = "+ok success";
+        StringBuilder apiCommandBuilder = new StringBuilder();
+        apiCommandBuilder.append(EventReader.API_RESPONSE).append("\n");
+        apiCommandBuilder.append("Content-Length: ").append(contentLength).append(EventReader.LINE_BREAKS);
+
+        expect(connection.available()).andReturn(300);
+
+        expect(connection.readStringByDelimiter(EventReader.LINE_BREAKS)).andReturn(apiCommandBuilder.toString());
+        expect(connection.readStringByLength(22, EventReader.UTF8)).andReturn(body);
+        
+        Event readEvent = readEvent();
+        
+        assertEquals(Event.API_RESPONSE, readEvent.getEventName());
+        assertEquals(body, readEvent.getBody());
+    }
+
     private Event readEvent() throws IOException {
         replay(connection);
         Event evt = eventReader.readEvent(connection);
