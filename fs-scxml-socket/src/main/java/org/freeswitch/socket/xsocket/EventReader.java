@@ -14,6 +14,7 @@ import org.xsocket.connection.INonBlockingConnection;
  * @author jocke
  */
 public class EventReader {
+    public static final String API_RESPONSE = "Content-Type: api/response";
 
     private static final Logger LOG = LoggerFactory.getLogger(EventReader.class);
     static final String LINE_BREAKS = "\n\n";
@@ -53,6 +54,9 @@ public class EventReader {
 
         if (isCommandReply(header) || isDisconnectNotice(header)) {
             return null;
+        
+        } else if(isApiResponse(header) && isContentLength(header)) {
+            return new Event(Event.API_RESPONSE, readEventByLength(header, connection));           
         }
 
         String body = readEventByHeader(header, connection);
@@ -61,6 +65,7 @@ public class EventReader {
             return Event.fromData(body);
         
         } else {
+            
             return null;
         }
 
@@ -127,5 +132,9 @@ public class EventReader {
 
     private boolean isCommandReply(String header) {
         return header.startsWith(COMMAND_REPLY);
+    }
+
+    private boolean isApiResponse(String header) {
+        return header.startsWith(API_RESPONSE);
     }
 }
