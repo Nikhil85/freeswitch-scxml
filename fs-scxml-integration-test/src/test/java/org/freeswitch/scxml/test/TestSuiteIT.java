@@ -1,14 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.freeswitch.scxml.test;
 
-import org.junit.internal.TextListener;
-import org.junit.runner.JUnitCore;
-import junit.framework.Assert;
-import org.junit.runner.Result;
-import org.ops4j.pax.exam.Inject;
 import org.freeswitch.scxml.test.actions.CountTest;
 import org.freeswitch.scxml.test.actions.GetDigitsTest;
 import org.freeswitch.scxml.test.actions.InputDigitsTest;
@@ -16,6 +7,11 @@ import org.freeswitch.scxml.test.actions.MenuTest;
 import org.freeswitch.scxml.test.actions.PhraseTest;
 import org.freeswitch.scxml.test.actions.PlayAudioTest;
 import org.freeswitch.scxml.test.actions.RecordAudioTest;
+import org.junit.internal.TextListener;
+import org.junit.runner.JUnitCore;
+import junit.framework.Assert;
+import org.junit.runner.Result;
+import org.ops4j.pax.exam.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -23,7 +19,6 @@ import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.BundleContext;
 import static org.ops4j.pax.exam.CoreOptions.*;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.*;
 
 /**
  *
@@ -47,14 +42,15 @@ public class TestSuiteIT {
                 PhraseTest.class,
                 PlayAudioTest.class,
                 CountTest.class,
-                RecordAudioTest.class);
+                RecordAudioTest.class
+                /** CallTest.class*/);
         Assert.assertTrue(run.wasSuccessful());
     }
 
     @Configuration
     public static Option[] configuration() throws Exception {
         return options(
-                workingDirectory("target/test-classes"),
+                junitBundles(),
                 systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
                 mavenBundle().groupId("org.xsocket").artifactId("xSocket").version("2.8.14"),
                 mavenBundle().groupId("org.apache.commons").artifactId("com.springsource.org.apache.commons.collections").version("3.2.1"),
@@ -63,8 +59,6 @@ public class TestSuiteIT {
                 mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-service").version("1.6.1"),
                 mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-api").version("1.6.1"),
                 mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.configadmin").version("1.2.8"),
-                mavenBundle().groupId("org.slf4j").artifactId("slf4j-api").version("1.6.1"),
-                mavenBundle().groupId("org.slf4j").artifactId("slf4j-jcl").version("1.6.1"),
                 wrappedBundle(mavenBundle().groupId("commons-jexl").artifactId("commons-jexl").version("1.1")),
                 wrappedBundle(mavenBundle().groupId("xalan").artifactId("xalan").version("2.7.0")),
                 wrappedBundle(mavenBundle().groupId("xml-apis").artifactId("xml-apis").version("2.0.2")),
