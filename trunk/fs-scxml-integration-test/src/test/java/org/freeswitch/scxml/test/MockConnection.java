@@ -27,12 +27,14 @@ public class MockConnection {
     public static final String SAY = "say";
     public static final String RECORD = "record";
     public static final String BREAK = "break";
+    public static final String ORIGINATE = "originate";
+    public static final String BRIDGE = "bridge";
+    
     private static final String DLM = "\n\n";
     private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s)(\\w*)$", Pattern.MULTILINE);
     private static final Pattern ARGS_PATTERN = Pattern.compile("^(execute-app-arg:)(\\s)(.*)$?", Pattern.MULTILINE);
     private final String uid;
     private IBlockingConnection ibc;
-    private String delimiter = "\n\n";
 
     public MockConnection(int port) throws IOException {
         ibc = new BlockingConnection("localhost", port);
@@ -40,10 +42,10 @@ public class MockConnection {
     }
 
     public MockConnection connect() throws IOException {
-        assertTrue(ibc.readStringByDelimiter(delimiter).equals("connect"));
-        assertTrue(ibc.readStringByDelimiter(delimiter).equals("myevents"));
-        assertTrue(ibc.readStringByDelimiter(delimiter).contains("filter Event-Name"));
-        assertTrue(ibc.readStringByDelimiter(delimiter).contains("filter Event-Name"));
+        assertTrue(ibc.readStringByDelimiter(DLM).equals("connect"));
+        assertTrue(ibc.readStringByDelimiter(DLM).equals("myevents"));
+        assertTrue(ibc.readStringByDelimiter(DLM).contains("filter Event-Name"));
+        assertTrue(ibc.readStringByDelimiter(DLM).contains("filter Event-Name"));
         return this;
     }
 
@@ -114,10 +116,18 @@ public class MockConnection {
         return uid;
     }
 
+    public Reply expectApi(String apiCommand) throws IOException {
+        assertTrue(ibc.readStringByDelimiter(DLM).contains(apiCommand));
+        return new Reply() ;
+    }
+
     public final class Reply {
 
         private String app;
 
+        public Reply() {
+        }
+        
         public Reply(String app) {
             this.app = app;
         }
@@ -126,6 +136,10 @@ public class MockConnection {
             Map<String, String> data = new HashMap<>();
             puIfAbsent(data);
             ibc.write(createEvent(event, data));
+        }
+        
+        public void andApiReply(String body) throws IOException {
+            ibc.write(body);
         }
 
         public void andReply(String event, Map<String, String> data) throws IOException {

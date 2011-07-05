@@ -37,8 +37,11 @@
         
         <sc:transition event="bridged">
             <sc:log expr="'the call has been bridged'" />
-            <fs:say>'please talk to each other'</fs:say>
-        </sc:transition>        
+        </sc:transition>
+        
+        <sc:transition event="error">
+            <sc:log expr="'Ops! error in script'" />
+        </sc:transition>
         
     </sc:state>
     
