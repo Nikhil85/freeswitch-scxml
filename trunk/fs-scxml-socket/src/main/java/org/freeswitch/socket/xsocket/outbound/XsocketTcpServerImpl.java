@@ -1,7 +1,6 @@
 package org.freeswitch.socket.xsocket.outbound;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Set;
 
 import org.slf4j.Logger;

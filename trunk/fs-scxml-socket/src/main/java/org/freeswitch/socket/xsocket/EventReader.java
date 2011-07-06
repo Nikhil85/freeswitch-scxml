@@ -64,8 +64,7 @@ public class EventReader {
         if (body != null) {
             return Event.fromData(body);
         
-        } else {
-            
+        } else {    
             return null;
         }
 
@@ -135,6 +134,6 @@ public class EventReader {
     }
 
     private boolean isApiResponse(String header) {
-        return header.startsWith(API_RESPONSE);
+        return header.contains(API_RESPONSE);
     }
 }
