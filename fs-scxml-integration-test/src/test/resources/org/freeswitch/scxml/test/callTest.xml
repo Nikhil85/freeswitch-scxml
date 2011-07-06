@@ -19,10 +19,11 @@
     
     <sc:state id="setup">
         <sc:onentry>
-            <sc:log expr="'setup'" />
+            <sc:log label="calltest" expr="'setup'" />
         </sc:onentry>
         
         <sc:transition event="answer">
+            <sc:log label="calltest" expr="'bridge'" />
             <fs:bridge id1="Unique-ID" id2="calleeId" />
         </sc:transition>
         
@@ -31,16 +32,21 @@
         </sc:transition>
         
         <sc:transition event="noanswer" target="exit">
-            <sc:log expr="'no answer ' + cause" />
+            <sc:log label="calltest" expr="'no answer ' + cause" />
             <fs:say>'no answer ' + cause</fs:say>
         </sc:transition>
         
         <sc:transition event="bridged">
-            <sc:log expr="'the call has been bridged'" />
+            <sc:log label="calltest" expr="'the call has been bridged'" />
+            <fs:say>'success'</fs:say>
         </sc:transition>
         
         <sc:transition event="error">
-            <sc:log expr="'Ops! error in script'" />
+            <sc:log label="calltest" expr="'Ops! error in script'" />
+        </sc:transition>
+        
+        <sc:transition event="hangup">
+            <sc:log label="calltest" expr="'Ops! caller hangup'" />
         </sc:transition>
         
     </sc:state>

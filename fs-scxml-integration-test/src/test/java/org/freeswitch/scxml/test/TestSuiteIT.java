@@ -1,5 +1,6 @@
 package org.freeswitch.scxml.test;
 
+import org.freeswitch.scxml.test.actions.CallTest;
 import org.freeswitch.scxml.test.actions.CountTest;
 import org.freeswitch.scxml.test.actions.GetDigitsTest;
 import org.freeswitch.scxml.test.actions.InputDigitsTest;
@@ -42,8 +43,8 @@ public class TestSuiteIT {
                 PhraseTest.class,
                 PlayAudioTest.class,
                 CountTest.class,
-                RecordAudioTest.class
-                /** CallTest.class*/);
+                RecordAudioTest.class,
+                CallTest.class);
         Assert.assertTrue(run.wasSuccessful());
     }
 

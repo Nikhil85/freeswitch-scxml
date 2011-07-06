@@ -28,7 +28,7 @@ public class MockConnection {
     public static final String RECORD = "record";
     public static final String BREAK = "break";
     public static final String ORIGINATE = "originate";
-    public static final String BRIDGE = "bridge";
+    public static final String BRIDGE = "uuid_bridge";
     
     private static final String DLM = "\n\n";
     private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s)(\\w*)$", Pattern.MULTILINE);
@@ -139,7 +139,11 @@ public class MockConnection {
         }
         
         public void andApiReply(String body) throws IOException {
-            ibc.write(body);
+            StringBuilder builder = new StringBuilder();
+            builder.append("Content-Type: api/response").append("\n");
+            builder.append("Content-Length: ").append(body.getBytes().length).append(DLM);
+            builder.append(body);
+            ibc.write(builder.toString());
         }
 
         public void andReply(String event, Map<String, String> data) throws IOException {
