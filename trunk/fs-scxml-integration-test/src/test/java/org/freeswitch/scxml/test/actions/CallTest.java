@@ -31,10 +31,11 @@ public class CallTest {
     }
    
    @Test
-   public void testCall() throws IOException {
-//       con.fireEvent(Event.CHANNEL_DATA, Fixture.createDataEventMap(PATH));
-//       con.expectApp(ANSWER).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
-//       con.expectApi(ORIGINATE).andApiReply("+OK 1234abc");
-//       con.expectApi(BRIDGE).andApiReply("+OK 1234abc");
+   public void testCall() throws IOException, InterruptedException {
+       con.fireEvent(Event.CHANNEL_DATA, Fixture.createDataEventMap(PATH));
+       con.expectApp(ANSWER).andReply(Event.CHANNEL_EXECUTE_COMPLETE);
+       con.expectApi(ORIGINATE).andApiReply("+OK 1234abc");
+       con.expectApi(BRIDGE).andApiReply("+OK 1234abc");
+       con.expectApp(SPEAK, "success").andReply(Event.CHANNEL_EXECUTE_COMPLETE);
    }
 }
