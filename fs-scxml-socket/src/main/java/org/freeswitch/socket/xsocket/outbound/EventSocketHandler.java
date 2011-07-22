@@ -1,7 +1,7 @@
 package org.freeswitch.socket.xsocket.outbound;
 
 import java.util.Map;
-import org.freeswitch.socket.xsocket.EventManger;
+import org.freeswitch.socket.xsocket.EventManager;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -28,7 +28,11 @@ import org.openide.util.Lookup;
 public final class EventSocketHandler implements IDataHandler, IDisconnectHandler, IConnectHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventSocketHandler.class);
-    private final EventReader reader = new EventReader();
+    private final EventReader reader;
+
+    public EventSocketHandler(EventReader reader) {
+        this.reader = reader;
+    }
     
     @Override
     public boolean onData(final INonBlockingConnection connection) throws IOException {
@@ -39,7 +43,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
             return true;
         }
 
-        EventManger manager = (EventManger) connection.getAttachment();
+        EventManager manager = (EventManager) connection.getAttachment();
 
         if (manager != null) {
             manager.onEvent(evt);
@@ -63,7 +67,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         
         Map<String, String> vars = evt.getBodyAsMap();
         DefaultEventQueue eventQueue = new DefaultEventQueue(vars.get(VarName.UNIQUE_ID));
-        EventManger manger = new EventManger(connection, eventQueue);
+        EventManager manger = new EventManager(connection, eventQueue);
         connection.setAttachment(manger);
         runApplication(new ApplicationRunner(factory.create(new HashMap<String, Object>(vars), manger, eventQueue)));
     }
@@ -94,7 +98,7 @@ public final class EventSocketHandler implements IDataHandler, IDisconnectHandle
         try {
             LOG.debug("onDisconnect:  connection[{}] {} bytes available", connection, connection.available());
 
-            EventManger fss = (EventManger) connection.getAttachment();
+            EventManager fss = (EventManager) connection.getAttachment();
 
             if (fss == null) {
                 LOG.warn("A connection was set up, but no session was created.");

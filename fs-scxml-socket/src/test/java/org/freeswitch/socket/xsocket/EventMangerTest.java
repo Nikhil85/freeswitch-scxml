@@ -16,7 +16,7 @@ import static org.easymock.EasyMock.*;
  */
 public class EventMangerTest {
 
-    private EventManger eventManger;
+    private EventManager eventManger;
     private INonBlockingConnection connection;
     private EventQueue eventQueue;
 
@@ -24,7 +24,7 @@ public class EventMangerTest {
     public void setUp() {
         connection = createMock(INonBlockingConnection.class);
         eventQueue = createMock(EventQueue.class);
-        eventManger = new EventManger(connection, eventQueue);
+        eventManger = new EventManager(connection, eventQueue);
     }
 
     @After

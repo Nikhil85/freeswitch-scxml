@@ -16,9 +16,9 @@ import org.xsocket.connection.INonBlockingConnection;
  *
  * @author jocke
  */
-public class EventManger implements CommandExecutor {
+public class EventManager implements CommandExecutor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EventManger.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EventManager.class);
     private static final Pattern APP_PATTERN = Pattern.compile("^(execute-app-name:)(\\s+)(\\w*)$", Pattern.MULTILINE);
     private final EventQueue queue;
     private INonBlockingConnection connection;
@@ -28,12 +28,12 @@ public class EventManger implements CommandExecutor {
      *
      * @param con The connection to use when writing to the socket.
      **/
-    public EventManger(INonBlockingConnection con, EventQueue queue) {
+    public EventManager(INonBlockingConnection con, EventQueue queue) {
         this.connection = con;
         this.queue = queue;
     }
 
-    public EventManger(EventQueue queue) {
+    public EventManager(EventQueue queue) {
         this.queue = queue;
     }
 
