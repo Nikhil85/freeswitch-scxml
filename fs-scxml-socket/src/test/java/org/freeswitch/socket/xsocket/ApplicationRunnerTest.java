@@ -30,6 +30,7 @@ public class ApplicationRunnerTest {
     @Test
     public void testRun() {
         MockLookup.setInstances(launcher);
+        expect(launcher.isLaunchable(session)).andReturn(Boolean.TRUE);
         launcher.launch(session);
         replay(launcher);
         runner.run();
