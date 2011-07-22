@@ -1,0 +1,18 @@
+
+<sc:scxml  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+           xmlns:sc="http://www.w3.org/2005/07/scxml"
+           xmlns:fs="http://www.freeswitch.org"
+           xsi:schemaLocation="http://www.w3.org/2005/07/scxml 
+           scxml.xsd
+           http://www.freeswitch.org 
+           fs-core.xsd"
+           initialstate="intro-main">
+               
+    <sc:state id="intro-main">
+        <sc:onentry>
+            <fs:answer/>
+            <fs:phrase type="number" module="en" method="ITERATED" value="1234" />
+            <fs:hangup />
+        </sc:onentry>
+    </sc:state>    
+</sc:scxml>

@@ -1,0 +1,28 @@
+Fixed tests and initial count support
+
+--This line, and those below, will be ignored--
+
+_M   .
+M    fs-scxml-config/src/main/java/org/freeswitch/config/OsgiConfigManager.java
+M    fs-scxml-config/src/main/java/org/freeswitch/config/Activator.java
+M    fs-scxml-config/pom.xml
+M    fs-scxml-adapter-api/pom.xml
+M    fs-scxml-socket/pom.xml
+M    fs-scxml-lookup/src/test/java/org/freeswitch/scxml/lookup/OsgiLookupTest.java
+M    fs-scxml-lookup/src/test/java/org/freeswitch/scxml/lookup/ActivatorTest.java
+M    fs-scxml-lookup/pom.xml
+M    fs-scxml-application-api/pom.xml
+M    fs-scxml-test-utils/pom.xml
+M    fs-scxml-socket-api/pom.xml
+M    fs-scxml-adapter/pom.xml
+M    fs-scxml-integration-test/src/test/java/org/freeswitch/scxml/test/actions/PhraseTest.java
+M    fs-scxml-integration-test/src/test/java/org/freeswitch/scxml/test/actions/InputDigitsTest.java
+M    fs-scxml-integration-test/src/test/java/org/freeswitch/scxml/test/TestSuiteIT.java
+M    fs-scxml-integration-test/src/test/java/org/freeswitch/scxml/test/MockConnection.java
+A  + fs-scxml-integration-test/src/test/resources/org/freeswitch/scxml/test/countTest.xml
+M    pom.xml
+M    fs-scxml-application/src/test/java/org/freeswitch/scxml/engine/CountTest.java
+M    fs-scxml-application/src/main/java/org/freeswitch/scxml/engine/StateMachine.java
+M    fs-scxml-application/src/main/java/org/freeswitch/scxml/engine/Count.java
+M    fs-scxml-application/src/main/java/org/freeswitch/scxml/engine/ScxmlListenerImpl.java
+M    fs-scxml-application/pom.xml
