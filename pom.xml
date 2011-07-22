@@ -68,7 +68,9 @@
     </distributionManagement>  
     
     <scm>
-        <developerConnection></developerConnection>
+        <connection>scm:svn:https://freeswitch-scxml.googlecode.com/svn/trunk</connection>
+        <developerConnection>scm:svn:https://freeswitch-scxml.googlecode.com/svn/trunk</developerConnection>
+        <url>svn:https://freeswitch-scxml.googlecode.com/svn/</url>
     </scm>
         
     <build>
