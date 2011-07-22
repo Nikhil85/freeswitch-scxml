@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.freeswitch.scxml</groupId>
         <artifactId>org.freeswitch.scxml</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
 
     <groupId>org.freeswitch.scxml</groupId>
     <artifactId>org.freeswitch.scxml.socket</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>bundle</packaging>
 
     <name>fs-scxml-socket</name>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.freeswitch</groupId>
             <artifactId>fs-scxml-test-utils</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
