@@ -1,9 +1,5 @@
 package org.freeswitch.scxml.engine;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.isA;
-import static org.junit.Assert.assertTrue;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,12 +11,15 @@ import org.freeswitch.adapter.api.session.Session;
 import org.freeswitch.scxml.application.api.ApplicationLauncher;
 import org.freeswitch.test.utils.MockLookup;
 import org.junit.Before;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
+
 
 /**
  *
  * @author jocke
  */
-public final class ApplicationLancherTest {
+public final class ScxmlApplicationLauncherTest {
 
     private Session session;
     private ScxmlApplication application;
@@ -36,7 +35,7 @@ public final class ApplicationLancherTest {
 
     @Test
     public void testLaunch() throws Exception {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = new HashMap<>();
         vars.put("variable_sip_to_params", "scxml=file:/home/test/test.xml");
 
         expect(session.getVars()).andReturn(vars);
@@ -48,5 +47,25 @@ public final class ApplicationLancherTest {
 
         assertTrue("The ivr session has not been addded.", vars.containsKey(Session.class.getName()));
         assertTrue("The ivr session has not been addded.", vars.containsValue(session));
+    }
+    
+    @Test
+    public void testIsLaunchable() throws Exception {
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("variable_sip_to_params", "scxml=file:/home/test/test.xml");
+
+        expect(session.getVars()).andReturn(vars);
+        EasyMock.replay(session, application);
+        assertTrue(launcher.isLaunchable(session));
+        EasyMock.verify(session, application);
+    }
+    
+    @Test
+    public void testIsNotLaunchable() throws Exception {
+        Map<String, Object> vars = new HashMap<>();
+        expect(session.getVars()).andReturn(vars);
+        EasyMock.replay(session, application);
+        assertFalse(launcher.isLaunchable(session));
+        EasyMock.verify(session, application);
     }
 }
