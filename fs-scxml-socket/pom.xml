@@ -117,11 +117,6 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.freeswitch.scxml</groupId>
-                                    <artifactId>org.freeswitch.scxml.socket.api</artifactId>
-                                    <version>${project.version}</version>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.freeswitch.scxml</groupId>
                                     <artifactId>org.freeswitch.scxml.socket</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>
