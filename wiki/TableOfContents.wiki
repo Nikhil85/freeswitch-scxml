@@ -14,4 +14,4 @@
     * [Wait Wait]
   * [Variables Variables]
     * [Builtin Built in]
-    * Count
+    * [Count Count]
