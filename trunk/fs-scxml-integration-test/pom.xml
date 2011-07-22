@@ -4,11 +4,11 @@
     <parent>
         <artifactId>org.freeswitch.scxml</artifactId>
         <groupId>org.freeswitch.scxml</groupId>
-        <version>1.0</version>
+        <version>1.1-SNAPSHOT</version>
     </parent>
     <groupId>org.freeswitch</groupId>
     <artifactId>fs-scxml-integration-test</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <name>fs-scxml-integration-test</name>
     <url>http://maven.apache.org</url>
     <properties>
