@@ -40,15 +40,7 @@ public final class ScxmlApplicationLauncher implements ApplicationLauncher {
         try {
             // Get all variables passed in from Freeswitch
             Map<String, Object> vars = session.getVars();
-            String targetUrl = (String) (vars.containsKey(SIP_TO_PARAMS) ? vars.get(SIP_TO_PARAMS) : vars.get(SCXML_VAR));
-
-            if (targetUrl == null) {
-                LOG.info("No SCXML param in request! No way to" + " launch application");
-                return;
-            }
-
-            targetUrl = URLDecoder.decode(targetUrl, UTF8);
-
+            String targetUrl = URLDecoder.decode(getTargetUrl(vars), UTF8);
             if (targetUrl.contains("=")) {
                 targetUrl = targetUrl.split("=")[1];
             }
@@ -60,7 +52,7 @@ public final class ScxmlApplicationLauncher implements ApplicationLauncher {
             if (app != null) {
                 vars.put(Session.class.getName(), session);
                 app.createAndStartMachine(url, vars);
-            
+
             } else {
                 LOG.warn("New scxml application was found unable to launch application");
             }
@@ -69,5 +61,14 @@ public final class ScxmlApplicationLauncher implements ApplicationLauncher {
             LOG.error(iex.getMessage());
         }
 
+    }
+
+    private String getTargetUrl(Map<String, Object> vars) {
+        return (String) (vars.containsKey(SIP_TO_PARAMS) ? vars.get(SIP_TO_PARAMS) : vars.get(SCXML_VAR));
+    }
+
+    @Override
+    public boolean isLaunchable(Session session) {        
+        return getTargetUrl(session.getVars()) != null;
     }
 }
