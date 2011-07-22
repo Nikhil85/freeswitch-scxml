@@ -67,6 +67,9 @@
         </repository>
     </distributionManagement>  
     
+    <scm>
+        <developerConnection></developerConnection>
+    </scm>
         
     <build>
         <extensions>
